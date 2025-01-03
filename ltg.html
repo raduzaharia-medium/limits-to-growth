@@ -1,107 +1,147 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta http-equiv="content-type" content="text/html;charset=utf-8">
-    <title>Limits to Growth (1972)</title>
-    <script type="text/javascript" src="html5slider.js"></script>
-    <script type="text/javascript" src="ltg.js"></script>
-    <link rel="stylesheet" type="text/css" href="ltg-styles.css">
-  </head>
-  <body onload="setUpModel();">
-    <div class="container">
-      <div class="content">
-        <div id="header">
-          <h2>The Limits to Growth</h2> 
-        </div>  
-        <div id="chart">  
-          <canvas id="cv" width="800" height="450">
-            <h3>Sorry, this page requires the HTML "canvas" element, which your browser doesn't seem to support.</h3>
-            <p>Browsers that should work include the latest versions of Firefox, Google Chrome, Safari and Opera. Version 9.0 of Internet Explorer may also work.</p>
-          </canvas>
-        </div>
-        <div id="controls">
-        	<div id="sliders">
-	          <div class="slider-set">
-            	<label for="duration">model duration (years)</label>
-            	<input id="duration-slider" name="duration-slider" type="range" class="slider" min="100" max="500" step="50" value="200" onchange="changeDuration()"/>
-            	<span id="duration-readout" class="slider-readout">200</span>
-          	</div>
-          	<div class="slider-set">
-            	<label for="dt-slider">time step (years)</label>
-            	<input id="dt-slider" name="dt-slider" type="range" class="slider" min="-4" max="1" step="1" value="-1" onchange="changeDt()"/>
-            	<span id="dt-readout" class="slider-readout">1</span>
-          	</div>
-          	<div class="slider-set">
-            	<label for="resource-slider">initial resources multiplier</label>
-            	<input id="resource-slider" name="resource-slider" type="range" class="slider" min="-3" max="5" step="1" value="0" onchange="changeResources()"/>
-            	<span id="resource-readout" class="slider-readout">1</span>
-            </div>
-          	<div class="slider-set">
-            	<label for="consumption-slider">output consumed (fraction)</label>
-            	<input id="consumption-slider" name="consumption-slider" type="range" class="slider" min="0.0" max="1.0" step="0.01" value="0.43" onchange="changeConsumption()"/>
-            	<span id="consumption-readout" class="slider-readout">0.43</span>
-          	</div>
+
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>Limits to Growth (1972)</title>
+
+  <script type="module" src="html5slider.js"></script>
+  <script type="module" src="ltg.js"></script>
+
+  <script type="module">
+    import { setUpModel, runModel, resetModel, fastRun, changeDuration, changeDt, changeResources, changeConsumption, pollCheckBoxes, setDefaults } from './ltg.js';
+
+    document.getElementById("duration-slider").addEventListener("input", changeDuration);
+    document.getElementById("dt-slider").addEventListener("input", changeDt);
+    document.getElementById("resource-slider").addEventListener("input", changeResources);
+    document.getElementById("consumption-slider").addEventListener("input", changeConsumption);
+
+    document.getElementById('population-ck').addEventListener('change', pollCheckBoxes);
+    document.getElementById('resources-ck').addEventListener('change', pollCheckBoxes);
+    document.getElementById('food-ck').addEventListener('change', pollCheckBoxes);
+    document.getElementById('industry-ck').addEventListener('change', pollCheckBoxes);
+    document.getElementById('service-ck').addEventListener('change', pollCheckBoxes);
+    document.getElementById('pollution-ck').addEventListener('change', pollCheckBoxes);
+    document.getElementById('life-expect-ck').addEventListener('change', pollCheckBoxes);
+    document.getElementById('birth-rate-ck').addEventListener('change', pollCheckBoxes);
+    document.getElementById('death-rate-ck').addEventListener('change', pollCheckBoxes);
+    document.getElementById('arable-land-ck').addEventListener('change', pollCheckBoxes);
+    document.getElementById('land-yield-ck').addEventListener('change', pollCheckBoxes);
+
+    document.getElementById('run').addEventListener('click', runModel);
+    document.getElementById('reset').addEventListener('click', resetModel);
+    document.getElementById('fast-run').addEventListener('click', fastRun);
+    document.getElementById('defaults').addEventListener('click', setDefaults);
+
+    setUpModel();
+  </script>
+
+  <link rel="stylesheet" type="text/css" href="ltg-styles.css">
+</head>
+
+<body>
+  <div class="container">
+    <div class="content">
+      <div id="header">
+        <h2>The Limits to Growth</h2>
+      </div>
+
+      <div id="chart">
+        <canvas id="cv" width="800" height="450">
+          <h3>Sorry, this page requires the HTML "canvas" element, which your browser doesn't seem to support.</h3>
+          <p>Browsers that should work include the latest versions of Firefox, Google Chrome, Safari and Opera. Version 9.0 of Internet Explorer may also work.
+          </p>
+        </canvas>
+      </div>
+
+      <div id="controls">
+        <div id="sliders">
+          <div class="slider-set">
+            <label for="duration">model duration (years)</label>
+            <input id="duration-slider" name="duration-slider" type="range" class="slider" min="100" max="500" step="50" value="200" />
+            <span id="duration-readout" class="slider-readout">200</span>
           </div>
-          <div id="checkboxes">
-            <p style="text-align: center; height: 16px"><strong>Variables to Plot</strong></p>
-            <div class="checkbox-line">
-              <div class="color-sample"></div>
-              <label><input id="population-ck" name="population" type="checkbox" checked onchange="pollCheckBoxes()"/>population</label><br/>
-            </div>
-            <div class="checkbox-line">
-              <div class="color-sample"></div>
-              <label><input id="resources-ck" name="nonrenewableResourceFractionRemaining" type="checkbox" checked onchange="pollCheckBoxes()"/>resources</label><br/>
-            </div>
-            <div class="checkbox-line">
-              <div class="color-sample"></div>
-              <label><input id="food-ck" name="foodPerCapita" type="checkbox" checked onchange="pollCheckBoxes()" />food per capita</label><br/>
-            </div>
-            <div class="checkbox-line">
-              <div class="color-sample"></div>
-              <label><input id="industry-ck" name="industrialOutputPerCapita" type="checkbox" checked onchange="pollCheckBoxes()" />industrial output</label><br/>
-            </div>
-            <div class="checkbox-line">
-              <div class="color-sample"></div>
-              <label><input id="service-ck" name="serviceOutput" type="checkbox" onchange="pollCheckBoxes()" />services output</label><br/>
-            </div>
-            <div class="checkbox-line">
-              <div class="color-sample"></div>
-              <label><input id="pollution-ck" name="indexOfPersistentPollution" type="checkbox" checked onchange="pollCheckBoxes()" />pollution index</label><br/>
-            </div>
-            <div class="checkbox-line">
-              <div class="color-sample"></div>
-              <label><input id="life-expect-ck" name="lifeExpectancy" type="checkbox" checked onchange="pollCheckBoxes()" />life expectancy</label><br/>
-            </div>
-            <div class="checkbox-line">
-              <div class="color-sample"></div>
-              <label><input id="birth-rate-ck" name="crudeBirthRate" type="checkbox" onchange="pollCheckBoxes()"/>birth rate</label><br/>
-            </div>
-            <div class="checkbox-line">
-              <div class="color-sample"></div>
-              <label><input id="death-rate-ck" name="crudeDeathRate" type="checkbox" onchange="pollCheckBoxes()"/>death rate</label><br/>
-            </div>
-            <div class="checkbox-line">
-              <div class="color-sample"></div>
-              <label><input id="arable-land-ck" name="arableLand" type="checkbox" onchange="pollCheckBoxes()"/>arable land</label><br/>
-            </div>
-            <div class="checkbox-line">
-              <div class="color-sample"></div>
-              <label><input id="land-yield-ck" name="landYield" type="checkbox" onchange="pollCheckBoxes()"/>land yield</label><br/>
-            </div>
-<!--
+          <div class="slider-set">
+            <label for="dt-slider">time step (years)</label>
+            <input id="dt-slider" name="dt-slider" type="range" class="slider" min="-4" max="1" step="1" value="-1" />
+            <span id="dt-readout" class="slider-readout">1</span>
+          </div>
+          <div class="slider-set">
+            <label for="resource-slider">initial resources multiplier</label>
+            <input id="resource-slider" name="resource-slider" type="range" class="slider" min="-3" max="5" step="1" value="0" />
+            <span id="resource-readout" class="slider-readout">1</span>
+          </div>
+          <div class="slider-set">
+            <label for="consumption-slider">output consumed (fraction)</label>
+            <input id="consumption-slider" name="consumption-slider" type="range" class="slider" min="0.0" max="1.0" step="0.01" value="0.43" />
+            <span id="consumption-readout" class="slider-readout">0.43</span>
+          </div>
+        </div>
+
+        <div id="checkboxes">
+          <p style="text-align: center; height: 16px"><strong>Variables to Plot</strong></p>
+          <div class="checkbox-line">
+            <div class="color-sample"></div>
+            <label><input id="population-ck" name="population" type="checkbox" checked />population</label><br />
+          </div>
+          <div class="checkbox-line">
+            <div class="color-sample"></div>
+            <label><input id="resources-ck" name="nonrenewableResourceFractionRemaining" type="checkbox" checked />resources</label><br />
+          </div>
+          <div class="checkbox-line">
+            <div class="color-sample"></div>
+            <label><input id="food-ck" name="foodPerCapita" type="checkbox" checked />food per capita</label><br />
+          </div>
+          <div class="checkbox-line">
+            <div class="color-sample"></div>
+            <label><input id="industry-ck" name="industrialOutputPerCapita" type="checkbox" checked />industrial
+              output</label><br />
+          </div>
+          <div class="checkbox-line">
+            <div class="color-sample"></div>
+            <label><input id="service-ck" name="serviceOutput" type="checkbox" />services output</label><br />
+          </div>
+          <div class="checkbox-line">
+            <div class="color-sample"></div>
+            <label><input id="pollution-ck" name="indexOfPersistentPollution" type="checkbox" checked />pollution
+              index</label><br />
+          </div>
+          <div class="checkbox-line">
+            <div class="color-sample"></div>
+            <label><input id="life-expect-ck" name="lifeExpectancy" type="checkbox" checked />life expectancy</label><br />
+          </div>
+          <div class="checkbox-line">
+            <div class="color-sample"></div>
+            <label><input id="birth-rate-ck" name="crudeBirthRate" type="checkbox" />birth rate</label><br />
+          </div>
+          <div class="checkbox-line">
+            <div class="color-sample"></div>
+            <label><input id="death-rate-ck" name="crudeDeathRate" type="checkbox" />death rate</label><br />
+          </div>
+          <div class="checkbox-line">
+            <div class="color-sample"></div>
+            <label><input id="arable-land-ck" name="arableLand" type="checkbox" />arable land</label><br />
+          </div>
+          <div class="checkbox-line">
+            <div class="color-sample"></div>
+            <label><input id="land-yield-ck" name="landYield" type="checkbox" />land yield</label><br />
+          </div>
+          <!--
             <div class="select-line">
               <div class="color-sample"></div>
               <label><input id="select-var-ck" name="agriculturalInputs" type="checkbox" onchange="changeMenuVar()"/></label>
               <select id="menuOfVars" onchange="changeMenuVar()"> </select>
             </div>
 -->
-          </div>
-          <button id="run" title="Run the model" onclick="runModel();">Run</button>
-          <button id="reset" title="Erase the graph" onclick="resetModel();">Reset</button>
-          <button id="defaults" title="All parameters to default values" onclick="setDefaults();">Defaults</button>
-          <button id="fast-run" title="Run the model at full speed" onclick="fastRun();">Run Fast</button>
         </div>
+
+        <button id="run" title="Run the model">Run</button>
+        <button id="reset" title="Erase the graph">Reset</button>
+        <button id="defaults" title="All parameters to default values">Defaults</button>
+        <button id="fast-run" title="Run the model at full speed">Run Fast</button>
       </div>
     </div>
-  </body>
+  </div>
+</body>
+
 </html>
