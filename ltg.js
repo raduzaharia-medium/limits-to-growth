@@ -1,6 +1,8 @@
 import { Level } from "./models/level.js";
 import { Rate } from "./models/rate.js";
 import { Aux } from "./models/aux.js";
+import { Smooth } from "./models/smooth.js";
+import { Delay3 } from "./models/delay.js";
 import { clip } from "./tools.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
@@ -28,105 +30,6 @@ var rateArray = new Array();
 // Equations with qClass "Aux" are pushed onto this Array
 
 var auxArray = new Array();
-
-// constructor for Smooth objects
-
-var Smooth = function (qName, qNumber, delay) {
-  this.qName = qName;
-  this.qNumber = qNumber;
-  this.qType = "Aux";
-  this.units = "dimensionless";
-  this.dependencies = [];
-  this.del = delay;
-  this.firstCall = true;
-  this.j = this.k = null;
-  qArray[qNumber] = this;
-  auxArray.push(this);
-};
-
-Smooth.prototype.init = function () {
-  this.theInput = this.initFn();
-  this.j = this.k = this.theInput.k || this.initVal;
-};
-
-Smooth.prototype.reset = function () {
-  this.firstCall = true;
-  this.j = this.k = this.null;
-};
-
-Smooth.prototype.update = function () {
-  if (this.firstCall) {
-    this.j = this.k = this.theInput.k || this.initVal;
-    this.firstCall = false;
-    return this.k;
-  } else {
-    this.k = this.j + (dt * (this.theInput.j - this.j)) / this.del;
-    return this.k;
-  }
-};
-
-Smooth.prototype.warmup = Smooth.prototype.init;
-
-Smooth.prototype.tick = Level.prototype.tick;
-
-// constructor for Delay3 objects
-// third-order exponential delay for Rate variables
-
-var Delay3 = function (qName, qNumber, delay) {
-  this.qName = qName;
-  this.qNumber = qNumber;
-  this.qType = "Aux";
-  this.units = "dimensionless";
-  this.dependencies = [];
-  this.delayPerStage = delay / 3;
-  this.firstCall = true;
-  this.j = this.k = null;
-  this.alpha = { j: null, k: null };
-  this.beta = { j: null, k: null };
-  this.gamma = { j: null, k: null };
-  qArray[qNumber] = this;
-  auxArray.push(this);
-};
-
-Delay3.prototype.init = function () {
-  this.theInput = this.initFn();
-  this.j = this.k = this.theInput.k;
-  this.alpha.j = this.alpha.k = this.theInput.j;
-  this.beta.j = this.beta.k = this.theInput.j;
-  this.gamma.j = this.gamma.k = this.theInput.j;
-};
-
-Delay3.prototype.reset = function () {
-  this.firstCall = true;
-  this.j = this.k = null;
-  this.alpha = { j: null, k: null };
-  this.beta = { j: null, k: null };
-  this.gamma = { j: null, k: null };
-};
-
-Delay3.prototype.update = function () {
-  if (this.firstCall) {
-    this.j = this.k = this.theInput.k;
-    this.alpha.j = this.alpha.k = this.theInput.k;
-    this.beta.j = this.beta.k = this.theInput.k;
-    this.gamma.j = this.gamma.k = this.theInput.k;
-    this.firstCall = false;
-    return this.k;
-  } else {
-    this.alpha.k = this.alpha.j + (dt * (this.theInput.j - this.alpha.j)) / this.delayPerStage;
-    this.beta.k = this.beta.j + (dt * (this.alpha.j - this.beta.j)) / this.delayPerStage;
-    this.gamma.k = this.gamma.j + (dt * (this.beta.j - this.gamma.j)) / this.delayPerStage;
-    this.alpha.j = this.alpha.k;
-    this.beta.j = this.beta.k;
-    this.gamma.j = this.gamma.k;
-    this.k = this.gamma.k;
-    return this.k;
-  }
-};
-
-Delay3.prototype.warmup = Delay3.prototype.init;
-
-Delay3.prototype.tick = Level.prototype.tick;
 
 // constructor for Table objects
 
@@ -389,19 +292,19 @@ var initSmoothsAndDelay3s = function () {
 
 var updateAuxen = function () {
   for (var i = 0; i < auxArray.length; i++) {
-    auxArray[i].update(t, startTime, stopTime, gLeft, gRight, gBottom, gTop);
+    auxArray[i].update(t, startTime, stopTime, gLeft, gRight, gBottom, gTop, dt);
   }
 };
 
 var updateRates = function () {
   for (var i = 0; i < rateArray.length; i++) {
-    rateArray[i].update(t, startTime, stopTime, gLeft, gRight, gBottom, gTop);
+    rateArray[i].update(t, startTime, stopTime, gLeft, gRight, gBottom, gTop, dt);
   }
 };
 
 var updateLevels = function () {
   for (var i = 0; i < levelArray.length; i++) {
-    levelArray[i].update(t, startTime, stopTime, gLeft, gRight, gBottom, gTop);
+    levelArray[i].update(t, startTime, stopTime, gLeft, gRight, gBottom, gTop, dt);
   }
 };
 
@@ -732,6 +635,8 @@ effectiveHealthServicesPerCapita.dependencies = ["healthServicesAllocationsPerCa
 effectiveHealthServicesPerCapita.initFn = function () {
   return healthServicesAllocationsPerCapita;
 };
+qArray[22] = effectiveHealthServicesPerCapita;
+auxArray.push(effectiveHealthServicesPerCapita);
 
 var lifetimeMultiplierFromHealthServices = new Aux("lifetimeMultiplierFromHealthServices", 23);
 lifetimeMultiplierFromHealthServices.units = "dimensionless";
@@ -884,6 +789,8 @@ perceivedLifeExpectancy.dependencies = ["lifeExpectancy"];
 perceivedLifeExpectancy.initFn = function () {
   return lifeExpectancy;
 };
+qArray[37] = perceivedLifeExpectancy;
+auxArray.push(perceivedLifeExpectancy);
 
 var desiredCompletedFamilySize = new Aux("desiredCompletedFamilySize", 38);
 desiredCompletedFamilySize.units = "dimensionless"; // not persons?
@@ -913,6 +820,8 @@ delayedIndustrialOutputPerCapita.dependencies = ["industrialOutputPerCapita"];
 delayedIndustrialOutputPerCapita.initFn = function () {
   return industrialOutputPerCapita;
 };
+qArray[40] = delayedIndustrialOutputPerCapita;
+auxArray.push(delayedIndustrialOutputPerCapita);
 
 var familyResponseToSocialNorm = new Table("familyResponseToSocialNorm", 41, [0.5, 0.6, 0.7, 0.85, 1.0], -0.2, 0.2, 0.1);
 familyResponseToSocialNorm.units = "dimensionless";
@@ -938,6 +847,8 @@ averageIndustrialOutputPerCapita.dependencies = ["industrialOutputPerCapita"];
 averageIndustrialOutputPerCapita.initFn = function () {
   return industrialOutputPerCapita;
 };
+qArray[43] = averageIndustrialOutputPerCapita;
+auxArray.push(averageIndustrialOutputPerCapita);
 
 var needForFertilityControl = new Aux("needForFertilityControl", 44);
 needForFertilityControl.units = "dimensionless";
@@ -963,6 +874,8 @@ fertilityControlFacilitiesPerCapita.dependencies = ["fertilityControlAllocationP
 fertilityControlFacilitiesPerCapita.initFn = function () {
   return fertilityControlAllocationPerCapita;
 };
+qArray[46] = fertilityControlFacilitiesPerCapita;
+auxArray.push(fertilityControlFacilitiesPerCapita);
 
 var fertilityControlAllocationPerCapita = new Aux("fertilityControlAllocationPerCapita", 47);
 fertilityControlAllocationPerCapita.units = "dollars per person-year";
@@ -1344,6 +1257,8 @@ laborUtilizationFractionDelayed.dependencies = ["laborUtilizationFraction"];
 laborUtilizationFractionDelayed.initFn = function () {
   return laborUtilizationFraction;
 };
+qArray[82] = laborUtilizationFractionDelayed;
+auxArray.push(laborUtilizationFractionDelayed);
 
 var capitalUtilizationFraction = new Table("capitalUtilizationFraction", 83, [1.0, 0.9, 0.7, 0.3, 0.1, 0.1], 1, 11, 2);
 capitalUtilizationFraction.units = "dimensionless";
@@ -1513,6 +1428,8 @@ agriculturalInputs.initFn = function () {
   return currentAgriculturalInputs;
 };
 agriculturalInputs.initVal = 5.0e9;
+qArray[99] = agriculturalInputs;
+auxArray.push(agriculturalInputs);
 
 /*
 var agriculturalInputs = new Smooth("agriculturalInputs", 99, averageLifetimeOfAgriculturalInputsK);
@@ -1534,6 +1451,8 @@ var agriculturalInputs = new Smooth("agriculturalInputs", 99, averageLifetimeOfA
       return agriculturalInputs.k;
     }
   }
+    qArray[99] = agriculturalInputs;
+    auxArray.push(agriculturalInputs);
 */
 
 // note: output of this equation goes unused
@@ -1827,6 +1746,8 @@ perceivedFoodRatio.initFn = function () {
   return foodRatio;
 };
 perceivedFoodRatio.initVal = 1.0;
+qArray[128] = perceivedFoodRatio;
+auxArray.push(perceivedFoodRatio);
 
 /*
 var perceivedFoodRatio = new Smooth("perceivedFoodRatio", 128, foodShortagePerceptionDelayK);
@@ -1847,6 +1768,8 @@ var perceivedFoodRatio = new Smooth("perceivedFoodRatio", 128, foodShortagePerce
       return perceivedFoodRatio.k;
     }
   }
+    qArray[128] = perceivedFoodRatio;
+    auxArray.push(perceivedFoodRatio);
 */
 
 // NONRENEWABLE RESOURCE SECTOR
@@ -2000,6 +1923,8 @@ persistenPollutionAppearanceRate.initFn = function () {
 };
 persistenPollutionAppearanceRate.qType = "Rate";
 rateArray.push(auxArray.pop()); // put this among the Rates, not the Auxes
+qArray[141] = persistenPollutionAppearanceRate;
+auxArray.push(persistenPollutionAppearanceRate);
 
 var persistentPollution = new Level("persistentPollution", 142, 2.5e7, startTime, qArray, levelArray);
 persistentPollution.units = "pollution units";
