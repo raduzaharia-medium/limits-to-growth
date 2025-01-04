@@ -5,6 +5,12 @@ import { Smooth } from "./models/smooth.js";
 import { Delay3 } from "./models/delay.js";
 import { Table } from "./models/table.js";
 import { clip } from "./tools.js";
+import { Population } from "./models/population/population.js";
+import { Population0To14 } from "./models/population/population0to14.js";
+import { Population15To44 } from "./models/population/population15to44.js";
+import { Population45To64 } from "./models/population/population45to64.js";
+import { Population65AndOver } from "./models/population/population65AndOver.js";
+import { DeathsPerYear } from "./models/population/deathsPerYear.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
     of World3, the social-economic-environmental model created by
@@ -383,27 +389,21 @@ var debugRun = function () {
 
 //THE POPULATION SECTOR
 
-var population = new Aux("population", 1);
-population.units = "persons";
-population.plotColor = "#e07154";
-population.plotMin = 0;
-population.plotMax = 1.6e10;
+var population = new Population();
 population.updateFn = function () {
   return population0To14.k + population15To44.k + population45To64.k + population65AndOver.k;
 };
 qArray[1] = population;
 auxArray.push(population);
 
-var population0To14 = new Level("population0To14", 2, 6.5e8, startTime);
-population0To14.units = "persons";
+var population0To14 = new Population0To14(startTime);
 population0To14.updateFn = function () {
   return population0To14.j + dt * (birthsPerYear.j - deathsPerYear0To14.j - maturationsPerYear14to15.j);
 };
 qArray[2] = population0To14;
 levelArray.push(population0To14);
 
-var deathsPerYear0To14 = new Rate("deathsPerYear0To14", 3);
-deathsPerYear0To14.units = "persons per year";
+var deathsPerYear0To14 = new DeathsPerYear();
 deathsPerYear0To14.updateFn = function () {
   return population0To14.k * mortality0To14.k;
 };
@@ -427,8 +427,7 @@ maturationsPerYear14to15.updateFn = function () {
 qArray[5] = maturationsPerYear14to15;
 rateArray.push(maturationsPerYear14to15);
 
-var population15To44 = new Level("population15To44", 6, 7.0e8, startTime, qArray, levelArray);
-population15To44.units = "persons";
+var population15To44 = new Population15To44(startTime);
 population15To44.updateFn = function () {
   return population15To44.j + dt * (maturationsPerYear14to15.j - deathsPerYear15To44.j - maturationsPerYear44to45.j);
 };
@@ -460,8 +459,7 @@ maturationsPerYear44to45.updateFn = function () {
 qArray[9] = maturationsPerYear44to45;
 rateArray.push(maturationsPerYear44to45);
 
-var population45To64 = new Level("population45To64", 10, 1.9e8, startTime, qArray, levelArray);
-population45To64.units = "persons";
+var population45To64 = new Population45To64(startTime);
 population45To64.updateFn = function () {
   return population45To64.j + dt * (maturationsPerYear44to45.j - deathsPerYear45To64.j - maturationsPerYear64to65.j);
 };
@@ -493,8 +491,7 @@ maturationsPerYear64to65.updateFn = function () {
 qArray[13] = maturationsPerYear64to65;
 rateArray.push(maturationsPerYear64to65);
 
-var population65AndOver = new Level("population65AndOver", 14, 6.0e7, startTime, qArray, levelArray);
-population65AndOver.units = "persons";
+var population65AndOver = new Population65AndOver(startTime);
 population65AndOver.updateFn = function () {
   return population65AndOver.j + dt * (maturationsPerYear64to65.j - deathsPerYear65AndOver.j);
 };

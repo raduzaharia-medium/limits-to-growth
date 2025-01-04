@@ -11,9 +11,9 @@ export class Equation {
     this.k = null;
 
     this.plotThisVar = false;
-    this.plotColor = "transparent"; // default to be overridden
-    this.plotMin = 0; // default to be overridden
-    this.plotMax = 1000; // default to be overridden
+    this.plotColor = "transparent";
+    this.plotMin = 0;
+    this.plotMax = 1000;
   }
 
   warmup() {
