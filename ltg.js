@@ -10,7 +10,7 @@ import { Population0To14 } from "./models/population/population0to14.js";
 import { Population15To44 } from "./models/population/population15to44.js";
 import { Population45To64 } from "./models/population/population45to64.js";
 import { Population65AndOver } from "./models/population/population65AndOver.js";
-import { DeathsPerYear } from "./models/population/deathsPerYear.js";
+import { DeathsPerYear0To14 } from "./models/population/deathsPerYear0to14.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
     of World3, the social-economic-environmental model created by
@@ -389,28 +389,22 @@ var debugRun = function () {
 
 //THE POPULATION SECTOR
 
-var population = new Population();
-population.updateFn = function () {
-  return population0To14.k + population15To44.k + population45To64.k + population65AndOver.k;
-};
+let population = new Population();
 qArray[1] = population;
 auxArray.push(population);
 
-var population0To14 = new Population0To14(startTime);
-population0To14.updateFn = function () {
-  return population0To14.j + dt * (birthsPerYear.j - deathsPerYear0To14.j - maturationsPerYear14to15.j);
-};
+let population0To14 = new Population0To14(startTime, dt);
 qArray[2] = population0To14;
 levelArray.push(population0To14);
+population.population0To14 = population0To14;
 
-var deathsPerYear0To14 = new DeathsPerYear();
-deathsPerYear0To14.updateFn = function () {
-  return population0To14.k * mortality0To14.k;
-};
+let deathsPerYear0To14 = new DeathsPerYear0To14();
 qArray[3] = deathsPerYear0To14;
 rateArray.push(deathsPerYear0To14);
+population0To14.deathsPerYear0To14 = deathsPerYear0To14;
+deathsPerYear0To14.population0To14 = population0To14;
 
-var mortality0To14 = new Table("mortality0To14", 4, [0.0567, 0.0366, 0.0243, 0.0155, 0.0082, 0.0023, 0.001], 20, 80, 10);
+let mortality0To14 = new Table("mortality0To14", 4, [0.0567, 0.0366, 0.0243, 0.0155, 0.0082, 0.0023, 0.001], 20, 80, 10);
 mortality0To14.units = "deaths per person-year";
 mortality0To14.dependencies = ["lifeExpectancy"];
 mortality0To14.updateFn = function () {
@@ -418,21 +412,24 @@ mortality0To14.updateFn = function () {
 };
 qArray[4] = mortality0To14;
 auxArray.push(mortality0To14);
+deathsPerYear0To14.mortality0To14 = mortality0To14;
 
-var maturationsPerYear14to15 = new Rate("maturationsPerYear14to15", 5);
+let maturationsPerYear14to15 = new Rate("maturationsPerYear14to15", 5);
 maturationsPerYear14to15.units = "persons per year";
 maturationsPerYear14to15.updateFn = function () {
   return (population0To14.k * (1 - mortality0To14.k)) / 15;
 };
 qArray[5] = maturationsPerYear14to15;
 rateArray.push(maturationsPerYear14to15);
+population0To14.maturationsPerYear14to15 = maturationsPerYear14to15;
 
-var population15To44 = new Population15To44(startTime);
+let population15To44 = new Population15To44(startTime);
 population15To44.updateFn = function () {
   return population15To44.j + dt * (maturationsPerYear14to15.j - deathsPerYear15To44.j - maturationsPerYear44to45.j);
 };
 qArray[6] = population15To44;
 levelArray.push(population15To44);
+population.population15To44 = population15To44;
 
 var deathsPerYear15To44 = new Rate("deathsPerYear15To44", 7);
 deathsPerYear15To44.units = "persons per year";
@@ -465,6 +462,7 @@ population45To64.updateFn = function () {
 };
 qArray[10] = population45To64;
 levelArray.push(population45To64);
+population.population45To64 = population45To64;
 
 var deathsPerYear45To64 = new Rate("deathsPerYear45To64", 11);
 deathsPerYear45To64.units = "persons per year";
@@ -497,6 +495,7 @@ population65AndOver.updateFn = function () {
 };
 qArray[14] = population65AndOver;
 levelArray.push(population65AndOver);
+population.population65AndOver = population65AndOver;
 
 var deathsPerYear65AndOver = new Rate("deathsPerYear65AndOver", 15);
 deathsPerYear65AndOver.units = "persons per year";
@@ -671,7 +670,7 @@ auxArray.push(lifetimeMultiplierFromPollution);
 
 // The Birth-Rate Subsector
 
-var birthsPerYear = new Rate("birthsPerYear", 30);
+let birthsPerYear = new Rate("birthsPerYear", 30);
 birthsPerYear.units = "persons per year";
 birthsPerYear.plotThisVar = true;
 birthsPerYear.reproductiveLifetime = 30; // years
@@ -683,6 +682,7 @@ birthsPerYear.updateFn = function () {
 };
 qArray[30] = birthsPerYear;
 rateArray.push(birthsPerYear);
+population0To14.birthsPerYear = birthsPerYear;
 
 var crudeBirthRate = new Aux("crudeBirthRate", 31);
 crudeBirthRate.units = "births per 1000 person-years";

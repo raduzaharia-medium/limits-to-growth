@@ -9,4 +9,24 @@ export class Population extends Aux {
     this.plotMin = 0;
     this.plotMax = 1.6e10;
   }
+
+  set population0To14(value) {
+    this._population0To14 = value;
+  }
+
+  set population15To44(value) {
+    this._population15To44 = value;
+  }
+
+  set population45To64(value) {
+    this._population45To64 = value;
+  }
+
+  set population65AndOver(value) {
+    this._population65AndOver = value;
+  }
+
+  updateFn() {
+    return this._population0To14.k + this._population15To44.k + this._population45To64.k + this._population65AndOver.k;
+  }
 }
