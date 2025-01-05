@@ -6,11 +6,12 @@ import { Delay3 } from "./models/delay.js";
 import { Table } from "./models/table.js";
 import { clip } from "./tools.js";
 import { Population } from "./models/population/population.js";
-import { Population0To14 } from "./models/population/population0to14.js";
-import { Population15To44 } from "./models/population/population15to44.js";
-import { Population45To64 } from "./models/population/population45to64.js";
+import { Population0To14 } from "./models/population/population0To14.js";
+import { Population15To44 } from "./models/population/population15To44.js";
+import { Population45To64 } from "./models/population/population45To64.js";
 import { Population65AndOver } from "./models/population/population65AndOver.js";
-import { DeathsPerYear0To14 } from "./models/population/deathsPerYear0to14.js";
+import { DeathsPerYear0To14 } from "./models/population/deathsPerYear0To14.js";
+import { Mortality0To14 } from "./models/population/mortality0To14.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
     of World3, the social-economic-environmental model created by
@@ -404,12 +405,7 @@ rateArray.push(deathsPerYear0To14);
 population0To14.deathsPerYear0To14 = deathsPerYear0To14;
 deathsPerYear0To14.population0To14 = population0To14;
 
-let mortality0To14 = new Table("mortality0To14", 4, [0.0567, 0.0366, 0.0243, 0.0155, 0.0082, 0.0023, 0.001], 20, 80, 10);
-mortality0To14.units = "deaths per person-year";
-mortality0To14.dependencies = ["lifeExpectancy"];
-mortality0To14.updateFn = function () {
-  return lifeExpectancy.k;
-};
+let mortality0To14 = new Mortality0To14();
 qArray[4] = mortality0To14;
 auxArray.push(mortality0To14);
 deathsPerYear0To14.mortality0To14 = mortality0To14;
@@ -559,6 +555,7 @@ lifeExpectancy.updateFn = function () {
 };
 qArray[19] = lifeExpectancy;
 auxArray.push(lifeExpectancy);
+mortality0To14.lifeExpectancy = lifeExpectancy;
 
 var subsistenceFoodPerCapitaK = 230; // kilograms per person-year, used in eqns 20, 127
 
