@@ -23,6 +23,7 @@ import { DeathsPerYear65AndOver } from "./models/population/deathsPerYear65AndOv
 import { Mortality65AndOver } from "./models/population/mortality65AndOver.js";
 import { DeathsPerYear } from "./models/population/deathsPerYear.js";
 import { CrudeDeathRate } from "./models/population/crudeDeathRate.js";
+import { LifeExpectancy } from "./models/population/lifeExpectancy.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
     of World3, the social-economic-environmental model created by
@@ -509,27 +510,7 @@ auxArray.push(crudeDeathRate);
 crudeDeathRate.deathsPerYear = deathsPerYear;
 crudeDeathRate.population = population;
 
-var lifeExpectancy = new Aux("lifeExpectancy", 19);
-lifeExpectancy.units = "years";
-lifeExpectancy.plotColor = "#666666";
-lifeExpectancy.plotMin = 0;
-lifeExpectancy.plotMax = 80;
-lifeExpectancy.dependencies = [
-  "lifetimeMultiplierFromFood",
-  "lifetimeMultiplierFromHealthServices",
-  "lifetimeMultiplierFromPollution",
-  "lifetimeMultiplierFromCrowding",
-];
-lifeExpectancy.normal = 32;
-lifeExpectancy.updateFn = function () {
-  return (
-    lifeExpectancy.normal *
-    lifetimeMultiplierFromFood.k *
-    lifetimeMultiplierFromHealthServices.k *
-    lifetimeMultiplierFromPollution.k *
-    lifetimeMultiplierFromCrowding.k
-  );
-};
+const lifeExpectancy = new LifeExpectancy();
 qArray[19] = lifeExpectancy;
 auxArray.push(lifeExpectancy);
 mortality0To14.lifeExpectancy = lifeExpectancy;
@@ -547,6 +528,7 @@ lifetimeMultiplierFromFood.updateFn = function () {
 };
 qArray[20] = lifetimeMultiplierFromFood;
 auxArray.push(lifetimeMultiplierFromFood);
+lifeExpectancy.lifetimeMultiplierFromFood = lifetimeMultiplierFromFood;
 
 var healthServicesAllocationsPerCapita = new Table("healthServicesAllocationsPerCapita", 21, [0, 20, 50, 95, 140, 175, 200, 220, 230], 0, 2000, 250);
 healthServicesAllocationsPerCapita.units = "dollars per person-year";
@@ -577,6 +559,7 @@ lifetimeMultiplierFromHealthServices.updateFn = function () {
 };
 qArray[23] = lifetimeMultiplierFromHealthServices;
 auxArray.push(lifetimeMultiplierFromHealthServices);
+lifeExpectancy.lifetimeMultiplierFromHealthServices = lifetimeMultiplierFromHealthServices;
 
 var lifetimeMultiplierFromHealthServicesBefore = new Table("lifetimeMultiplierFromHealthServicesBefore", 24, [1, 1.1, 1.4, 1.6, 1.7, 1.8], 0, 100, 20);
 lifetimeMultiplierFromHealthServicesBefore.units = "dimensionless";
@@ -628,6 +611,7 @@ lifetimeMultiplierFromCrowding.updateFn = function () {
 };
 qArray[28] = lifetimeMultiplierFromCrowding;
 auxArray.push(lifetimeMultiplierFromCrowding);
+lifeExpectancy.lifetimeMultiplierFromCrowding = lifetimeMultiplierFromCrowding;
 
 var lifetimeMultiplierFromPollution = new Table(
   "lifetimeMultiplierFromPollution",
@@ -644,6 +628,7 @@ lifetimeMultiplierFromPollution.updateFn = function () {
 };
 qArray[29] = lifetimeMultiplierFromPollution;
 auxArray.push(lifetimeMultiplierFromPollution);
+lifeExpectancy.lifetimeMultiplierFromPollution = lifetimeMultiplierFromPollution;
 
 // The Birth-Rate Subsector
 
