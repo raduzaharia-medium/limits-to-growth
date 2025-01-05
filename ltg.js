@@ -311,7 +311,9 @@ var timeStep = function () {
   updateAuxen();
   updateRates();
   tock();
+
   t += dt;
+  lifetimeMultiplierFromHealthServices.t = t;
 };
 
 var animationStep = function () {
@@ -538,10 +540,11 @@ qArray[22] = effectiveHealthServicesPerCapita;
 auxArray.push(effectiveHealthServicesPerCapita);
 effectiveHealthServicesPerCapita.healthServicesAllocationsPerCapita = healthServicesAllocationsPerCapita;
 
-const lifetimeMultiplierFromHealthServices = new LifetimeMultiplierFromHealthServices(t);
+const lifetimeMultiplierFromHealthServices = new LifetimeMultiplierFromHealthServices();
 qArray[23] = lifetimeMultiplierFromHealthServices;
 auxArray.push(lifetimeMultiplierFromHealthServices);
 lifeExpectancy.lifetimeMultiplierFromHealthServices = lifetimeMultiplierFromHealthServices;
+lifetimeMultiplierFromHealthServices.t = t;
 
 var lifetimeMultiplierFromHealthServicesBefore = new Table("lifetimeMultiplierFromHealthServicesBefore", 24, [1, 1.1, 1.4, 1.6, 1.7, 1.8], 0, 100, 20);
 lifetimeMultiplierFromHealthServicesBefore.units = "dimensionless";

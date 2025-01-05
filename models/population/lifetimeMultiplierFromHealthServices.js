@@ -2,13 +2,12 @@ import { clip } from "../../tools.js";
 import { Aux } from "../aux.js";
 
 export class LifetimeMultiplierFromHealthServices extends Aux {
-  constructor(t) {
+  constructor() {
     super("lifetimeMultiplierFromHealthServices", 23);
 
     this.units = "dimensionless";
     this.dependencies = ["lifetimeMultiplierFromHealthServicesBefore", "lifetimeMultiplierFromHealthServicesAfter"];
     this.policyYear = 1940;
-    this.t = t;
   }
 
   set lifetimeMultiplierFromHealthServicesBefore(value) {
@@ -19,7 +18,11 @@ export class LifetimeMultiplierFromHealthServices extends Aux {
     this._lifetimeMultiplierFromHealthServicesAfter = value;
   }
 
+  set t(value) {
+    this._t = value;
+  }
+
   updateFn() {
-    return clip(this._lifetimeMultiplierFromHealthServicesAfter.k, this._lifetimeMultiplierFromHealthServicesBefore.k, this.t, this.policyYear);
+    return clip(this._lifetimeMultiplierFromHealthServicesAfter.k, this._lifetimeMultiplierFromHealthServicesBefore.k, this._t, this.policyYear);
   }
 }
