@@ -17,6 +17,8 @@ import { DeathsPerYear15To44 } from "./models/population/deathsPerYear15To44.js"
 import { Mortality15To44 } from "./models/population/mortality15To44.js";
 import { MaturationsPerYear44To45 } from "./models/population/maturationsPerYear44To45.js";
 import { DeathsPerYear45To64 } from "./models/population/deathsPerYear45To64.js";
+import { Mortality45To64 } from "./models/population/mortality45To64.js";
+import { MaturationsPerYear64To65 } from "./models/population/maturationsPerYear64To65.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
     of World3, the social-economic-environmental model created by
@@ -458,32 +460,23 @@ rateArray.push(deathsPerYear45To64);
 population45To64.deathsPerYear45To64 = deathsPerYear45To64;
 deathsPerYear45To64.population45To64 = population45To64;
 
-var mortality45To64 = new Table("mortality45To64", 12, [0.0562, 0.0373, 0.0252, 0.0171, 0.0118, 0.0083, 0.006], 20, 80, 10);
-mortality45To64.units = "deaths per person-year";
-mortality45To64.dependencies = ["lifeExpectancy"];
-mortality45To64.updateFn = function () {
-  return lifeExpectancy.k;
-};
+const mortality45To64 = new Mortality45To64();
 qArray[12] = mortality45To64;
 auxArray.push(mortality45To64);
 deathsPerYear45To64.mortality45To64 = mortality45To64;
 
-var maturationsPerYear64to65 = new Rate("maturationsPerYear64to65", 13);
-maturationsPerYear64to65.units = "persons per year";
-maturationsPerYear64to65.updateFn = function () {
-  return (population45To64.k * (1 - mortality45To64.k)) / 20;
-};
+const maturationsPerYear64to65 = new MaturationsPerYear64To65();
 qArray[13] = maturationsPerYear64to65;
 rateArray.push(maturationsPerYear64to65);
 population45To64.maturationsPerYear64to65 = maturationsPerYear64to65;
+maturationsPerYear64to65.population45To64 = population45To64;
+maturationsPerYear64to65.mortality45To64 = mortality45To64;
 
-var population65AndOver = new Population65AndOver(startTime);
-population65AndOver.updateFn = function () {
-  return population65AndOver.j + dt * (maturationsPerYear64to65.j - deathsPerYear65AndOver.j);
-};
+const population65AndOver = new Population65AndOver(startTime, dt);
 qArray[14] = population65AndOver;
 levelArray.push(population65AndOver);
 population.population65AndOver = population65AndOver;
+population65AndOver.maturationsPerYear64To65 = maturationsPerYear64to65;
 
 var deathsPerYear65AndOver = new Rate("deathsPerYear65AndOver", 15);
 deathsPerYear65AndOver.units = "persons per year";
@@ -492,6 +485,7 @@ deathsPerYear65AndOver.updateFn = function () {
 };
 qArray[15] = deathsPerYear65AndOver;
 rateArray.push(deathsPerYear65AndOver);
+population65AndOver.deathsPerYear65AndOver = deathsPerYear65AndOver;
 
 var mortality65AndOver = new Table("mortality65AndOver", 16, [0.13, 0.11, 0.09, 0.07, 0.06, 0.05, 0.04], 20, 80, 10);
 mortality65AndOver.units = "deaths per person-year";
@@ -549,6 +543,7 @@ qArray[19] = lifeExpectancy;
 auxArray.push(lifeExpectancy);
 mortality0To14.lifeExpectancy = lifeExpectancy;
 mortality15To44.lifeExpectancy = lifeExpectancy;
+mortality45To64.lifeExpectancy = lifeExpectancy;
 
 var subsistenceFoodPerCapitaK = 230; // kilograms per person-year, used in eqns 20, 127
 
