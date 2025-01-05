@@ -19,6 +19,10 @@ import { MaturationsPerYear44To45 } from "./models/population/maturationsPerYear
 import { DeathsPerYear45To64 } from "./models/population/deathsPerYear45To64.js";
 import { Mortality45To64 } from "./models/population/mortality45To64.js";
 import { MaturationsPerYear64To65 } from "./models/population/maturationsPerYear64To65.js";
+import { DeathsPerYear65AndOver } from "./models/population/deathsPerYear65AndOver.js";
+import { Mortality65AndOver } from "./models/population/mortality65AndOver.js";
+import { DeathsPerYear } from "./models/population/deathsPerYear.js";
+import { CrudeDeathRate } from "./models/population/crudeDeathRate.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
     of World3, the social-economic-environmental model created by
@@ -478,45 +482,32 @@ levelArray.push(population65AndOver);
 population.population65AndOver = population65AndOver;
 population65AndOver.maturationsPerYear64To65 = maturationsPerYear64to65;
 
-var deathsPerYear65AndOver = new Rate("deathsPerYear65AndOver", 15);
-deathsPerYear65AndOver.units = "persons per year";
-deathsPerYear65AndOver.updateFn = function () {
-  return population65AndOver.k * mortality65AndOver.k;
-};
+const deathsPerYear65AndOver = new DeathsPerYear65AndOver();
 qArray[15] = deathsPerYear65AndOver;
 rateArray.push(deathsPerYear65AndOver);
 population65AndOver.deathsPerYear65AndOver = deathsPerYear65AndOver;
+deathsPerYear65AndOver.population65AndOver = population65AndOver;
 
-var mortality65AndOver = new Table("mortality65AndOver", 16, [0.13, 0.11, 0.09, 0.07, 0.06, 0.05, 0.04], 20, 80, 10);
-mortality65AndOver.units = "deaths per person-year";
-mortality65AndOver.dependencies = ["lifeExpectancy"];
-mortality65AndOver.updateFn = function () {
-  return lifeExpectancy.k;
-};
+const mortality65AndOver = new Mortality65AndOver();
 qArray[16] = mortality65AndOver;
 auxArray.push(mortality65AndOver);
+deathsPerYear65AndOver.mortality65AndOver = mortality65AndOver;
 
 // The Death-Rate Subsector
 
-var deathsPerYear = new Aux("deathsPerYear", 17);
-deathsPerYear.units = "persons per year";
-deathsPerYear.updateFn = function () {
-  return deathsPerYear0To14.j + deathsPerYear15To44.j + deathsPerYear45To64.j + deathsPerYear65AndOver.j;
-};
+const deathsPerYear = new DeathsPerYear();
 qArray[17] = deathsPerYear;
 auxArray.push(deathsPerYear);
+deathsPerYear.deathsPerYear0To14 = deathsPerYear0To14;
+deathsPerYear.deathsPerYear15To44 = deathsPerYear15To44;
+deathsPerYear.deathsPerYear45To64 = deathsPerYear45To64;
+deathsPerYear.deathsPerYear65AndOver = deathsPerYear65AndOver;
 
-var crudeDeathRate = new Aux("crudeDeathRate", 18);
-crudeDeathRate.units = "deaths per 1000 person-years";
-crudeDeathRate.dependencies = ["deathsPerYear", "population"];
-crudeDeathRate.plotColor = "#650d99";
-crudeDeathRate.plotMin = 0;
-crudeDeathRate.plotMax = 50;
-crudeDeathRate.updateFn = function () {
-  return (1000 * deathsPerYear.k) / population.k;
-};
+const crudeDeathRate = new CrudeDeathRate();
 qArray[18] = crudeDeathRate;
 auxArray.push(crudeDeathRate);
+crudeDeathRate.deathsPerYear = deathsPerYear;
+crudeDeathRate.population = population;
 
 var lifeExpectancy = new Aux("lifeExpectancy", 19);
 lifeExpectancy.units = "years";
@@ -544,6 +535,7 @@ auxArray.push(lifeExpectancy);
 mortality0To14.lifeExpectancy = lifeExpectancy;
 mortality15To44.lifeExpectancy = lifeExpectancy;
 mortality45To64.lifeExpectancy = lifeExpectancy;
+mortality65AndOver.lifeExpectancy = lifeExpectancy;
 
 var subsistenceFoodPerCapitaK = 230; // kilograms per person-year, used in eqns 20, 127
 
