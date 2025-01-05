@@ -24,6 +24,10 @@ import { Mortality65AndOver } from "./models/population/mortality65AndOver.js";
 import { DeathsPerYear } from "./models/population/deathsPerYear.js";
 import { CrudeDeathRate } from "./models/population/crudeDeathRate.js";
 import { LifeExpectancy } from "./models/population/lifeExpectancy.js";
+import { LifetimeMultiplierFromFood } from "./models/population/lifetimeMultiplierFromFood.js";
+import { HealthServicesAllocationPerCapita } from "./models/population/healthServicesAllocationsPerCapita.js";
+import { EffectiveHealthServicesPerCapita } from "./models/population/effectiveHealthServicesPerCapita.js";
+import { LifetimeMultiplierFromHealthServices } from "./models/population/lifetimeMultiplierFromHealthServices.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
     of World3, the social-economic-environmental model created by
@@ -518,45 +522,23 @@ mortality15To44.lifeExpectancy = lifeExpectancy;
 mortality45To64.lifeExpectancy = lifeExpectancy;
 mortality65AndOver.lifeExpectancy = lifeExpectancy;
 
-var subsistenceFoodPerCapitaK = 230; // kilograms per person-year, used in eqns 20, 127
-
-var lifetimeMultiplierFromFood = new Table("lifetimeMultiplierFromFood", 20, [0, 1, 1.2, 1.3, 1.35, 1.4], 0, 5, 1);
-lifetimeMultiplierFromFood.units = "dimensionless";
-lifetimeMultiplierFromFood.dependencies = ["foodPerCapita"];
-lifetimeMultiplierFromFood.updateFn = function () {
-  return foodPerCapita.k / subsistenceFoodPerCapitaK;
-};
+const subsistenceFoodPerCapitaK = 230; // kilograms per person-year, used in eqns 20, 127
+const lifetimeMultiplierFromFood = new LifetimeMultiplierFromFood(subsistenceFoodPerCapitaK);
 qArray[20] = lifetimeMultiplierFromFood;
 auxArray.push(lifetimeMultiplierFromFood);
 lifeExpectancy.lifetimeMultiplierFromFood = lifetimeMultiplierFromFood;
 
-var healthServicesAllocationsPerCapita = new Table("healthServicesAllocationsPerCapita", 21, [0, 20, 50, 95, 140, 175, 200, 220, 230], 0, 2000, 250);
-healthServicesAllocationsPerCapita.units = "dollars per person-year";
-healthServicesAllocationsPerCapita.dependencies = ["serviceOutputPerCapita"];
-healthServicesAllocationsPerCapita.updateFn = function () {
-  return serviceOutputPerCapita.k;
-};
+const healthServicesAllocationsPerCapita = new HealthServicesAllocationPerCapita();
 qArray[21] = healthServicesAllocationsPerCapita;
 auxArray.push(healthServicesAllocationsPerCapita);
 
-var effectiveHealthServicesPerCapitaImpactDelay = 20; // years, used in eqn 22
-
-var effectiveHealthServicesPerCapita = new Smooth("effectiveHealthServicesPerCapita", 22, effectiveHealthServicesPerCapitaImpactDelay);
-effectiveHealthServicesPerCapita.units = "dollars per person-year";
-effectiveHealthServicesPerCapita.dependencies = ["healthServicesAllocationsPerCapita"];
-effectiveHealthServicesPerCapita.initFn = function () {
-  return healthServicesAllocationsPerCapita;
-};
+const effectiveHealthServicesPerCapitaImpactDelay = 20; // years, used in eqn 22
+const effectiveHealthServicesPerCapita = new EffectiveHealthServicesPerCapita(effectiveHealthServicesPerCapitaImpactDelay);
 qArray[22] = effectiveHealthServicesPerCapita;
 auxArray.push(effectiveHealthServicesPerCapita);
+effectiveHealthServicesPerCapita.healthServicesAllocationsPerCapita = healthServicesAllocationsPerCapita;
 
-var lifetimeMultiplierFromHealthServices = new Aux("lifetimeMultiplierFromHealthServices", 23);
-lifetimeMultiplierFromHealthServices.units = "dimensionless";
-lifetimeMultiplierFromHealthServices.dependencies = ["lifetimeMultiplierFromHealthServicesBefore", "lifetimeMultiplierFromHealthServicesAfter"];
-lifetimeMultiplierFromHealthServices.policyYear = 1940;
-lifetimeMultiplierFromHealthServices.updateFn = function () {
-  return clip(lifetimeMultiplierFromHealthServicesAfter.k, lifetimeMultiplierFromHealthServicesBefore.k, t, lifetimeMultiplierFromHealthServices.policyYear);
-};
+const lifetimeMultiplierFromHealthServices = new LifetimeMultiplierFromHealthServices(t);
 qArray[23] = lifetimeMultiplierFromHealthServices;
 auxArray.push(lifetimeMultiplierFromHealthServices);
 lifeExpectancy.lifetimeMultiplierFromHealthServices = lifetimeMultiplierFromHealthServices;
@@ -569,6 +551,7 @@ lifetimeMultiplierFromHealthServicesBefore.updateFn = function () {
 };
 qArray[24] = lifetimeMultiplierFromHealthServicesBefore;
 auxArray.push(lifetimeMultiplierFromHealthServicesBefore);
+lifetimeMultiplierFromHealthServices.lifetimeMultiplierFromHealthServicesBefore = lifetimeMultiplierFromHealthServicesBefore;
 
 var lifetimeMultiplierFromHealthServicesAfter = new Table("lifetimeMultiplierFromHealthServicesAfter", 25, [1, 1.4, 1.6, 1.8, 1.95, 2.0], 0, 100, 20);
 lifetimeMultiplierFromHealthServicesAfter.units = "dimensionless";
@@ -578,6 +561,7 @@ lifetimeMultiplierFromHealthServicesAfter.updateFn = function () {
 };
 qArray[25] = lifetimeMultiplierFromHealthServicesAfter;
 auxArray.push(lifetimeMultiplierFromHealthServicesAfter);
+lifetimeMultiplierFromHealthServices.lifetimeMultiplierFromHealthServicesAfter = lifetimeMultiplierFromHealthServicesAfter;
 
 var fractionOfPopulationUrban = new Table("fractionOfPopulationUrban", 26, [0, 0.2, 0.4, 0.5, 0.58, 0.65, 0.72, 0.78, 0.8], 0, 1.6e10, 2.0e9);
 fractionOfPopulationUrban.units = "dimensionless";
@@ -1109,6 +1093,7 @@ serviceOutputPerCapita.updateFn = function () {
 };
 qArray[71] = serviceOutputPerCapita;
 auxArray.push(serviceOutputPerCapita);
+healthServicesAllocationsPerCapita.serviceOutputPerCapita = serviceOutputPerCapita;
 
 var serviceCapitalOutputRatio = new Aux("serviceCapitalOutputRatio", 72);
 serviceCapitalOutputRatio.units = "years";
@@ -1277,6 +1262,7 @@ foodPerCapita.updateFn = function () {
 };
 qArray[88] = foodPerCapita;
 auxArray.push(foodPerCapita);
+lifetimeMultiplierFromFood.foodPerCapita = foodPerCapita;
 
 var indicatedFoodPerCapita = new Aux("indicatedFoodPerCapita", 89);
 indicatedFoodPerCapita.units = "kilograms per person-year";
