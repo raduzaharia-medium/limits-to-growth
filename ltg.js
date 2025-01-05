@@ -12,6 +12,8 @@ import { Population45To64 } from "./models/population/population45To64.js";
 import { Population65AndOver } from "./models/population/population65AndOver.js";
 import { DeathsPerYear0To14 } from "./models/population/deathsPerYear0To14.js";
 import { Mortality0To14 } from "./models/population/mortality0To14.js";
+import { MaturationsPerYear14To15 } from "./models/population/maturationsPerYear14To15.js";
+import { DeathsPerYear15To44 } from "./models/population/deathsPerYear15To44.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
     of World3, the social-economic-environmental model created by
@@ -410,30 +412,24 @@ qArray[4] = mortality0To14;
 auxArray.push(mortality0To14);
 deathsPerYear0To14.mortality0To14 = mortality0To14;
 
-let maturationsPerYear14to15 = new Rate("maturationsPerYear14to15", 5);
-maturationsPerYear14to15.units = "persons per year";
-maturationsPerYear14to15.updateFn = function () {
-  return (population0To14.k * (1 - mortality0To14.k)) / 15;
-};
+let maturationsPerYear14to15 = new MaturationsPerYear14To15();
 qArray[5] = maturationsPerYear14to15;
 rateArray.push(maturationsPerYear14to15);
 population0To14.maturationsPerYear14to15 = maturationsPerYear14to15;
+maturationsPerYear14to15.population0To14 = population0To14;
+maturationsPerYear14to15.mortality0To14 = mortality0To14;
 
-let population15To44 = new Population15To44(startTime);
-population15To44.updateFn = function () {
-  return population15To44.j + dt * (maturationsPerYear14to15.j - deathsPerYear15To44.j - maturationsPerYear44to45.j);
-};
+let population15To44 = new Population15To44(startTime, dt);
 qArray[6] = population15To44;
 levelArray.push(population15To44);
+population15To44.maturationsPerYear14to15 = maturationsPerYear14to15;
 population.population15To44 = population15To44;
 
-var deathsPerYear15To44 = new Rate("deathsPerYear15To44", 7);
-deathsPerYear15To44.units = "persons per year";
-deathsPerYear15To44.updateFn = function () {
-  return population15To44.k * mortality15To44.k;
-};
+var deathsPerYear15To44 = new DeathsPerYear15To44();
 qArray[7] = deathsPerYear15To44;
 rateArray.push(deathsPerYear15To44);
+population15To44.deathsPerYear15To44 = deathsPerYear15To44;
+deathsPerYear15To44.population15To44 = population15To44;
 
 var mortality15To44 = new Table("mortality15To44", 8, [0.0266, 0.0171, 0.011, 0.0065, 0.004, 0.0016, 0.0008], 20, 80, 10);
 mortality15To44.units = "deaths per person-year";
@@ -443,6 +439,7 @@ mortality15To44.updateFn = function () {
 };
 qArray[8] = mortality15To44;
 auxArray.push(mortality15To44);
+deathsPerYear15To44.mortality15To44 = mortality15To44;
 
 var maturationsPerYear44to45 = new Rate("maturationsPerYear44to45", 9);
 maturationsPerYear44to45.units = "persons per year";
@@ -451,6 +448,7 @@ maturationsPerYear44to45.updateFn = function () {
 };
 qArray[9] = maturationsPerYear44to45;
 rateArray.push(maturationsPerYear44to45);
+population15To44.maturationsPerYear44to45 = maturationsPerYear44to45;
 
 var population45To64 = new Population45To64(startTime);
 population45To64.updateFn = function () {
