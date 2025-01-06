@@ -1,4 +1,4 @@
-import { Rate } from "../rate.js";
+import { Rate } from "../../rate.js";
 
 export class DeathsPerYear45To64 extends Rate {
   constructor() {

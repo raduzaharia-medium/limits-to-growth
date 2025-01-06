@@ -1,8 +1,8 @@
-import { Table } from "../table.js";
+import { Table } from "../../table.js";
 
-export class Mortality15To44 extends Table {
+export class Mortality65AndOver extends Table {
   constructor() {
-    super("mortality15To44", 8, [0.0266, 0.0171, 0.011, 0.0065, 0.004, 0.0016, 0.0008], 20, 80, 10);
+    super("mortality65AndOver", 16, [0.13, 0.11, 0.09, 0.07, 0.06, 0.05, 0.04], 20, 80, 10);
 
     this.units = "deaths per person-year";
     this.dependencies = ["lifeExpectancy"];

@@ -1,4 +1,4 @@
-import { Aux } from "../aux.js";
+import { Aux } from "../../aux.js";
 
 export class CrudeDeathRate extends Aux {
   constructor() {

@@ -1,8 +1,8 @@
-import { Rate } from "../rate.js";
+import { Rate } from "../../rate.js";
 
-export class MaturationsPerYear14To15 extends Rate {
+export class DeathsPerYear0To14 extends Rate {
   constructor() {
-    super("maturationsPerYear14To15", 5);
+    super("deathsPerYear0To14", 3);
 
     this.units = "persons per year";
   }
@@ -16,6 +16,6 @@ export class MaturationsPerYear14To15 extends Rate {
   }
 
   updateFn() {
-    return (this._population0To14.k * (1 - this._mortality0To14.k)) / 15;
+    return this._population0To14.k * this._mortality0To14.k;
   }
 }
