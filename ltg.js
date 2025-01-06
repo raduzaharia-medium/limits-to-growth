@@ -41,6 +41,11 @@ import { MaxTotalFertility } from "./models/equations/maxTotalFertility.js";
 import { FecundityMultiplier } from "./models/equations/fecundityMultiplier.js";
 import { DesiredTotalFertility } from "./models/equations/desiredTotalFertility.js";
 import { CompensatoryMultiplierFromPerceivedLifeExpectancy } from "./models/equations/compensatoryMultiplierFromPerceivedLifeExpectancy.js";
+import { PerceivedLifeExpectancy } from "./models/equations/perceivedLifeExpectancy.js";
+import { DesiredCompletedFamilySize } from "./models/equations/desiredCompletedFamilySize.js";
+import { SocialFamilySizeNorm } from "./models/equations/socialFamilySizeNorm.js";
+import { DelayedIndustrialOutputPerCapita } from "./models/equations/delayedIndustrialOutputPerCapita.js";
+import { FamilyResponseToSocialNorm } from "./models/equations/familyResponseToSocialNorm.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
     of World3, the social-economic-environmental model created by
@@ -644,58 +649,36 @@ auxArray.push(compensatoryMultiplierFromPerceivedLifeExpectancy);
 desiredTotalFertility.compensatoryMultiplierFromPerceivedLifeExpectancy = compensatoryMultiplierFromPerceivedLifeExpectancy;
 
 const lifetimePerceptionDelayK = 20; // years, used in eqn 37
-var perceivedLifeExpectancy = new Delay3("perceivedLifeExpectancy", 37, lifetimePerceptionDelayK);
-perceivedLifeExpectancy.units = "years";
-perceivedLifeExpectancy.dependencies = ["lifeExpectancy"];
-perceivedLifeExpectancy.initFn = function () {
-  return lifeExpectancy;
-};
+const perceivedLifeExpectancy = new PerceivedLifeExpectancy(lifetimePerceptionDelayK);
 qArray[37] = perceivedLifeExpectancy;
 auxArray.push(perceivedLifeExpectancy);
 compensatoryMultiplierFromPerceivedLifeExpectancy.perceivedLifeExpectancy = perceivedLifeExpectancy;
+perceivedLifeExpectancy.lifeExpectancy = lifeExpectancy;
 
-var desiredCompletedFamilySize = new Aux("desiredCompletedFamilySize", 38);
-desiredCompletedFamilySize.units = "dimensionless"; // not persons?
-desiredCompletedFamilySize.dependencies = ["familyResponseToSocialNorm", "socialFamilySizeNorm"];
-desiredCompletedFamilySize.normal = 4.0;
+const zeroPopulationGrowthTargetYear = 4000;
+const desiredCompletedFamilySize = new DesiredCompletedFamilySize(zeroPopulationGrowthTargetYear);
+desiredCompletedFamilySize.updateFn = function () {
+  return clip(2.0, desiredCompletedFamilySize.normal * familyResponseToSocialNorm.k * socialFamilySizeNorm.k, t, zeroPopulationGrowthTargetYear);
+};
 qArray[38] = desiredCompletedFamilySize;
 auxArray.push(desiredCompletedFamilySize);
 desiredTotalFertility.desiredCompletedFamilySize = desiredCompletedFamilySize;
 
-const zeroPopulationGrowthTargetYear = 4000;
-
-desiredCompletedFamilySize.updateFn = function () {
-  return clip(2.0, desiredCompletedFamilySize.normal * familyResponseToSocialNorm.k * socialFamilySizeNorm.k, t, zeroPopulationGrowthTargetYear);
-};
-
-var socialFamilySizeNorm = new Table("socialFamilySizeNorm", 39, [1.25, 1, 0.9, 0.8, 0.75], 0, 800, 200);
-socialFamilySizeNorm.units = "dimensionless";
-socialFamilySizeNorm.dependencies = ["delayedIndustrialOutputPerCapita"];
-socialFamilySizeNorm.updateFn = function () {
-  return delayedIndustrialOutputPerCapita.k;
-};
+const socialFamilySizeNorm = new SocialFamilySizeNorm();
 qArray[39] = socialFamilySizeNorm;
 auxArray.push(socialFamilySizeNorm);
+desiredCompletedFamilySize.socialFamilySizeNorm = socialFamilySizeNorm;
 
-var socialAdjustmentDelayK = 20; // years, used in eqn 40
-
-var delayedIndustrialOutputPerCapita = new Delay3("delayedIndustrialOutputPerCapita", 40, socialAdjustmentDelayK);
-delayedIndustrialOutputPerCapita.units = "dollars per person-year";
-delayedIndustrialOutputPerCapita.dependencies = ["industrialOutputPerCapita"];
-delayedIndustrialOutputPerCapita.initFn = function () {
-  return industrialOutputPerCapita;
-};
+const socialAdjustmentDelayK = 20; // years, used in eqn 40
+const delayedIndustrialOutputPerCapita = new DelayedIndustrialOutputPerCapita(socialAdjustmentDelayK);
 qArray[40] = delayedIndustrialOutputPerCapita;
 auxArray.push(delayedIndustrialOutputPerCapita);
+socialFamilySizeNorm.delayedIndustrialOutputPerCapita = delayedIndustrialOutputPerCapita;
 
-var familyResponseToSocialNorm = new Table("familyResponseToSocialNorm", 41, [0.5, 0.6, 0.7, 0.85, 1.0], -0.2, 0.2, 0.1);
-familyResponseToSocialNorm.units = "dimensionless";
-familyResponseToSocialNorm.dependencies = ["familyIncomeExpectation"];
-familyResponseToSocialNorm.updateFn = function () {
-  return familyIncomeExpectation.k;
-};
+const familyResponseToSocialNorm = new FamilyResponseToSocialNorm();
 qArray[41] = familyResponseToSocialNorm;
 auxArray.push(familyResponseToSocialNorm);
+desiredCompletedFamilySize.familyResponseToSocialNorm = familyResponseToSocialNorm;
 
 var familyIncomeExpectation = new Aux("familyIncomeExpectation", 42);
 familyIncomeExpectation.units = "dimensionless";
@@ -705,6 +688,7 @@ familyIncomeExpectation.updateFn = function () {
 };
 qArray[42] = familyIncomeExpectation;
 auxArray.push(familyIncomeExpectation);
+familyResponseToSocialNorm.familyIncomeExpectation = familyIncomeExpectation;
 
 var incomeExpectationAveragingTimeK = 3; // years, used in eqn 43
 
@@ -788,6 +772,7 @@ industrialOutputPerCapita.updateFn = function () {
 qArray[49] = industrialOutputPerCapita;
 auxArray.push(industrialOutputPerCapita);
 crowdingMultiplierFromIndustrialization.industrialOutputPerCapita = industrialOutputPerCapita;
+delayedIndustrialOutputPerCapita.industrialOutputPerCapita = industrialOutputPerCapita;
 
 var industrialOutput = new Aux("industrialOutput", 50);
 industrialOutput.units = "dollars per year";
