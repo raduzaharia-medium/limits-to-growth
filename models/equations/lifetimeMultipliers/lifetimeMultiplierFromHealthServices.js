@@ -1,11 +1,10 @@
-import { clip } from "../../tools.js";
-import { Aux } from "../aux.js";
+import { clip } from "../../../tools.js";
+import { Aux } from "../../aux.js";
 
 export class LifetimeMultiplierFromHealthServices extends Aux {
   constructor() {
     super("lifetimeMultiplierFromHealthServices", 23);
 
-    this.units = "dimensionless";
     this.dependencies = ["lifetimeMultiplierFromHealthServicesBefore", "lifetimeMultiplierFromHealthServicesAfter"];
     this.policyYear = 1940;
   }

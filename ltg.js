@@ -24,10 +24,15 @@ import { Mortality65AndOver } from "./models/equations/mortality/mortality65AndO
 import { DeathsPerYear } from "./models/equations/deaths/deathsPerYear.js";
 import { CrudeDeathRate } from "./models/equations/deaths/crudeDeathRate.js";
 import { LifeExpectancy } from "./models/equations/lifeExpectancy.js";
-import { LifetimeMultiplierFromFood } from "./models/equations/lifetimeMultiplierFromFood.js";
+import { LifetimeMultiplierFromFood } from "./models/equations/lifetimeMultipliers/lifetimeMultiplierFromFood.js";
 import { HealthServicesAllocationPerCapita } from "./models/equations/healthServicesAllocationsPerCapita.js";
 import { EffectiveHealthServicesPerCapita } from "./models/equations/effectiveHealthServicesPerCapita.js";
-import { LifetimeMultiplierFromHealthServices } from "./models/equations/lifetimeMultiplierFromHealthServices.js";
+import { LifetimeMultiplierFromHealthServices } from "./models/equations/lifetimeMultipliers/lifetimeMultiplierFromHealthServices.js";
+import { LifetimeMultiplierFromHealthServicesBefore } from "./models/equations/lifetimeMultipliers/lifetimeMultiplierFromHealthServicesBefore.js";
+import { LifetimeMultiplierFromHealthServicesAfter } from "./models/equations/lifetimeMultipliers/lifetimeMultiplierFromHealthServicesAfter.js";
+import { FractionOfPopulationUrban } from "./models/equations/population/fractionOfPopulationUrban.js";
+import { CrowdingMultiplierFromIndustrialization } from "./models/equations/crowdingMultiplierFromIndustrialization.js";
+import { LifetimeMultiplierFromCrowding } from "./models/equations/lifetimeMultipliers/lifetimeMultiplierFromCrowding.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
     of World3, the social-economic-environmental model created by
@@ -552,59 +557,33 @@ qArray[23] = lifetimeMultiplierFromHealthServices;
 auxArray.push(lifetimeMultiplierFromHealthServices);
 lifeExpectancy.lifetimeMultiplierFromHealthServices = lifetimeMultiplierFromHealthServices;
 
-var lifetimeMultiplierFromHealthServicesBefore = new Table("lifetimeMultiplierFromHealthServicesBefore", 24, [1, 1.1, 1.4, 1.6, 1.7, 1.8], 0, 100, 20);
-lifetimeMultiplierFromHealthServicesBefore.units = "dimensionless";
-lifetimeMultiplierFromHealthServicesBefore.dependencies = ["effectiveHealthServicesPerCapita"];
-lifetimeMultiplierFromHealthServicesBefore.updateFn = function () {
-  return effectiveHealthServicesPerCapita.k;
-};
+const lifetimeMultiplierFromHealthServicesBefore = new LifetimeMultiplierFromHealthServicesBefore();
 qArray[24] = lifetimeMultiplierFromHealthServicesBefore;
 auxArray.push(lifetimeMultiplierFromHealthServicesBefore);
 lifetimeMultiplierFromHealthServices.lifetimeMultiplierFromHealthServicesBefore = lifetimeMultiplierFromHealthServicesBefore;
+lifetimeMultiplierFromHealthServicesBefore.effectiveHealthServicesPerCapita = effectiveHealthServicesPerCapita;
 
-var lifetimeMultiplierFromHealthServicesAfter = new Table("lifetimeMultiplierFromHealthServicesAfter", 25, [1, 1.4, 1.6, 1.8, 1.95, 2.0], 0, 100, 20);
-lifetimeMultiplierFromHealthServicesAfter.units = "dimensionless";
-lifetimeMultiplierFromHealthServicesAfter.dependencies = ["effectiveHealthServicesPerCapita"];
-lifetimeMultiplierFromHealthServicesAfter.updateFn = function () {
-  return effectiveHealthServicesPerCapita.k;
-};
+const lifetimeMultiplierFromHealthServicesAfter = new LifetimeMultiplierFromHealthServicesAfter();
 qArray[25] = lifetimeMultiplierFromHealthServicesAfter;
 auxArray.push(lifetimeMultiplierFromHealthServicesAfter);
 lifetimeMultiplierFromHealthServices.lifetimeMultiplierFromHealthServicesAfter = lifetimeMultiplierFromHealthServicesAfter;
+lifetimeMultiplierFromHealthServicesAfter.effectiveHealthServicesPerCapita = effectiveHealthServicesPerCapita;
 
-var fractionOfPopulationUrban = new Table("fractionOfPopulationUrban", 26, [0, 0.2, 0.4, 0.5, 0.58, 0.65, 0.72, 0.78, 0.8], 0, 1.6e10, 2.0e9);
-fractionOfPopulationUrban.units = "dimensionless";
-fractionOfPopulationUrban.dependencies = ["population"];
-fractionOfPopulationUrban.updateFn = function () {
-  return population.k;
-};
+const fractionOfPopulationUrban = new FractionOfPopulationUrban();
 qArray[26] = fractionOfPopulationUrban;
 auxArray.push(fractionOfPopulationUrban);
+fractionOfPopulationUrban.population = population;
 
-var crowdingMultiplierFromIndustrialization = new Table(
-  "crowdingMultiplierFromIndustrialization",
-  27,
-  [0.5, 0.05, -0.1, -0.08, -0.02, 0.05, 0.1, 0.15, 0.2],
-  0,
-  1600,
-  200
-);
-crowdingMultiplierFromIndustrialization.units = "dimensionless";
-crowdingMultiplierFromIndustrialization.dependencies = ["industrialOutputPerCapita"];
-crowdingMultiplierFromIndustrialization.updateFn = function () {
-  return industrialOutputPerCapita.k;
-};
+const crowdingMultiplierFromIndustrialization = new CrowdingMultiplierFromIndustrialization();
 qArray[27] = crowdingMultiplierFromIndustrialization;
 auxArray.push(crowdingMultiplierFromIndustrialization);
 
-var lifetimeMultiplierFromCrowding = new Aux("lifetimeMultiplierFromCrowding", 28);
-lifetimeMultiplierFromCrowding.units = "dimensionless";
-lifetimeMultiplierFromCrowding.updateFn = function () {
-  return 1 - crowdingMultiplierFromIndustrialization.k * fractionOfPopulationUrban.k;
-};
+const lifetimeMultiplierFromCrowding = new LifetimeMultiplierFromCrowding();
 qArray[28] = lifetimeMultiplierFromCrowding;
 auxArray.push(lifetimeMultiplierFromCrowding);
 lifeExpectancy.lifetimeMultiplierFromCrowding = lifetimeMultiplierFromCrowding;
+lifetimeMultiplierFromCrowding.fractionOfPopulationUrban = fractionOfPopulationUrban;
+lifetimeMultiplierFromCrowding.crowdingMultiplierFromIndustrialization = crowdingMultiplierFromIndustrialization;
 
 var lifetimeMultiplierFromPollution = new Table(
   "lifetimeMultiplierFromPollution",
@@ -845,6 +824,7 @@ industrialOutputPerCapita.updateFn = function () {
 };
 qArray[49] = industrialOutputPerCapita;
 auxArray.push(industrialOutputPerCapita);
+crowdingMultiplierFromIndustrialization.industrialOutputPerCapita = industrialOutputPerCapita;
 
 var industrialOutput = new Aux("industrialOutput", 50);
 industrialOutput.units = "dollars per year";
