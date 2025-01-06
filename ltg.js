@@ -36,10 +36,10 @@ import { LifetimeMultiplierFromCrowding } from "./models/equations/lifetimeMulti
 import { LifetimeMultiplierFromPollution } from "./models/equations/lifetimeMultipliers/lifetimeMultiplierFromPollution.js";
 import { BirthsPerYear } from "./models/equations/birthsPerYear.js";
 import { CrudeBirthRate } from "./models/equations/crudeBirthRate.js";
-import { TotalFertility } from "./models/equations/totalFertility.js";
-import { MaxTotalFertility } from "./models/equations/maxTotalFertility.js";
+import { TotalFertility } from "./models/equations/fertility/totalFertility.js";
+import { MaxTotalFertility } from "./models/equations/fertility/maxTotalFertility.js";
 import { FecundityMultiplier } from "./models/equations/fecundityMultiplier.js";
-import { DesiredTotalFertility } from "./models/equations/desiredTotalFertility.js";
+import { DesiredTotalFertility } from "./models/equations/fertility/desiredTotalFertility.js";
 import { CompensatoryMultiplierFromPerceivedLifeExpectancy } from "./models/equations/compensatoryMultiplierFromPerceivedLifeExpectancy.js";
 import { PerceivedLifeExpectancy } from "./models/equations/perceivedLifeExpectancy.js";
 import { DesiredCompletedFamilySize } from "./models/equations/desiredCompletedFamilySize.js";
@@ -48,7 +48,10 @@ import { DelayedIndustrialOutputPerCapita } from "./models/equations/delayedIndu
 import { FamilyResponseToSocialNorm } from "./models/equations/familyResponseToSocialNorm.js";
 import { FamilyIncomeExpectation } from "./models/equations/familyIncomeExpectation.js";
 import { AverageIndustrialOutputPerCapita } from "./models/equations/averageIndustrialOutputPerCapita.js";
-import { NeedForFertilityControl } from "./models/equations/needForFertilityControl.js";
+import { NeedForFertilityControl } from "./models/equations/fertility/needForFertilityControl.js";
+import { FertilityControlEffectiveness } from "./models/equations/fertility/fertilityControlEfectiveness.js";
+import { FertilityControlFacilitiesPerCapita } from "./models/equations/fertility/fertilityControlFacilitiesPerCapita.js";
+import { FertilityControlAllocationPerCapita } from "./models/equations/fertility/fertilityControlAllocationPerCapita.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
     of World3, the social-economic-environmental model created by
@@ -700,35 +703,21 @@ auxArray.push(needForFertilityControl);
 needForFertilityControl.maxTotalFertility = maxTotalFertility;
 needForFertilityControl.desiredTotalFertility = desiredTotalFertility;
 
-var fertilityControlEffectiveness = new Table("fertilityControlEffectiveness", 45, [0.75, 0.85, 0.9, 0.95, 0.98, 0.99, 1.0], 0, 3, 0.5);
-fertilityControlEffectiveness.units = "dimensionless";
-fertilityControlEffectiveness.dependencies = ["fertilityControlFacilitiesPerCapita"];
-fertilityControlEffectiveness.updateFn = function () {
-  return fertilityControlFacilitiesPerCapita.k;
-};
+const fertilityControlEffectiveness = new FertilityControlEffectiveness();
 qArray[45] = fertilityControlEffectiveness;
 auxArray.push(fertilityControlEffectiveness);
 totalFertility.fertilityControlEffectiveness = fertilityControlEffectiveness;
 
-var healthServicesImpactDelayK = 20; // years, for eqn 46
-
-var fertilityControlFacilitiesPerCapita = new Delay3("fertilityControlFacilitiesPerCapita", 46, healthServicesImpactDelayK);
-fertilityControlFacilitiesPerCapita.units = "dollars per person-year";
-fertilityControlFacilitiesPerCapita.dependencies = ["fertilityControlAllocationPerCapita"];
-fertilityControlFacilitiesPerCapita.initFn = function () {
-  return fertilityControlAllocationPerCapita;
-};
+const healthServicesImpactDelayK = 20; // years, for eqn 46
+const fertilityControlFacilitiesPerCapita = new FertilityControlFacilitiesPerCapita(healthServicesImpactDelayK);
 qArray[46] = fertilityControlFacilitiesPerCapita;
 auxArray.push(fertilityControlFacilitiesPerCapita);
+fertilityControlEffectiveness.fertilityControlFacilitiesPerCapita = fertilityControlFacilitiesPerCapita;
 
-var fertilityControlAllocationPerCapita = new Aux("fertilityControlAllocationPerCapita", 47);
-fertilityControlAllocationPerCapita.units = "dollars per person-year";
-fertilityControlAllocationPerCapita.dependencies = ["serviceOutputPerCapita", "fractionOfServicesAllocatedToFertilityControl"];
-fertilityControlAllocationPerCapita.updateFn = function () {
-  return fractionOfServicesAllocatedToFertilityControl.k * serviceOutputPerCapita.k;
-};
+const fertilityControlAllocationPerCapita = new FertilityControlAllocationPerCapita();
 qArray[47] = fertilityControlAllocationPerCapita;
 auxArray.push(fertilityControlAllocationPerCapita);
+fertilityControlFacilitiesPerCapita.fertilityControlAllocationPerCapita = fertilityControlAllocationPerCapita;
 
 var fractionOfServicesAllocatedToFertilityControl = new Table(
   "fractionOfServicesAllocatedToFertilityControl",
@@ -745,6 +734,7 @@ fractionOfServicesAllocatedToFertilityControl.updateFn = function () {
 };
 qArray[48] = fractionOfServicesAllocatedToFertilityControl;
 auxArray.push(fractionOfServicesAllocatedToFertilityControl);
+fertilityControlAllocationPerCapita.fractionOfServicesAllocatedToFertilityControl = fractionOfServicesAllocatedToFertilityControl;
 
 // THE CAPITAL SECTOR
 
@@ -1022,6 +1012,7 @@ serviceOutputPerCapita.updateFn = function () {
 qArray[71] = serviceOutputPerCapita;
 auxArray.push(serviceOutputPerCapita);
 healthServicesAllocationsPerCapita.serviceOutputPerCapita = serviceOutputPerCapita;
+fertilityControlAllocationPerCapita.serviceOutputPerCapita = serviceOutputPerCapita;
 
 var serviceCapitalOutputRatio = new Aux("serviceCapitalOutputRatio", 72);
 serviceCapitalOutputRatio.units = "years";
