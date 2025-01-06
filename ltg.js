@@ -46,6 +46,9 @@ import { DesiredCompletedFamilySize } from "./models/equations/desiredCompletedF
 import { SocialFamilySizeNorm } from "./models/equations/socialFamilySizeNorm.js";
 import { DelayedIndustrialOutputPerCapita } from "./models/equations/delayedIndustrialOutputPerCapita.js";
 import { FamilyResponseToSocialNorm } from "./models/equations/familyResponseToSocialNorm.js";
+import { FamilyIncomeExpectation } from "./models/equations/familyIncomeExpectation.js";
+import { AverageIndustrialOutputPerCapita } from "./models/equations/averageIndustrialOutputPerCapita.js";
+import { NeedForFertilityControl } from "./models/equations/needForFertilityControl.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
     of World3, the social-economic-environmental model created by
@@ -680,35 +683,22 @@ qArray[41] = familyResponseToSocialNorm;
 auxArray.push(familyResponseToSocialNorm);
 desiredCompletedFamilySize.familyResponseToSocialNorm = familyResponseToSocialNorm;
 
-var familyIncomeExpectation = new Aux("familyIncomeExpectation", 42);
-familyIncomeExpectation.units = "dimensionless";
-familyIncomeExpectation.dependencies = ["industrialOutputPerCapita", "averageIndustrialOutputPerCapita"];
-familyIncomeExpectation.updateFn = function () {
-  return (industrialOutputPerCapita.k - averageIndustrialOutputPerCapita.k) / averageIndustrialOutputPerCapita.k;
-};
+const familyIncomeExpectation = new FamilyIncomeExpectation();
 qArray[42] = familyIncomeExpectation;
 auxArray.push(familyIncomeExpectation);
 familyResponseToSocialNorm.familyIncomeExpectation = familyIncomeExpectation;
 
-var incomeExpectationAveragingTimeK = 3; // years, used in eqn 43
-
-var averageIndustrialOutputPerCapita = new Smooth("averageIndustrialOutputPerCapita", 43, incomeExpectationAveragingTimeK);
-averageIndustrialOutputPerCapita.units = "dollars per person-year";
-averageIndustrialOutputPerCapita.dependencies = ["industrialOutputPerCapita"];
-averageIndustrialOutputPerCapita.initFn = function () {
-  return industrialOutputPerCapita;
-};
+const incomeExpectationAveragingTimeK = 3; // years, used in eqn 43
+const averageIndustrialOutputPerCapita = new AverageIndustrialOutputPerCapita(incomeExpectationAveragingTimeK);
 qArray[43] = averageIndustrialOutputPerCapita;
 auxArray.push(averageIndustrialOutputPerCapita);
+familyIncomeExpectation.averageIndustrialOutputPerCapita = averageIndustrialOutputPerCapita;
 
-var needForFertilityControl = new Aux("needForFertilityControl", 44);
-needForFertilityControl.units = "dimensionless";
-needForFertilityControl.dependencies = ["maxTotalFertility", "desiredTotalFertility"];
-needForFertilityControl.updateFn = function () {
-  return maxTotalFertility.k / desiredTotalFertility.k - 1;
-};
+const needForFertilityControl = new NeedForFertilityControl();
 qArray[44] = needForFertilityControl;
 auxArray.push(needForFertilityControl);
+needForFertilityControl.maxTotalFertility = maxTotalFertility;
+needForFertilityControl.desiredTotalFertility = desiredTotalFertility;
 
 var fertilityControlEffectiveness = new Table("fertilityControlEffectiveness", 45, [0.75, 0.85, 0.9, 0.95, 0.98, 0.99, 1.0], 0, 3, 0.5);
 fertilityControlEffectiveness.units = "dimensionless";
@@ -773,6 +763,8 @@ qArray[49] = industrialOutputPerCapita;
 auxArray.push(industrialOutputPerCapita);
 crowdingMultiplierFromIndustrialization.industrialOutputPerCapita = industrialOutputPerCapita;
 delayedIndustrialOutputPerCapita.industrialOutputPerCapita = industrialOutputPerCapita;
+familyIncomeExpectation.industrialOutputPerCapita = industrialOutputPerCapita;
+averageIndustrialOutputPerCapita.industrialOutputPerCapita = industrialOutputPerCapita;
 
 var industrialOutput = new Aux("industrialOutput", 50);
 industrialOutput.units = "dollars per year";
