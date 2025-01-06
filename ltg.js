@@ -37,6 +37,10 @@ import { LifetimeMultiplierFromPollution } from "./models/equations/lifetimeMult
 import { BirthsPerYear } from "./models/equations/birthsPerYear.js";
 import { CrudeBirthRate } from "./models/equations/crudeBirthRate.js";
 import { TotalFertility } from "./models/equations/totalFertility.js";
+import { MaxTotalFertility } from "./models/equations/maxTotalFertility.js";
+import { FecundityMultiplier } from "./models/equations/fecundityMultiplier.js";
+import { DesiredTotalFertility } from "./models/equations/desiredTotalFertility.js";
+import { CompensatoryMultiplierFromPerceivedLifeExpectancy } from "./models/equations/compensatoryMultiplierFromPerceivedLifeExpectancy.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
     of World3, the social-economic-environmental model created by
@@ -618,54 +622,28 @@ const totalFertility = new TotalFertility();
 qArray[32] = totalFertility;
 auxArray.push(totalFertility);
 
-var maxTotalFertility = new Aux("maxTotalFertility", 33);
-maxTotalFertility.units = "dimensionless";
-maxTotalFertility.dependencies = ["fecundityMultiplier"];
-maxTotalFertility.normal = 12; // dimensionless
-maxTotalFertility.updateFn = function () {
-  return maxTotalFertility.normal * fecundityMultiplier.k;
-};
+const maxTotalFertility = new MaxTotalFertility();
 qArray[33] = maxTotalFertility;
 auxArray.push(maxTotalFertility);
 totalFertility.maxTotalFertility = maxTotalFertility;
 
-var fecundityMultiplier = new Table("fecundityMultiplier", 34, [0.0, 0.2, 0.4, 0.6, 0.8, 0.9, 1.0, 1.05, 1.1], 0, 80, 10);
-fecundityMultiplier.units = "dimensionless";
-fecundityMultiplier.dependencies = ["lifeExpectancy"];
-fecundityMultiplier.updateFn = function () {
-  return lifeExpectancy.k;
-};
+const fecundityMultiplier = new FecundityMultiplier();
 qArray[34] = fecundityMultiplier;
 auxArray.push(fecundityMultiplier);
+maxTotalFertility.fecundityMultiplier = fecundityMultiplier;
+fecundityMultiplier.lifeExpectancy = lifeExpectancy;
 
-var desiredTotalFertility = new Aux("desiredTotalFertility", 35);
-desiredTotalFertility.units = "dimensionless";
-desiredTotalFertility.dependencies = ["desiredCompletedFamilySize", "compensatoryMultiplierFromPerceivedLifeExpectancy"];
-desiredTotalFertility.updateFn = function () {
-  return desiredCompletedFamilySize.k * compensatoryMultiplierFromPerceivedLifeExpectancy.k;
-};
+const desiredTotalFertility = new DesiredTotalFertility();
 qArray[35] = desiredTotalFertility;
 auxArray.push(desiredTotalFertility);
 totalFertility.desiredTotalFertility = desiredTotalFertility;
 
-var compensatoryMultiplierFromPerceivedLifeExpectancy = new Table(
-  "compensatoryMultiplierFromPerceivedLifeExpectancy",
-  36,
-  [3.0, 2.1, 1.6, 1.4, 1.3, 1.2, 1.1, 1.05, 1.0],
-  0,
-  80,
-  10
-);
-compensatoryMultiplierFromPerceivedLifeExpectancy.units = "dimensionless";
-compensatoryMultiplierFromPerceivedLifeExpectancy.dependencies = ["perceivedLifeExpectancy"];
-compensatoryMultiplierFromPerceivedLifeExpectancy.updateFn = function () {
-  return perceivedLifeExpectancy.k;
-};
+const compensatoryMultiplierFromPerceivedLifeExpectancy = new CompensatoryMultiplierFromPerceivedLifeExpectancy();
 qArray[36] = compensatoryMultiplierFromPerceivedLifeExpectancy;
 auxArray.push(compensatoryMultiplierFromPerceivedLifeExpectancy);
+desiredTotalFertility.compensatoryMultiplierFromPerceivedLifeExpectancy = compensatoryMultiplierFromPerceivedLifeExpectancy;
 
-var lifetimePerceptionDelayK = 20; // years, used in eqn 37
-
+const lifetimePerceptionDelayK = 20; // years, used in eqn 37
 var perceivedLifeExpectancy = new Delay3("perceivedLifeExpectancy", 37, lifetimePerceptionDelayK);
 perceivedLifeExpectancy.units = "years";
 perceivedLifeExpectancy.dependencies = ["lifeExpectancy"];
@@ -674,6 +652,7 @@ perceivedLifeExpectancy.initFn = function () {
 };
 qArray[37] = perceivedLifeExpectancy;
 auxArray.push(perceivedLifeExpectancy);
+compensatoryMultiplierFromPerceivedLifeExpectancy.perceivedLifeExpectancy = perceivedLifeExpectancy;
 
 var desiredCompletedFamilySize = new Aux("desiredCompletedFamilySize", 38);
 desiredCompletedFamilySize.units = "dimensionless"; // not persons?
@@ -681,6 +660,7 @@ desiredCompletedFamilySize.dependencies = ["familyResponseToSocialNorm", "social
 desiredCompletedFamilySize.normal = 4.0;
 qArray[38] = desiredCompletedFamilySize;
 auxArray.push(desiredCompletedFamilySize);
+desiredTotalFertility.desiredCompletedFamilySize = desiredCompletedFamilySize;
 
 const zeroPopulationGrowthTargetYear = 4000;
 
