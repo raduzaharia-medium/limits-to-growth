@@ -1,4 +1,4 @@
-import { Rate } from "../../rate.js";
+import { Rate } from "../../../rate.js";
 
 export class IndustrialCapitalInvestmentRate extends Rate {
   constructor() {

@@ -44,22 +44,26 @@ import { CompensatoryMultiplierFromPerceivedLifeExpectancy } from "./models/equa
 import { PerceivedLifeExpectancy } from "./models/equations/lifetimeMultipliers/perceivedLifeExpectancy.js";
 import { DesiredCompletedFamilySize } from "./models/equations/natality/desiredCompletedFamilySize.js";
 import { SocialFamilySizeNorm } from "./models/equations/natality/socialFamilySizeNorm.js";
-import { DelayedIndustrialOutputPerCapita } from "./models/equations/industry/delayedIndustrialOutputPerCapita.js";
+import { DelayedIndustrialOutputPerCapita } from "./models/equations/capital/industry/delayedIndustrialOutputPerCapita.js";
 import { FamilyResponseToSocialNorm } from "./models/equations/natality/familyResponseToSocialNorm.js";
 import { FamilyIncomeExpectation } from "./models/equations/familyIncomeExpectation.js";
-import { AverageIndustrialOutputPerCapita } from "./models/equations/industry/averageIndustrialOutputPerCapita.js";
+import { AverageIndustrialOutputPerCapita } from "./models/equations/capital/industry/averageIndustrialOutputPerCapita.js";
 import { NeedForFertilityControl } from "./models/equations/fertility/needForFertilityControl.js";
 import { FertilityControlEffectiveness } from "./models/equations/fertility/fertilityControlEfectiveness.js";
 import { FertilityControlFacilitiesPerCapita } from "./models/equations/fertility/fertilityControlFacilitiesPerCapita.js";
 import { FertilityControlAllocationPerCapita } from "./models/equations/fertility/fertilityControlAllocationPerCapita.js";
 import { FractionOfServicesAllocatedToFertilityControl } from "./models/equations/fertility/fractionOfServicesAllocatedToFertilityControl.js";
-import { IndustrialOutputPerCapita } from "./models/equations/industry/industrialOutputPerCapita.js";
-import { IndustrialOutput } from "./models/equations/industry/industrialOutput.js";
-import { IndustrialCapitalOutputRatio } from "./models/equations/industry/industrialCapitalOutputRatio.js";
-import { IndustrialCapital } from "./models/equations/industry/industrialCapital.js";
-import { IndustrialCapitalDepreciationRate } from "./models/equations/industry/industrialCapitalDepreciationRate.js";
-import { AverageLifetimeOfIndustrialCapital } from "./models/equations/industry/averageLifetimeOfIndustrialCapital.js";
-import { IndustrialCapitalInvestmentRate } from "./models/equations/industry/industrialCapitalInvestmentRate.js";
+import { IndustrialOutputPerCapita } from "./models/equations/capital/industry/industrialOutputPerCapita.js";
+import { IndustrialOutput } from "./models/equations/capital/industry/industrialOutput.js";
+import { IndustrialCapitalOutputRatio } from "./models/equations/capital/industry/industrialCapitalOutputRatio.js";
+import { IndustrialCapital } from "./models/equations/capital/industry/industrialCapital.js";
+import { IndustrialCapitalDepreciationRate } from "./models/equations/capital/industry/industrialCapitalDepreciationRate.js";
+import { AverageLifetimeOfIndustrialCapital } from "./models/equations/capital/industry/averageLifetimeOfIndustrialCapital.js";
+import { IndustrialCapitalInvestmentRate } from "./models/equations/capital/industry/industrialCapitalInvestmentRate.js";
+import { FractionOfIndustrialOutputAllocatedToIndustry } from "./models/equations/capital/industry/fractionOfIndustrialOutputAllocatedToIndustry.js";
+import { FractionOfIndustrialOutputAllocatedToConsumption } from "./models/equations/capital/industry/fractionOfIndustrialOutputAllocatedToConsumption.js";
+import { FractionOfIndustrialOutputAllocatedToConsumptionConstant } from "./models/equations/capital/industry/fractionOfIndustrialOutputAllocatedToConsumptionConstant.js";
+import { FractionOfIndustrialOutputAllocatedToConsumptionVariable } from "./models/equations/capital/industry/fractionOfIndustrialOutputAllocatedToConsumptionVariable.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
     of World3, the social-economic-environmental model created by
@@ -787,29 +791,12 @@ rateArray.push(industrialCapitalInvestmentRate);
 industrialCapital.industrialCapitalInvestmentRate = industrialCapitalInvestmentRate;
 industrialCapitalInvestmentRate.industrialOutput = industrialOutput;
 
-var fractionOfIndustrialOutputAllocatedToIndustry = new Aux("fractionOfIndustrialOutputAllocatedToIndustry", 56);
-fractionOfIndustrialOutputAllocatedToIndustry.units = "dimensionless";
-fractionOfIndustrialOutputAllocatedToIndustry.dependencies = [
-  "fractionOfIndustrialOutputAllocatedToAgriculture",
-  "fractionOfIndustrialOutputAllocatedToServices",
-  "fractionOfIndustrialOutputAllocatedToConsumption",
-];
-fractionOfIndustrialOutputAllocatedToIndustry.updateFn = function () {
-  return (
-    1 -
-    fractionOfIndustrialOutputAllocatedToAgriculture.k -
-    fractionOfIndustrialOutputAllocatedToServices.k -
-    fractionOfIndustrialOutputAllocatedToConsumption.k
-  );
-};
+const fractionOfIndustrialOutputAllocatedToIndustry = new FractionOfIndustrialOutputAllocatedToIndustry();
 qArray[56] = fractionOfIndustrialOutputAllocatedToIndustry;
 auxArray.push(fractionOfIndustrialOutputAllocatedToIndustry);
 industrialCapitalInvestmentRate.fractionOfIndustrialOutputAllocatedToIndustry = fractionOfIndustrialOutputAllocatedToIndustry;
 
-var fractionOfIndustrialOutputAllocatedToConsumption = new Aux("fractionOfIndustrialOutputAllocatedToConsumption", 57);
-fractionOfIndustrialOutputAllocatedToConsumption.units = "dimensionless";
-fractionOfIndustrialOutputAllocatedToConsumption.dependencies = ["fractionOfIndustrialOutputAllocatedToConsumptionVariable"];
-fractionOfIndustrialOutputAllocatedToConsumption.industrialEquilibriumTime = 4000; // year
+const fractionOfIndustrialOutputAllocatedToConsumption = new FractionOfIndustrialOutputAllocatedToConsumption();
 fractionOfIndustrialOutputAllocatedToConsumption.updateFn = function () {
   return clip(
     fractionOfIndustrialOutputAllocatedToConsumptionVariable.k,
@@ -820,33 +807,23 @@ fractionOfIndustrialOutputAllocatedToConsumption.updateFn = function () {
 };
 qArray[57] = fractionOfIndustrialOutputAllocatedToConsumption;
 auxArray.push(fractionOfIndustrialOutputAllocatedToConsumption);
+fractionOfIndustrialOutputAllocatedToIndustry.fractionOfIndustrialOutputAllocatedToConsumption = fractionOfIndustrialOutputAllocatedToConsumption;
 
-var fractionOfIndustrialOutputAllocatedToConsumptionConstant = new Aux("fractionOfIndustrialOutputAllocatedToConsumptionConstant", 58);
-fractionOfIndustrialOutputAllocatedToConsumptionConstant.units = "dimensionless";
-fractionOfIndustrialOutputAllocatedToConsumptionConstant.before = 0.43;
-fractionOfIndustrialOutputAllocatedToConsumptionConstant.after = 0.43;
+const fractionOfIndustrialOutputAllocatedToConsumptionConstant = new FractionOfIndustrialOutputAllocatedToConsumptionConstant(policyYear);
 fractionOfIndustrialOutputAllocatedToConsumptionConstant.updateFn = function () {
   return clip(fractionOfIndustrialOutputAllocatedToConsumptionConstant.after, fractionOfIndustrialOutputAllocatedToConsumptionConstant.before, t, policyYear);
 };
 qArray[58] = fractionOfIndustrialOutputAllocatedToConsumptionConstant;
 auxArray.push(fractionOfIndustrialOutputAllocatedToConsumptionConstant);
+fractionOfIndustrialOutputAllocatedToConsumption.fractionOfIndustrialOutputAllocatedToConsumptionConstant =
+  fractionOfIndustrialOutputAllocatedToConsumptionConstant;
 
-var fractionOfIndustrialOutputAllocatedToConsumptionVariable = new Table(
-  "fractionOfIndustrialOutputAllocatedToConsumptionVariable",
-  59,
-  [0.3, 0.32, 0.34, 0.36, 0.38, 0.43, 0.73, 0.77, 0.81, 0.82, 0.83],
-  0,
-  2,
-  0.2
-);
-fractionOfIndustrialOutputAllocatedToConsumptionVariable.units = "dimensionless";
-fractionOfIndustrialOutputAllocatedToConsumptionVariable.dependencies = ["industrialOutputPerCapita"];
-fractionOfIndustrialOutputAllocatedToConsumptionVariable.industrialOutputPerCapitaDesired = 400;
-fractionOfIndustrialOutputAllocatedToConsumptionVariable.updateFn = function () {
-  return industrialOutputPerCapita.k / fractionOfIndustrialOutputAllocatedToConsumptionVariable.industrialOutputPerCapitaDesired;
-};
+const fractionOfIndustrialOutputAllocatedToConsumptionVariable = new FractionOfIndustrialOutputAllocatedToConsumptionVariable();
 qArray[59] = fractionOfIndustrialOutputAllocatedToConsumptionVariable;
 auxArray.push(fractionOfIndustrialOutputAllocatedToConsumptionVariable);
+fractionOfIndustrialOutputAllocatedToConsumption.fractionOfIndustrialOutputAllocatedToConsumptionVariable =
+  fractionOfIndustrialOutputAllocatedToConsumptionVariable;
+fractionOfIndustrialOutputAllocatedToConsumptionVariable.industrialOutputPerCapita = industrialOutputPerCapita;
 
 // The Service Subsector
 
@@ -902,6 +879,7 @@ fractionOfIndustrialOutputAllocatedToServices.updateFn = function () {
 };
 qArray[63] = fractionOfIndustrialOutputAllocatedToServices;
 auxArray.push(fractionOfIndustrialOutputAllocatedToServices);
+fractionOfIndustrialOutputAllocatedToIndustry.fractionOfIndustrialOutputAllocatedToServices = fractionOfIndustrialOutputAllocatedToServices;
 
 var fractionOfIndustrialOutputAllocatedToServicesBefore = new Table(
   "fractionOfIndustrialOutputAllocatedToServicesBefore",
@@ -1209,6 +1187,7 @@ fractionOfIndustrialOutputAllocatedToAgriculture.updateFn = function () {
 };
 qArray[93] = fractionOfIndustrialOutputAllocatedToAgriculture;
 auxArray.push(fractionOfIndustrialOutputAllocatedToAgriculture);
+fractionOfIndustrialOutputAllocatedToIndustry._fractionOfIndustrialOutputAllocatedToAgriculture = fractionOfIndustrialOutputAllocatedToAgriculture;
 
 var fractionOfIndustrialOutputAllocatedToAgricultureBefore = new Table(
   "fractionOfIndustrialOutputAllocatedToAgricultureBefore",

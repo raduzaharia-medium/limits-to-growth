@@ -1,8 +1,8 @@
-import { Smooth } from "../../smooth.js";
+import { Delay3 } from "../../../delay.js";
 
-export class AverageIndustrialOutputPerCapita extends Smooth {
-  constructor(incomeExpectationAveragingTimeK) {
-    super("averageIndustrialOutputPerCapita", 43, incomeExpectationAveragingTimeK);
+export class DelayedIndustrialOutputPerCapita extends Delay3 {
+  constructor(socialAdjustmentDelayK) {
+    super("delayedIndustrialOutputPerCapita", 40, socialAdjustmentDelayK);
 
     this.units = "dollars per person-year";
     this.dependencies = ["industrialOutputPerCapita"];
