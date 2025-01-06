@@ -33,6 +33,10 @@ import { LifetimeMultiplierFromHealthServicesAfter } from "./models/equations/li
 import { FractionOfPopulationUrban } from "./models/equations/population/fractionOfPopulationUrban.js";
 import { CrowdingMultiplierFromIndustrialization } from "./models/equations/crowdingMultiplierFromIndustrialization.js";
 import { LifetimeMultiplierFromCrowding } from "./models/equations/lifetimeMultipliers/lifetimeMultiplierFromCrowding.js";
+import { LifetimeMultiplierFromPollution } from "./models/equations/lifetimeMultipliers/lifetimeMultiplierFromPollution.js";
+import { BirthsPerYear } from "./models/equations/birthsPerYear.js";
+import { CrudeBirthRate } from "./models/equations/crudeBirthRate.js";
+import { TotalFertility } from "./models/equations/totalFertility.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
     of World3, the social-economic-environmental model created by
@@ -585,56 +589,32 @@ lifeExpectancy.lifetimeMultiplierFromCrowding = lifetimeMultiplierFromCrowding;
 lifetimeMultiplierFromCrowding.fractionOfPopulationUrban = fractionOfPopulationUrban;
 lifetimeMultiplierFromCrowding.crowdingMultiplierFromIndustrialization = crowdingMultiplierFromIndustrialization;
 
-var lifetimeMultiplierFromPollution = new Table(
-  "lifetimeMultiplierFromPollution",
-  29,
-  [1.0, 0.99, 0.97, 0.95, 0.9, 0.85, 0.75, 0.65, 0.55, 0.4, 0.2],
-  0,
-  100,
-  10
-);
-lifetimeMultiplierFromPollution.units = "dimensionless";
-lifetimeMultiplierFromPollution.dependencies = ["indexOfPersistentPollution"];
-lifetimeMultiplierFromPollution.updateFn = function () {
-  return indexOfPersistentPollution.k;
-};
+const lifetimeMultiplierFromPollution = new LifetimeMultiplierFromPollution();
 qArray[29] = lifetimeMultiplierFromPollution;
 auxArray.push(lifetimeMultiplierFromPollution);
 lifeExpectancy.lifetimeMultiplierFromPollution = lifetimeMultiplierFromPollution;
 
 // The Birth-Rate Subsector
 
-var birthsPerYear = new Rate("birthsPerYear", 30);
-birthsPerYear.units = "persons per year";
-birthsPerYear.plotThisVar = true;
-birthsPerYear.reproductiveLifetime = 30; // years
-birthsPerYear.populationEquilibriumTime = 4000; // year
+const birthsPerYear = new BirthsPerYear();
 birthsPerYear.updateFn = function () {
-  var after = deathsPerYear.k;
-  var before = (totalFertility.k * population15To44.k * 0.5) / birthsPerYear.reproductiveLifetime;
+  const after = deathsPerYear.k;
+  const before = (totalFertility.k * population15To44.k * 0.5) / birthsPerYear.reproductiveLifetime;
+
   return clip(after, before, t, birthsPerYear.populationEquilibriumTime);
 };
 qArray[30] = birthsPerYear;
 rateArray.push(birthsPerYear);
+birthsPerYear.deathsPerYear = deathsPerYear;
+birthsPerYear.population15To44 = population15To44;
 
-var crudeBirthRate = new Aux("crudeBirthRate", 31);
-crudeBirthRate.units = "births per 1000 person-years";
-crudeBirthRate.dependencies = ["population"];
-crudeBirthRate.plotColor = "#f6f648";
-crudeBirthRate.plotMin = 0;
-crudeBirthRate.plotMax = 50;
-crudeBirthRate.updateFn = function () {
-  return (1000 * birthsPerYear.j) / population.k;
-};
+const crudeBirthRate = new CrudeBirthRate();
 qArray[31] = crudeBirthRate;
 auxArray.push(crudeBirthRate);
+crudeBirthRate.birthsPerYear = birthsPerYear;
+crudeBirthRate.population = population;
 
-var totalFertility = new Aux("totalFertility", 32);
-totalFertility.units = "dimensionless";
-totalFertility.dependencies = ["maxTotalFertility", "fertilityControlEffectiveness", "desiredTotalFertility"];
-totalFertility.updateFn = function () {
-  return Math.min(maxTotalFertility.k, maxTotalFertility.k * (1 - fertilityControlEffectiveness.k) + desiredTotalFertility.k * fertilityControlEffectiveness.k);
-};
+const totalFertility = new TotalFertility();
 qArray[32] = totalFertility;
 auxArray.push(totalFertility);
 
@@ -647,6 +627,7 @@ maxTotalFertility.updateFn = function () {
 };
 qArray[33] = maxTotalFertility;
 auxArray.push(maxTotalFertility);
+totalFertility.maxTotalFertility = maxTotalFertility;
 
 var fecundityMultiplier = new Table("fecundityMultiplier", 34, [0.0, 0.2, 0.4, 0.6, 0.8, 0.9, 1.0, 1.05, 1.1], 0, 80, 10);
 fecundityMultiplier.units = "dimensionless";
@@ -665,6 +646,7 @@ desiredTotalFertility.updateFn = function () {
 };
 qArray[35] = desiredTotalFertility;
 auxArray.push(desiredTotalFertility);
+totalFertility.desiredTotalFertility = desiredTotalFertility;
 
 var compensatoryMultiplierFromPerceivedLifeExpectancy = new Table(
   "compensatoryMultiplierFromPerceivedLifeExpectancy",
@@ -772,6 +754,7 @@ fertilityControlEffectiveness.updateFn = function () {
 };
 qArray[45] = fertilityControlEffectiveness;
 auxArray.push(fertilityControlEffectiveness);
+totalFertility.fertilityControlEffectiveness = fertilityControlEffectiveness;
 
 var healthServicesImpactDelayK = 20; // years, for eqn 46
 
@@ -1912,6 +1895,7 @@ indexOfPersistentPollution.updateFn = function () {
 };
 qArray[143] = indexOfPersistentPollution;
 auxArray.push(indexOfPersistentPollution);
+lifetimeMultiplierFromPollution.indexOfPersistentPollution = indexOfPersistentPollution;
 
 var persistenPollutionAssimilationRate = new Rate("persistenPollutionAssimilationRate", 144);
 persistenPollutionAssimilationRate.units = "pollution units per year";
