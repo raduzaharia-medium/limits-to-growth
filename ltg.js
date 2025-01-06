@@ -44,15 +44,18 @@ import { CompensatoryMultiplierFromPerceivedLifeExpectancy } from "./models/equa
 import { PerceivedLifeExpectancy } from "./models/equations/lifetimeMultipliers/perceivedLifeExpectancy.js";
 import { DesiredCompletedFamilySize } from "./models/equations/natality/desiredCompletedFamilySize.js";
 import { SocialFamilySizeNorm } from "./models/equations/natality/socialFamilySizeNorm.js";
-import { DelayedIndustrialOutputPerCapita } from "./models/equations/delayedIndustrialOutputPerCapita.js";
+import { DelayedIndustrialOutputPerCapita } from "./models/equations/industry/delayedIndustrialOutputPerCapita.js";
 import { FamilyResponseToSocialNorm } from "./models/equations/natality/familyResponseToSocialNorm.js";
 import { FamilyIncomeExpectation } from "./models/equations/familyIncomeExpectation.js";
-import { AverageIndustrialOutputPerCapita } from "./models/equations/averageIndustrialOutputPerCapita.js";
+import { AverageIndustrialOutputPerCapita } from "./models/equations/industry/averageIndustrialOutputPerCapita.js";
 import { NeedForFertilityControl } from "./models/equations/fertility/needForFertilityControl.js";
 import { FertilityControlEffectiveness } from "./models/equations/fertility/fertilityControlEfectiveness.js";
 import { FertilityControlFacilitiesPerCapita } from "./models/equations/fertility/fertilityControlFacilitiesPerCapita.js";
 import { FertilityControlAllocationPerCapita } from "./models/equations/fertility/fertilityControlAllocationPerCapita.js";
 import { FractionOfServicesAllocatedToFertilityControl } from "./models/equations/fertility/fractionOfServicesAllocatedToFertilityControl.js";
+import { IndustrialOutputPerCapita } from "./models/equations/industry/industrialOutputPerCapita.js";
+import { IndustrialOutput } from "./models/equations/industry/industrialOutput.js";
+import { IndustrialCapitalOutputRatio } from "./models/equations/industry/industrialCapitalOutputRatio.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
     of World3, the social-economic-environmental model created by
@@ -730,41 +733,27 @@ fractionOfServicesAllocatedToFertilityControl.needForFertilityControl = needForF
 
 // The Industrial Subsector
 
-var industrialOutputPerCapita = new Aux("industrialOutputPerCapita", 49);
-industrialOutputPerCapita.units = "dollars per person-year";
-industrialOutputPerCapita.dependencies = ["industrialOutput", "population"];
-industrialOutputPerCapita.plotColor = "#4a6892";
-industrialOutputPerCapita.plotMin = 0;
-industrialOutputPerCapita.plotMax = 500;
-industrialOutputPerCapita.updateFn = function () {
-  return industrialOutput.k / population.k;
-};
+const industrialOutputPerCapita = new IndustrialOutputPerCapita();
 qArray[49] = industrialOutputPerCapita;
 auxArray.push(industrialOutputPerCapita);
 crowdingMultiplierFromIndustrialization.industrialOutputPerCapita = industrialOutputPerCapita;
 delayedIndustrialOutputPerCapita.industrialOutputPerCapita = industrialOutputPerCapita;
 familyIncomeExpectation.industrialOutputPerCapita = industrialOutputPerCapita;
 averageIndustrialOutputPerCapita.industrialOutputPerCapita = industrialOutputPerCapita;
+industrialOutputPerCapita.population = population;
 
-var industrialOutput = new Aux("industrialOutput", 50);
-industrialOutput.units = "dollars per year";
-industrialOutput.valueIn1970 = 7.9e11; // for eqns 106 and 107
-industrialOutput.dependencies = ["fractionOfCapitalAllocatedToObtainingResources", "capitalUtilizationFraction", "industrialCapitalOutputRatio"];
-industrialOutput.updateFn = function () {
-  return (industrialCapital.k * (1 - fractionOfCapitalAllocatedToObtainingResources.k) * capitalUtilizationFraction.k) / industrialCapitalOutputRatio.k;
-};
+const industrialOutput = new IndustrialOutput();
 qArray[50] = industrialOutput;
 auxArray.push(industrialOutput);
+industrialOutputPerCapita.industrialOutput = industrialOutput;
 
-var industrialCapitalOutputRatio = new Aux("industrialCapitalOutputRatio", 51);
-industrialCapitalOutputRatio.units = "years";
-industrialCapitalOutputRatio.before = 3;
-industrialCapitalOutputRatio.after = 3;
+var industrialCapitalOutputRatio = new IndustrialCapitalOutputRatio(policyYear);
 industrialCapitalOutputRatio.updateFn = function () {
   return clip(industrialCapitalOutputRatio.after, industrialCapitalOutputRatio.before, t, policyYear);
 };
 qArray[51] = industrialCapitalOutputRatio;
 auxArray.push(industrialCapitalOutputRatio);
+industrialOutput.industrialCapitalOutputRatio = industrialCapitalOutputRatio;
 
 var industrialCapital = new Level("industrialCapital", 52, 2.1e11, startTime, qArray, levelArray);
 industrialCapital.units = "dollars";
@@ -773,6 +762,7 @@ industrialCapital.updateFn = function () {
 };
 qArray[52] = industrialCapital;
 levelArray.push(industrialCapital);
+industrialOutput.industrialCapital = industrialCapital;
 
 var industrialCapitalDepreciationRate = new Rate("industrialCapitalDepreciationRate", 53);
 industrialCapitalDepreciationRate.units = "dollars per year";
@@ -1116,6 +1106,7 @@ capitalUtilizationFraction.updateFn = function () {
 };
 qArray[83] = capitalUtilizationFraction;
 auxArray.push(capitalUtilizationFraction);
+industrialOutput.capitalUtilizationFraction = capitalUtilizationFraction;
 
 // THE AGRICULTURAL SECTOR
 
@@ -1716,6 +1707,7 @@ fractionOfCapitalAllocatedToObtainingResources.updateFn = function () {
 };
 qArray[134] = fractionOfCapitalAllocatedToObtainingResources;
 auxArray.push(fractionOfCapitalAllocatedToObtainingResources);
+industrialOutput.fractionOfCapitalAllocatedToObtainingResources = fractionOfCapitalAllocatedToObtainingResources;
 
 var fractionOfCapitalAllocatedToObtainingResourcesBefore = new Table(
   "fractionOfCapitalAllocatedToObtainingResourcesBefore",
