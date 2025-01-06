@@ -56,6 +56,10 @@ import { FractionOfServicesAllocatedToFertilityControl } from "./models/equation
 import { IndustrialOutputPerCapita } from "./models/equations/industry/industrialOutputPerCapita.js";
 import { IndustrialOutput } from "./models/equations/industry/industrialOutput.js";
 import { IndustrialCapitalOutputRatio } from "./models/equations/industry/industrialCapitalOutputRatio.js";
+import { IndustrialCapital } from "./models/equations/industry/industrialCapital.js";
+import { IndustrialCapitalDepreciationRate } from "./models/equations/industry/industrialCapitalDepreciationRate.js";
+import { AverageLifetimeOfIndustrialCapital } from "./models/equations/industry/averageLifetimeOfIndustrialCapital.js";
+import { IndustrialCapitalInvestmentRate } from "./models/equations/industry/industrialCapitalInvestmentRate.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
     of World3, the social-economic-environmental model created by
@@ -438,7 +442,7 @@ const population = new Population();
 qArray[1] = population;
 auxArray.push(population);
 
-const population0To14 = new Population0To14(startTime);
+const population0To14 = new Population0To14(startTime, dt);
 population0To14.updateFn = function () {
   return population0To14.j + dt * (birthsPerYear.j - deathsPerYear0To14.j - maturationsPerYear14to15.j);
 };
@@ -462,7 +466,7 @@ rateArray.push(maturationsPerYear14to15);
 maturationsPerYear14to15.population0To14 = population0To14;
 maturationsPerYear14to15.mortality0To14 = mortality0To14;
 
-const population15To44 = new Population15To44(startTime);
+const population15To44 = new Population15To44(startTime, dt);
 population15To44.updateFn = function () {
   return population15To44.j + dt * (maturationsPerYear14to15.j - deathsPerYear15To44.j - maturationsPerYear44to45.j);
 };
@@ -486,7 +490,7 @@ rateArray.push(maturationsPerYear44to45);
 maturationsPerYear44to45.population15To44 = population15To44;
 maturationsPerYear44to45.mortality15To44 = mortality15To44;
 
-const population45To64 = new Population45To64(startTime);
+const population45To64 = new Population45To64(startTime, dt);
 population45To64.updateFn = function () {
   return population45To64.j + dt * (maturationsPerYear44to45.j - deathsPerYear45To64.j - maturationsPerYear64to65.j);
 };
@@ -747,7 +751,7 @@ qArray[50] = industrialOutput;
 auxArray.push(industrialOutput);
 industrialOutputPerCapita.industrialOutput = industrialOutput;
 
-var industrialCapitalOutputRatio = new IndustrialCapitalOutputRatio(policyYear);
+const industrialCapitalOutputRatio = new IndustrialCapitalOutputRatio(policyYear);
 industrialCapitalOutputRatio.updateFn = function () {
   return clip(industrialCapitalOutputRatio.after, industrialCapitalOutputRatio.before, t, policyYear);
 };
@@ -755,8 +759,7 @@ qArray[51] = industrialCapitalOutputRatio;
 auxArray.push(industrialCapitalOutputRatio);
 industrialOutput.industrialCapitalOutputRatio = industrialCapitalOutputRatio;
 
-var industrialCapital = new Level("industrialCapital", 52, 2.1e11, startTime, qArray, levelArray);
-industrialCapital.units = "dollars";
+const industrialCapital = new IndustrialCapital(startTime, dt);
 industrialCapital.updateFn = function () {
   return industrialCapital.j + dt * (industrialCapitalInvestmentRate.j - industrialCapitalDepreciationRate.j);
 };
@@ -764,31 +767,25 @@ qArray[52] = industrialCapital;
 levelArray.push(industrialCapital);
 industrialOutput.industrialCapital = industrialCapital;
 
-var industrialCapitalDepreciationRate = new Rate("industrialCapitalDepreciationRate", 53);
-industrialCapitalDepreciationRate.units = "dollars per year";
-industrialCapitalDepreciationRate.updateFn = function () {
-  return industrialCapital.k / averageLifetimeOfIndustrialCapital.k;
-};
+const industrialCapitalDepreciationRate = new IndustrialCapitalDepreciationRate();
 qArray[53] = industrialCapitalDepreciationRate;
 rateArray.push(industrialCapitalDepreciationRate);
+industrialCapital.industrialCapitalDepreciationRate = industrialCapitalDepreciationRate;
+industrialCapitalDepreciationRate.industrialCapital = industrialCapital;
 
-var averageLifetimeOfIndustrialCapital = new Aux("averageLifetimeOfIndustrialCapital", 54);
-averageLifetimeOfIndustrialCapital.units = "years";
-averageLifetimeOfIndustrialCapital.before = 14;
-averageLifetimeOfIndustrialCapital.after = 14;
+const averageLifetimeOfIndustrialCapital = new AverageLifetimeOfIndustrialCapital(policyYear);
 averageLifetimeOfIndustrialCapital.updateFn = function () {
   return clip(averageLifetimeOfIndustrialCapital.after, averageLifetimeOfIndustrialCapital.before, t, policyYear);
 };
 qArray[54] = averageLifetimeOfIndustrialCapital;
 auxArray.push(averageLifetimeOfIndustrialCapital);
+industrialCapitalDepreciationRate.averageLifetimeOfIndustrialCapital = averageLifetimeOfIndustrialCapital;
 
-var industrialCapitalInvestmentRate = new Rate("industrialCapitalInvestmentRate", 55);
-industrialCapitalInvestmentRate.units = "dollars per year";
-industrialCapitalInvestmentRate.updateFn = function () {
-  return industrialOutput.k * fractionOfIndustrialOutputAllocatedToIndustry.k;
-};
+const industrialCapitalInvestmentRate = new IndustrialCapitalInvestmentRate();
 qArray[55] = industrialCapitalInvestmentRate;
 rateArray.push(industrialCapitalInvestmentRate);
+industrialCapital.industrialCapitalInvestmentRate = industrialCapitalInvestmentRate;
+industrialCapitalInvestmentRate.industrialOutput = industrialOutput;
 
 var fractionOfIndustrialOutputAllocatedToIndustry = new Aux("fractionOfIndustrialOutputAllocatedToIndustry", 56);
 fractionOfIndustrialOutputAllocatedToIndustry.units = "dimensionless";
@@ -807,6 +804,7 @@ fractionOfIndustrialOutputAllocatedToIndustry.updateFn = function () {
 };
 qArray[56] = fractionOfIndustrialOutputAllocatedToIndustry;
 auxArray.push(fractionOfIndustrialOutputAllocatedToIndustry);
+industrialCapitalInvestmentRate.fractionOfIndustrialOutputAllocatedToIndustry = fractionOfIndustrialOutputAllocatedToIndustry;
 
 var fractionOfIndustrialOutputAllocatedToConsumption = new Aux("fractionOfIndustrialOutputAllocatedToConsumption", 57);
 fractionOfIndustrialOutputAllocatedToConsumption.units = "dimensionless";
