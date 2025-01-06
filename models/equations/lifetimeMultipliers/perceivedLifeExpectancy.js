@@ -1,4 +1,4 @@
-import { Delay3 } from "../delay.js";
+import { Delay3 } from "../../delay.js";
 
 export class PerceivedLifeExpectancy extends Delay3 {
   constructor(lifetimePerceptionDelayK) {

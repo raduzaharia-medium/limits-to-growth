@@ -1,4 +1,4 @@
-import { Table } from "../table.js";
+import { Table } from "../../table.js";
 
 export class FamilyResponseToSocialNorm extends Table {
   constructor() {

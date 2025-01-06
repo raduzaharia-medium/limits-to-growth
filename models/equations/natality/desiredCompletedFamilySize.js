@@ -1,4 +1,4 @@
-import { Aux } from "../aux.js";
+import { Aux } from "../../aux.js";
 
 export class DesiredCompletedFamilySize extends Aux {
   constructor(zeroPopulationGrowthTargetYear) {

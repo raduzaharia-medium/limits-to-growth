@@ -23,7 +23,7 @@ import { DeathsPerYear65AndOver } from "./models/equations/deaths/deathsPerYear6
 import { Mortality65AndOver } from "./models/equations/mortality/mortality65AndOver.js";
 import { DeathsPerYear } from "./models/equations/deaths/deathsPerYear.js";
 import { CrudeDeathRate } from "./models/equations/deaths/crudeDeathRate.js";
-import { LifeExpectancy } from "./models/equations/lifeExpectancy.js";
+import { LifeExpectancy } from "./models/equations/lifetimeMultipliers/lifeExpectancy.js";
 import { LifetimeMultiplierFromFood } from "./models/equations/lifetimeMultipliers/lifetimeMultiplierFromFood.js";
 import { HealthServicesAllocationPerCapita } from "./models/equations/healthServicesAllocationsPerCapita.js";
 import { EffectiveHealthServicesPerCapita } from "./models/equations/effectiveHealthServicesPerCapita.js";
@@ -31,27 +31,28 @@ import { LifetimeMultiplierFromHealthServices } from "./models/equations/lifetim
 import { LifetimeMultiplierFromHealthServicesBefore } from "./models/equations/lifetimeMultipliers/lifetimeMultiplierFromHealthServicesBefore.js";
 import { LifetimeMultiplierFromHealthServicesAfter } from "./models/equations/lifetimeMultipliers/lifetimeMultiplierFromHealthServicesAfter.js";
 import { FractionOfPopulationUrban } from "./models/equations/population/fractionOfPopulationUrban.js";
-import { CrowdingMultiplierFromIndustrialization } from "./models/equations/crowdingMultiplierFromIndustrialization.js";
+import { CrowdingMultiplierFromIndustrialization } from "./models/equations/population/crowdingMultiplierFromIndustrialization.js";
 import { LifetimeMultiplierFromCrowding } from "./models/equations/lifetimeMultipliers/lifetimeMultiplierFromCrowding.js";
 import { LifetimeMultiplierFromPollution } from "./models/equations/lifetimeMultipliers/lifetimeMultiplierFromPollution.js";
-import { BirthsPerYear } from "./models/equations/birthsPerYear.js";
-import { CrudeBirthRate } from "./models/equations/crudeBirthRate.js";
+import { BirthsPerYear } from "./models/equations/natality/birthsPerYear.js";
+import { CrudeBirthRate } from "./models/equations/natality/crudeBirthRate.js";
 import { TotalFertility } from "./models/equations/fertility/totalFertility.js";
 import { MaxTotalFertility } from "./models/equations/fertility/maxTotalFertility.js";
-import { FecundityMultiplier } from "./models/equations/fecundityMultiplier.js";
+import { FecundityMultiplier } from "./models/equations/natality/fecundityMultiplier.js";
 import { DesiredTotalFertility } from "./models/equations/fertility/desiredTotalFertility.js";
 import { CompensatoryMultiplierFromPerceivedLifeExpectancy } from "./models/equations/compensatoryMultiplierFromPerceivedLifeExpectancy.js";
-import { PerceivedLifeExpectancy } from "./models/equations/perceivedLifeExpectancy.js";
-import { DesiredCompletedFamilySize } from "./models/equations/desiredCompletedFamilySize.js";
-import { SocialFamilySizeNorm } from "./models/equations/socialFamilySizeNorm.js";
+import { PerceivedLifeExpectancy } from "./models/equations/lifetimeMultipliers/perceivedLifeExpectancy.js";
+import { DesiredCompletedFamilySize } from "./models/equations/natality/desiredCompletedFamilySize.js";
+import { SocialFamilySizeNorm } from "./models/equations/natality/socialFamilySizeNorm.js";
 import { DelayedIndustrialOutputPerCapita } from "./models/equations/delayedIndustrialOutputPerCapita.js";
-import { FamilyResponseToSocialNorm } from "./models/equations/familyResponseToSocialNorm.js";
+import { FamilyResponseToSocialNorm } from "./models/equations/natality/familyResponseToSocialNorm.js";
 import { FamilyIncomeExpectation } from "./models/equations/familyIncomeExpectation.js";
 import { AverageIndustrialOutputPerCapita } from "./models/equations/averageIndustrialOutputPerCapita.js";
 import { NeedForFertilityControl } from "./models/equations/fertility/needForFertilityControl.js";
 import { FertilityControlEffectiveness } from "./models/equations/fertility/fertilityControlEfectiveness.js";
 import { FertilityControlFacilitiesPerCapita } from "./models/equations/fertility/fertilityControlFacilitiesPerCapita.js";
 import { FertilityControlAllocationPerCapita } from "./models/equations/fertility/fertilityControlAllocationPerCapita.js";
+import { FractionOfServicesAllocatedToFertilityControl } from "./models/equations/fertility/fractionOfServicesAllocatedToFertilityControl.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
     of World3, the social-economic-environmental model created by
@@ -719,22 +720,11 @@ qArray[47] = fertilityControlAllocationPerCapita;
 auxArray.push(fertilityControlAllocationPerCapita);
 fertilityControlFacilitiesPerCapita.fertilityControlAllocationPerCapita = fertilityControlAllocationPerCapita;
 
-var fractionOfServicesAllocatedToFertilityControl = new Table(
-  "fractionOfServicesAllocatedToFertilityControl",
-  48,
-  [0.0, 0.005, 0.015, 0.025, 0.03, 0.035],
-  0,
-  10,
-  2
-);
-fractionOfServicesAllocatedToFertilityControl.units = "dimensionless";
-fractionOfServicesAllocatedToFertilityControl.dependencies = ["needForFertilityControl"];
-fractionOfServicesAllocatedToFertilityControl.updateFn = function () {
-  return needForFertilityControl.k;
-};
+const fractionOfServicesAllocatedToFertilityControl = new FractionOfServicesAllocatedToFertilityControl();
 qArray[48] = fractionOfServicesAllocatedToFertilityControl;
 auxArray.push(fractionOfServicesAllocatedToFertilityControl);
 fertilityControlAllocationPerCapita.fractionOfServicesAllocatedToFertilityControl = fractionOfServicesAllocatedToFertilityControl;
+fractionOfServicesAllocatedToFertilityControl.needForFertilityControl = needForFertilityControl;
 
 // THE CAPITAL SECTOR
 
