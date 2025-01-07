@@ -69,6 +69,11 @@ import { IndicatedServiceOutputPerCapitaBefore } from "./models/equations/capita
 import { IndicatedServiceOutputPerCapitaAfter } from "./models/equations/capital/service/indicatedServiceOutputPerCapitaAfter.js";
 import { FractionOfIndustrialOutputAllocatedToServices } from "./models/equations/capital/service/fractionOfIndustrialOutputAllocatedToServices.js";
 import { FractionOfIndustrialOutputAllocatedToServicesBefore } from "./models/equations/capital/service/fractionOfIndustrialOutputAllocatedToServicesBefore.js";
+import { FractionOfIndustrialOutputAllocatedToServicesAfter } from "./models/equations/capital/service/fractionOfIndustrialOutputAllocatedToServicesAfter.js";
+import { ServiceCapitalInvestmentRate } from "./models/equations/capital/service/serviceCapitalInvestmentRate.js";
+import { ServiceCapital } from "./models/equations/capital/service/serviceCapital.js";
+import { ServiceCapitalDepreciationRate } from "./models/equations/capital/service/serviceCapitalDepreciationRate.js";
+import { AverageLifetimeOfServiceCapital } from "./models/equations/capital/service/averageLifetimeOfServiceCapital.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
     of World3, the social-economic-environmental model created by
@@ -865,56 +870,39 @@ auxArray.push(fractionOfIndustrialOutputAllocatedToServicesBefore);
 fractionOfIndustrialOutputAllocatedToServices.fractionOfIndustrialOutputAllocatedToServicesBefore = fractionOfIndustrialOutputAllocatedToServicesBefore;
 fractionOfIndustrialOutputAllocatedToServicesBefore.indicatedServiceOutputPerCapita = indicatedServiceOutputPerCapita;
 
-var fractionOfIndustrialOutputAllocatedToServicesAfter = new Table(
-  "fractionOfIndustrialOutputAllocatedToServicesAfter",
-  65,
-  [0.3, 0.2, 0.1, 0.05, 0],
-  0,
-  2,
-  0.5
-);
-fractionOfIndustrialOutputAllocatedToServicesAfter.units = "dimensionless";
-fractionOfIndustrialOutputAllocatedToServicesAfter.dependencies = ["serviceOutputPerCapita", "indicatedServiceOutputPerCapita"];
-fractionOfIndustrialOutputAllocatedToServicesAfter.updateFn = function () {
-  return serviceOutputPerCapita.k / indicatedServiceOutputPerCapita.k;
-};
+const fractionOfIndustrialOutputAllocatedToServicesAfter = new FractionOfIndustrialOutputAllocatedToServicesAfter();
 qArray[65] = fractionOfIndustrialOutputAllocatedToServicesAfter;
 auxArray.push(fractionOfIndustrialOutputAllocatedToServicesAfter);
 fractionOfIndustrialOutputAllocatedToServices.fractionOfIndustrialOutputAllocatedToServicesAfter = fractionOfIndustrialOutputAllocatedToServicesAfter;
+fractionOfIndustrialOutputAllocatedToServicesAfter.indicatedServiceOutputPerCapita = indicatedServiceOutputPerCapita;
 
-var serviceCapitalInvestmentRate = new Rate("serviceCapitalInvestmentRate", 66);
-serviceCapitalInvestmentRate.units = "dollars per year";
-serviceCapitalInvestmentRate.updateFn = function () {
-  return industrialOutput.k * fractionOfIndustrialOutputAllocatedToServices.k;
-};
+const serviceCapitalInvestmentRate = new ServiceCapitalInvestmentRate();
 qArray[66] = serviceCapitalInvestmentRate;
 rateArray.push(serviceCapitalInvestmentRate);
+serviceCapitalInvestmentRate.industrialOutput = industrialOutput;
+serviceCapitalInvestmentRate.fractionOfIndustrialOutputAllocatedToServices = fractionOfIndustrialOutputAllocatedToServices;
 
-var serviceCapital = new Level("serviceCapital", 67, 1.44e11, startTime, qArray, levelArray);
-serviceCapital.units = "dollars";
+const serviceCapital = new ServiceCapital();
 serviceCapital.updateFn = function () {
   return serviceCapital.j + dt * (serviceCapitalInvestmentRate.j - serviceCapitalDepreciationRate.j);
 };
 qArray[67] = serviceCapital;
 levelArray.push(serviceCapital);
+serviceCapital.serviceCapitalInvestmentRate = serviceCapitalInvestmentRate;
 
-var serviceCapitalDepreciationRate = new Rate("serviceCapitalDepreciationRate", 68);
-serviceCapitalDepreciationRate.units = "dollars per year";
-serviceCapitalDepreciationRate.updateFn = function () {
-  return serviceCapital.k / averageLifetimeOfServiceCapital.k;
-};
+const serviceCapitalDepreciationRate = new ServiceCapitalDepreciationRate();
 qArray[68] = serviceCapitalDepreciationRate;
 rateArray.push(serviceCapitalDepreciationRate);
+serviceCapital.serviceCapitalDepreciationRate = serviceCapitalDepreciationRate;
+serviceCapitalDepreciationRate.serviceCapital = serviceCapital;
 
-var averageLifetimeOfServiceCapital = new Aux("averageLifetimeOfServiceCapital", 69);
-averageLifetimeOfServiceCapital.units = "years";
-averageLifetimeOfServiceCapital.before = 20; // years
-averageLifetimeOfServiceCapital.after = 20; // years
+const averageLifetimeOfServiceCapital = new AverageLifetimeOfServiceCapital(policyYear);
 averageLifetimeOfServiceCapital.updateFn = function () {
   return clip(averageLifetimeOfServiceCapital.after, averageLifetimeOfServiceCapital.before, t, policyYear);
 };
 qArray[69] = averageLifetimeOfServiceCapital;
 auxArray.push(averageLifetimeOfServiceCapital);
+serviceCapitalDepreciationRate.averageLifetimeOfServiceCapital = averageLifetimeOfServiceCapital;
 
 var serviceOutput = new Aux("serviceOutput", 70);
 serviceOutput.units = "dollars per year";
@@ -939,6 +927,7 @@ auxArray.push(serviceOutputPerCapita);
 healthServicesAllocationsPerCapita.serviceOutputPerCapita = serviceOutputPerCapita;
 fertilityControlAllocationPerCapita.serviceOutputPerCapita = serviceOutputPerCapita;
 fractionOfIndustrialOutputAllocatedToServicesBefore.serviceOutputPerCapita = serviceOutputPerCapita;
+fractionOfIndustrialOutputAllocatedToServicesAfter.serviceOutputPerCapita = serviceOutputPerCapita;
 
 var serviceCapitalOutputRatio = new Aux("serviceCapitalOutputRatio", 72);
 serviceCapitalOutputRatio.units = "years";
