@@ -82,6 +82,12 @@ import { PotentialJobsInIndustrialSector } from "./models/equations/capital/jobs
 import { JobsPerIndustrialCapitalUnit } from "./models/equations/capital/jobs/jobsPerIndustrialCapitalUnit.js";
 import { PotentialJobsInServiceSector } from "./models/equations/capital/jobs/potentialJobsInServiceSector.js";
 import { JobsPerServiceCapitalUnit } from "./models/equations/capital/jobs/jobsPerServiceCapitalUnit.js";
+import { PotentialJobsInAgriculturalSector } from "./models/equations/capital/jobs/potentialJobsInAgriculturalSector.js";
+import { JobsPerHectare } from "./models/equations/capital/jobs/jobsPerHectare.js";
+import { LaborForce } from "./models/equations/capital/jobs/laborForce.js";
+import { LaborUtilizationFraction } from "./models/equations/capital/jobs/laborUtilizationFraction.js";
+import { LaborUtilizationFractionDelayed } from "./models/equations/capital/jobs/laborUtilizationFractionDelayed.js";
+import { CapitalUtilizationFraction } from "./models/equations/capital/jobs/capitalUtilizationFraction.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
     of World3, the social-economic-environmental model created by
@@ -965,64 +971,40 @@ auxArray.push(jobsPerServiceCapitalUnit);
 potentialJobsInServiceSector.jobsPerServiceCapitalUnit = jobsPerServiceCapitalUnit;
 jobsPerServiceCapitalUnit.serviceOutputPerCapita = serviceOutputPerCapita;
 
-var potentialJobsInAgriculturalSector = new Aux("potentialJobsInAgriculturalSector", 78);
-potentialJobsInAgriculturalSector.units = "persons";
-potentialJobsInAgriculturalSector.dependencies = ["jobsPerHectare"];
-potentialJobsInAgriculturalSector.updateFn = function () {
-  return arableLand.k * jobsPerHectare.k;
-};
+const potentialJobsInAgriculturalSector = new PotentialJobsInAgriculturalSector();
 qArray[78] = potentialJobsInAgriculturalSector;
 auxArray.push(potentialJobsInAgriculturalSector);
 jobs.potentialJobsInAgriculturalSector = potentialJobsInAgriculturalSector;
 
-var jobsPerHectare = new Table("jobsPerHectare", 79, [2, 0.5, 0.4, 0.3, 0.27, 0.24, 0.2, 0.2], 2, 30, 4);
-jobsPerHectare.units = "persons per hectare";
-jobsPerHectare.dependencies = ["agriculturalInputsPerHectare"];
-jobsPerHectare.updateFn = function () {
-  return agriculturalInputsPerHectare.k;
-};
+const jobsPerHectare = new JobsPerHectare();
 qArray[79] = jobsPerHectare;
 auxArray.push(jobsPerHectare);
+potentialJobsInAgriculturalSector.jobsPerHectare = jobsPerHectare;
 
-var laborForce = new Aux("laborForce", 80);
-laborForce.units = "persons";
-laborForce.participationFraction = 0.75; // dimensionless
-laborForce.updateFn = function () {
-  return (population15To44.k + population45To64.k) * laborForce.participationFraction;
-};
+const laborForce = new LaborForce();
 qArray[80] = laborForce;
 auxArray.push(laborForce);
+laborForce.population15To44 = population15To44;
+laborForce.population45To64 = population45To64;
 
-var laborUtilizationFraction = new Aux("laborUtilizationFraction", 81);
-laborUtilizationFraction.units = "dimensionless";
-laborUtilizationFraction.dependencies = ["jobs", "laborForce"];
-laborUtilizationFraction.updateFn = function () {
-  return jobs.k / laborForce.k;
-};
+const laborUtilizationFraction = new LaborUtilizationFraction();
 qArray[81] = laborUtilizationFraction;
 auxArray.push(laborUtilizationFraction);
+laborUtilizationFraction.jobs = jobs;
+laborUtilizationFraction.laborForce = laborForce;
 
-var laborUtilizationFractionDelayedDelayTime = 2; // years, eqn 82
-
-var laborUtilizationFractionDelayed = new Smooth("laborUtilizationFractionDelayed", 82, laborUtilizationFractionDelayedDelayTime);
-laborUtilizationFractionDelayed.units = "dimensionless";
-laborUtilizationFractionDelayed.dependencies = ["laborUtilizationFraction"];
-laborUtilizationFractionDelayed.initFn = function () {
-  return laborUtilizationFraction;
-};
+const laborUtilizationFractionDelayedDelayTime = 2; // years, eqn 82
+const laborUtilizationFractionDelayed = new LaborUtilizationFractionDelayed(laborUtilizationFractionDelayedDelayTime);
 qArray[82] = laborUtilizationFractionDelayed;
 auxArray.push(laborUtilizationFractionDelayed);
+laborUtilizationFractionDelayed.laborUtilizationFraction = laborUtilizationFraction;
 
-var capitalUtilizationFraction = new Table("capitalUtilizationFraction", 83, [1.0, 0.9, 0.7, 0.3, 0.1, 0.1], 1, 11, 2);
-capitalUtilizationFraction.units = "dimensionless";
-capitalUtilizationFraction.dependencies = []; // "laborUtilizationFractionDelayed" removed to break cycle
-capitalUtilizationFraction.updateFn = function () {
-  return laborUtilizationFractionDelayed.k || 1.0; // to break circularity
-};
+const capitalUtilizationFraction = new CapitalUtilizationFraction();
 qArray[83] = capitalUtilizationFraction;
 auxArray.push(capitalUtilizationFraction);
 industrialOutput.capitalUtilizationFraction = capitalUtilizationFraction;
 serviceOutput.capitalUtilizationFraction = capitalUtilizationFraction;
+capitalUtilizationFraction.laborUtilizationFractionDelayed = laborUtilizationFractionDelayed;
 
 // THE AGRICULTURAL SECTOR
 
@@ -1047,6 +1029,7 @@ arableLand.updateFn = function () {
 };
 qArray[85] = arableLand;
 levelArray.push(arableLand);
+potentialJobsInAgriculturalSector.arableLand = arableLand;
 
 var potentiallyArableLand = new Level("potentiallyArableLand", 86, 2.3e9, startTime, qArray, levelArray);
 potentiallyArableLand.units = "hectares";
@@ -1243,6 +1226,7 @@ agriculturalInputsPerHectare.updateFn = function () {
 };
 qArray[101] = agriculturalInputsPerHectare;
 auxArray.push(agriculturalInputsPerHectare);
+jobsPerHectare.agriculturalInputsPerHectare = agriculturalInputsPerHectare;
 
 var landYieldMultiplierFromCapital = new Table(
   "landYieldMultiplierFromCapital",
