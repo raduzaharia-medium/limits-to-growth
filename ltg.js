@@ -88,6 +88,9 @@ import { LaborForce } from "./models/equations/capital/jobs/laborForce.js";
 import { LaborUtilizationFraction } from "./models/equations/capital/jobs/laborUtilizationFraction.js";
 import { LaborUtilizationFractionDelayed } from "./models/equations/capital/jobs/laborUtilizationFractionDelayed.js";
 import { CapitalUtilizationFraction } from "./models/equations/capital/jobs/capitalUtilizationFraction.js";
+import { LandFractionCultivated } from "./models/equations/agriculture/landDevelopment/landFractionCultivated.js";
+import { ArableLand } from "./models/equations/agriculture/landDevelopment/arableLand.js";
+import { PotentiallyArableLand } from "./models/equations/agriculture/landDevelopment/potentiallyArableLand.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
     of World3, the social-economic-environmental model created by
@@ -1010,34 +1013,27 @@ capitalUtilizationFraction.laborUtilizationFractionDelayed = laborUtilizationFra
 
 // Loop 1: Food from Investment in Land Development
 
-var landFractionCultivated = new Aux("landFractionCultivated", 84);
-landFractionCultivated.units = "dimensionless";
-landFractionCultivated.potentiallyArableLandTotal = 3.2e9; // hectares, used here and in eqn 97
-landFractionCultivated.updateFn = function () {
-  return arableLand.k / landFractionCultivated.potentiallyArableLandTotal;
-};
+const potentiallyArableLandTotal = 3.2e9;
+const landFractionCultivated = new LandFractionCultivated(potentiallyArableLandTotal);
 qArray[84] = landFractionCultivated;
 auxArray.push(landFractionCultivated);
 
-var arableLand = new Level("arableLand", 85, 0.9e9, startTime, qArray, levelArray);
-arableLand.units = "hectares";
-arableLand.plotColor = "#513210";
-arableLand.plotMin = 0;
-arableLand.plotMax = 3.0e9;
+const arableLand = new ArableLand();
 arableLand.updateFn = function () {
   return arableLand.j + dt * (landDevelopmentRate.j - landErosionRate.j - landRemovalForUrbanIndustrialUse.j);
 };
 qArray[85] = arableLand;
 levelArray.push(arableLand);
 potentialJobsInAgriculturalSector.arableLand = arableLand;
+landFractionCultivated.arableLand = arableLand;
 
-var potentiallyArableLand = new Level("potentiallyArableLand", 86, 2.3e9, startTime, qArray, levelArray);
-potentiallyArableLand.units = "hectares";
+const potentiallyArableLand = new PotentiallyArableLand();
 potentiallyArableLand.updateFn = function () {
   return potentiallyArableLand.j + dt * -landDevelopmentRate.j;
 };
 qArray[86] = potentiallyArableLand;
 levelArray.push(potentiallyArableLand);
+potentiallyArableLand.landDevelopmentRate = landDevelopmentRate;
 
 var food = new Aux("food", 87);
 food.units = "kilograms per year";
@@ -1151,11 +1147,13 @@ landDevelopmentRate.updateFn = function () {
 };
 qArray[96] = landDevelopmentRate;
 rateArray.push(landDevelopmentRate);
+arableLand.landDevelopmentRate = landDevelopmentRate;
+potentiallyArableLand.landDevelopmentRate = landDevelopmentRate;
 
 var developmentCostPerHectare = new Table("developmentCostPerHectare", 97, [100000, 7400, 5200, 3500, 2400, 1500, 750, 300, 150, 75, 50], 0, 1.0, 0.1);
 developmentCostPerHectare.units = "dollars per hectare";
 developmentCostPerHectare.updateFn = function () {
-  return potentiallyArableLand.k / landFractionCultivated.potentiallyArableLandTotal;
+  return potentiallyArableLand.k / potentiallyArableLandTotal;
 };
 qArray[97] = developmentCostPerHectare;
 auxArray.push(developmentCostPerHectare);
@@ -1406,6 +1404,7 @@ landErosionRate.updateFn = function () {
 };
 qArray[116] = landErosionRate;
 rateArray.push(landErosionRate);
+arableLand.landErosionRate = landErosionRate;
 
 // 2016-08-09: Neil S. Grant reported an error in the table of values
 // for urbanIndustrialLandPerCapita. The third element of the array
@@ -1437,6 +1436,7 @@ landRemovalForUrbanIndustrialUse.updateFn = function () {
 };
 qArray[119] = landRemovalForUrbanIndustrialUse;
 rateArray.push(landRemovalForUrbanIndustrialUse);
+arableLand.landRemovalForUrbanIndustrialUse = landRemovalForUrbanIndustrialUse;
 
 var urbanIndustrialLand = new Level("urbanIndustrialLand", 120, 8.2e6, startTime, qArray, levelArray);
 urbanIndustrialLand.units = "hectares";

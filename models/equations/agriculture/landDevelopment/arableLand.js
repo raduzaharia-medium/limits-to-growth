@@ -1,0 +1,28 @@
+import { Level } from "../../../level.js";
+
+export class ArableLand extends Level {
+  constructor() {
+    super("arableLand", 85, 0.9e9);
+
+    this.units = "hectares";
+    this.plotColor = "#513210";
+    this.plotMin = 0;
+    this.plotMax = 3.0e9;
+  }
+
+  set landDevelopmentRate(value) {
+    this._landDevelopmentRate = value;
+  }
+
+  set landErosionRate(value) {
+    this._landErosionRate = value;
+  }
+
+  set landRemovalForUrbanIndustrialUse(value) {
+    this._landRemovalForUrbanIndustrialUse = value;
+  }
+
+  updateFn() {
+    return this.j + dt * (this._landDevelopmentRate.j - this._landErosionRate.j - this._landRemovalForUrbanIndustrialUse.j);
+  }
+}

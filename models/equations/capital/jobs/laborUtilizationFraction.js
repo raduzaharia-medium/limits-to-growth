@@ -4,7 +4,6 @@ export class LaborUtilizationFraction extends Aux {
   constructor() {
     super("laborUtilizationFraction", 81);
 
-    this.units = "dimensionless";
     this.dependencies = ["jobs", "laborForce"];
   }
 
