@@ -77,6 +77,11 @@ import { AverageLifetimeOfServiceCapital } from "./models/equations/capital/serv
 import { ServiceOutput } from "./models/equations/capital/service/serviceOutput.js";
 import { ServiceOutputPerCapita } from "./models/equations/capital/service/serviceOutputPerCapita.js";
 import { ServiceCapitalOutputRatio } from "./models/equations/capital/service/serviceCapitalOutputRatio.js";
+import { Jobs } from "./models/equations/capital/jobs/jobs.js";
+import { PotentialJobsInIndustrialSector } from "./models/equations/capital/jobs/potentialJobsInIndustrialSector.js";
+import { JobsPerIndustrialCapitalUnit } from "./models/equations/capital/jobs/jobsPerIndustrialCapitalUnit.js";
+import { PotentialJobsInServiceSector } from "./models/equations/capital/jobs/potentialJobsInServiceSector.js";
+import { JobsPerServiceCapitalUnit } from "./models/equations/capital/jobs/jobsPerServiceCapitalUnit.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
     of World3, the social-economic-environmental model created by
@@ -932,50 +937,33 @@ serviceOutput.serviceCapitalOutputRatio = serviceCapitalOutputRatio;
 
 // The Jobs Subsector
 
-var jobs = new Aux("jobs", 73);
-jobs.units = "persons";
-jobs.dependencies = ["potentialJobsInIndustrialSector", "potentialJobsInAgriculturalSector", "potentialJobsInServiceSector"];
-jobs.updateFn = function () {
-  return potentialJobsInIndustrialSector.k + potentialJobsInAgriculturalSector.k + potentialJobsInServiceSector.k;
-};
+const jobs = new Jobs();
 qArray[73] = jobs;
 auxArray.push(jobs);
 
-var potentialJobsInIndustrialSector = new Aux("potentialJobsInIndustrialSector", 74);
-potentialJobsInIndustrialSector.units = "persons";
-potentialJobsInIndustrialSector.dependencies = ["jobsPerIndustrialCapitalUnit"];
-potentialJobsInIndustrialSector.updateFn = function () {
-  return industrialCapital.k * jobsPerIndustrialCapitalUnit.k;
-};
+const potentialJobsInIndustrialSector = new PotentialJobsInIndustrialSector();
 qArray[74] = potentialJobsInIndustrialSector;
 auxArray.push(potentialJobsInIndustrialSector);
+jobs.potentialJobsInIndustrialSector = potentialJobsInIndustrialSector;
+potentialJobsInIndustrialSector.industrialCapital = industrialCapital;
 
-var jobsPerIndustrialCapitalUnit = new Table("jobsPerIndustrialCapitalUnit", 75, [0.00037, 0.00018, 0.00012, 0.00009, 0.00007, 0.00006], 50, 800, 150);
-jobsPerIndustrialCapitalUnit.units = "persons per dollar";
-jobsPerIndustrialCapitalUnit.dependencies = ["industrialOutputPerCapita"];
-jobsPerIndustrialCapitalUnit.updateFn = function () {
-  return industrialOutputPerCapita.k;
-};
+const jobsPerIndustrialCapitalUnit = new JobsPerIndustrialCapitalUnit();
 qArray[75] = jobsPerIndustrialCapitalUnit;
 auxArray.push(jobsPerIndustrialCapitalUnit);
+potentialJobsInIndustrialSector.jobsPerIndustrialCapitalUnit = jobsPerIndustrialCapitalUnit;
+jobsPerIndustrialCapitalUnit.industrialOutputPerCapita = industrialOutputPerCapita;
 
-var potentialJobsInServiceSector = new Aux("potentialJobsInServiceSector", 76);
-potentialJobsInServiceSector.units = "persons";
-potentialJobsInServiceSector.dependencies = ["jobsPerServiceCapitalUnit"];
-potentialJobsInServiceSector.updateFn = function () {
-  return serviceCapital.k * jobsPerServiceCapitalUnit.k;
-};
+const potentialJobsInServiceSector = new PotentialJobsInServiceSector();
 qArray[76] = potentialJobsInServiceSector;
 auxArray.push(potentialJobsInServiceSector);
+jobs.potentialJobsInServiceSector = potentialJobsInServiceSector;
+potentialJobsInServiceSector.serviceCapital = serviceCapital;
 
-var jobsPerServiceCapitalUnit = new Table("jobsPerServiceCapitalUnit", 77, [0.0011, 0.0006, 0.00035, 0.0002, 0.00015, 0.00015], 50, 800, 150);
-jobsPerServiceCapitalUnit.units = "persons per dollar";
-jobsPerServiceCapitalUnit.dependencies = ["serviceOutputPerCapita"];
-jobsPerServiceCapitalUnit.updateFn = function () {
-  return serviceOutputPerCapita.k;
-};
+const jobsPerServiceCapitalUnit = new JobsPerServiceCapitalUnit();
 qArray[77] = jobsPerServiceCapitalUnit;
 auxArray.push(jobsPerServiceCapitalUnit);
+potentialJobsInServiceSector.jobsPerServiceCapitalUnit = jobsPerServiceCapitalUnit;
+jobsPerServiceCapitalUnit.serviceOutputPerCapita = serviceOutputPerCapita;
 
 var potentialJobsInAgriculturalSector = new Aux("potentialJobsInAgriculturalSector", 78);
 potentialJobsInAgriculturalSector.units = "persons";
@@ -985,6 +973,7 @@ potentialJobsInAgriculturalSector.updateFn = function () {
 };
 qArray[78] = potentialJobsInAgriculturalSector;
 auxArray.push(potentialJobsInAgriculturalSector);
+jobs.potentialJobsInAgriculturalSector = potentialJobsInAgriculturalSector;
 
 var jobsPerHectare = new Table("jobsPerHectare", 79, [2, 0.5, 0.4, 0.3, 0.27, 0.24, 0.2, 0.2], 2, 30, 4);
 jobsPerHectare.units = "persons per hectare";
