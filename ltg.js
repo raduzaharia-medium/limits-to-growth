@@ -74,6 +74,9 @@ import { ServiceCapitalInvestmentRate } from "./models/equations/capital/service
 import { ServiceCapital } from "./models/equations/capital/service/serviceCapital.js";
 import { ServiceCapitalDepreciationRate } from "./models/equations/capital/service/serviceCapitalDepreciationRate.js";
 import { AverageLifetimeOfServiceCapital } from "./models/equations/capital/service/averageLifetimeOfServiceCapital.js";
+import { ServiceOutput } from "./models/equations/capital/service/serviceOutput.js";
+import { ServiceOutputPerCapita } from "./models/equations/capital/service/serviceOutputPerCapita.js";
+import { ServiceCapitalOutputRatio } from "./models/equations/capital/service/serviceCapitalOutputRatio.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
     of World3, the social-economic-environmental model created by
@@ -904,40 +907,28 @@ qArray[69] = averageLifetimeOfServiceCapital;
 auxArray.push(averageLifetimeOfServiceCapital);
 serviceCapitalDepreciationRate.averageLifetimeOfServiceCapital = averageLifetimeOfServiceCapital;
 
-var serviceOutput = new Aux("serviceOutput", 70);
-serviceOutput.units = "dollars per year";
-serviceOutput.plotColor = "#4a8a91";
-serviceOutput.plotMin = 0;
-serviceOutput.plotMax = 1.0e13;
-serviceOutput.dependencies = ["capitalUtilizationFraction", "serviceCapitalOutputRatio"];
-serviceOutput.updateFn = function () {
-  return (serviceCapital.k * capitalUtilizationFraction.k) / serviceCapitalOutputRatio.k;
-};
+const serviceOutput = new ServiceOutput();
 qArray[70] = serviceOutput;
 auxArray.push(serviceOutput);
+serviceOutput.serviceCapital = serviceCapital;
 
-var serviceOutputPerCapita = new Aux("serviceOutputPerCapita", 71);
-serviceOutputPerCapita.units = "dollars per person-year";
-serviceOutputPerCapita.dependencies = ["serviceOutput", "population"];
-serviceOutputPerCapita.updateFn = function () {
-  return serviceOutput.k / population.k;
-};
+const serviceOutputPerCapita = new ServiceOutputPerCapita();
 qArray[71] = serviceOutputPerCapita;
 auxArray.push(serviceOutputPerCapita);
 healthServicesAllocationsPerCapita.serviceOutputPerCapita = serviceOutputPerCapita;
 fertilityControlAllocationPerCapita.serviceOutputPerCapita = serviceOutputPerCapita;
 fractionOfIndustrialOutputAllocatedToServicesBefore.serviceOutputPerCapita = serviceOutputPerCapita;
 fractionOfIndustrialOutputAllocatedToServicesAfter.serviceOutputPerCapita = serviceOutputPerCapita;
+serviceOutputPerCapita.population = population;
+serviceOutputPerCapita.serviceOutput = serviceOutput;
 
-var serviceCapitalOutputRatio = new Aux("serviceCapitalOutputRatio", 72);
-serviceCapitalOutputRatio.units = "years";
-serviceCapitalOutputRatio.before = 1;
-serviceCapitalOutputRatio.after = 1;
+const serviceCapitalOutputRatio = new ServiceCapitalOutputRatio(policyYear);
 serviceCapitalOutputRatio.updateFn = function () {
   return clip(serviceCapitalOutputRatio.after, serviceCapitalOutputRatio.before, t, policyYear);
 };
 qArray[72] = serviceCapitalOutputRatio;
 auxArray.push(serviceCapitalOutputRatio);
+serviceOutput.serviceCapitalOutputRatio = serviceCapitalOutputRatio;
 
 // The Jobs Subsector
 
@@ -1042,6 +1033,7 @@ capitalUtilizationFraction.updateFn = function () {
 qArray[83] = capitalUtilizationFraction;
 auxArray.push(capitalUtilizationFraction);
 industrialOutput.capitalUtilizationFraction = capitalUtilizationFraction;
+serviceOutput.capitalUtilizationFraction = capitalUtilizationFraction;
 
 // THE AGRICULTURAL SECTOR
 
