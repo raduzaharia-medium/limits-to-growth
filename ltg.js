@@ -91,6 +91,10 @@ import { CapitalUtilizationFraction } from "./models/equations/capital/jobs/capi
 import { LandFractionCultivated } from "./models/equations/agriculture/landDevelopment/landFractionCultivated.js";
 import { ArableLand } from "./models/equations/agriculture/landDevelopment/arableLand.js";
 import { PotentiallyArableLand } from "./models/equations/agriculture/landDevelopment/potentiallyArableLand.js";
+import { Food } from "./models/equations/agriculture/landDevelopment/food.js";
+import { FoodPerCapita } from "./models/equations/agriculture/landDevelopment/foodPerCapita.js";
+import { IndicatedFoodPerCapita } from "./models/equations/agriculture/landDevelopment/indicatedFoodPerCapita.js";
+import { IndicatedFoodPerCapitaBefore } from "./models/equations/agriculture/landDevelopment/indicatedFoodPerCapitaBefore.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
     of World3, the social-economic-environmental model created by
@@ -1035,47 +1039,30 @@ qArray[86] = potentiallyArableLand;
 levelArray.push(potentiallyArableLand);
 potentiallyArableLand.landDevelopmentRate = landDevelopmentRate;
 
-var food = new Aux("food", 87);
-food.units = "kilograms per year";
-food.dependencies = ["landYield"];
-food.landFractionHarvestedK = 0.7; // dimensionless
-food.processingLossK = 0.1; // dimensionless
-food.updateFn = function () {
-  return landYield.k * arableLand.k * food.landFractionHarvestedK * (1 - food.processingLossK);
-};
+const food = new Food();
 qArray[87] = food;
 auxArray.push(food);
+food.arableLand = arableLand;
 
-var foodPerCapita = new Aux("foodPerCapita", 88);
-foodPerCapita.units = "kilograms per person-year";
-foodPerCapita.dependencies = ["food", "population"];
-foodPerCapita.plotColor = "#a8c3a5";
-foodPerCapita.plotMin = 0;
-foodPerCapita.plotMax = 1000;
-foodPerCapita.updateFn = function () {
-  return food.k / population.k;
-};
+const foodPerCapita = new FoodPerCapita();
 qArray[88] = foodPerCapita;
 auxArray.push(foodPerCapita);
 lifetimeMultiplierFromFood.foodPerCapita = foodPerCapita;
+foodPerCapita.food = food;
+foodPerCapita.population = population;
 
-var indicatedFoodPerCapita = new Aux("indicatedFoodPerCapita", 89);
-indicatedFoodPerCapita.units = "kilograms per person-year";
-indicatedFoodPerCapita.dependencies = ["indicatedFoodPerCapitaBefore", "indicatedFoodPerCapitaAfter"];
+const indicatedFoodPerCapita = new IndicatedFoodPerCapita(policyYear);
 indicatedFoodPerCapita.updateFn = function () {
   return clip(indicatedFoodPerCapitaAfter.k, indicatedFoodPerCapitaBefore.k, t, policyYear);
 };
 qArray[89] = indicatedFoodPerCapita;
 auxArray.push(indicatedFoodPerCapita);
 
-var indicatedFoodPerCapitaBefore = new Table("indicatedFoodPerCapitaBefore", 90, [230, 480, 690, 850, 970, 1070, 1150, 1210, 1250], 0, 1600, 200);
-indicatedFoodPerCapitaBefore.units = "kilograms per person-year";
-indicatedFoodPerCapitaBefore.dependencies = ["industrialOutputPerCapita"];
-indicatedFoodPerCapitaBefore.updateFn = function () {
-  return industrialOutputPerCapita.k;
-};
+const indicatedFoodPerCapitaBefore = new IndicatedFoodPerCapitaBefore();
 qArray[90] = indicatedFoodPerCapitaBefore;
 auxArray.push(indicatedFoodPerCapitaBefore);
+indicatedFoodPerCapita.indicatedFoodPerCapitaBefore = indicatedFoodPerCapitaBefore;
+indicatedFoodPerCapitaBefore.industrialOutputPerCapita = industrialOutputPerCapita;
 
 var indicatedFoodPerCapitaAfter = new Table("indicatedFoodPerCapitaAfter", 91, [230, 480, 690, 850, 970, 1070, 1150, 1210, 1250], 0, 1600, 200);
 indicatedFoodPerCapitaAfter.units = "kilograms per person-year";
@@ -1085,6 +1072,7 @@ indicatedFoodPerCapitaAfter.updateFn = function () {
 };
 qArray[91] = indicatedFoodPerCapitaAfter;
 auxArray.push(indicatedFoodPerCapitaAfter);
+indicatedFoodPerCapita.indicatedFoodPerCapitaAfter = indicatedFoodPerCapitaAfter;
 
 var totalAgriculturalInvestment = new Aux("totalAgriculturalInvestment", 92);
 totalAgriculturalInvestment.units = "dollars per year";
@@ -1253,6 +1241,7 @@ landYield.updateFn = function () {
 };
 qArray[103] = landYield;
 auxArray.push(landYield);
+food.landYield = landYield;
 
 var landYieldFactor = new Aux("landYieldFactor", 104);
 landYieldFactor.units = "dimensionless";
