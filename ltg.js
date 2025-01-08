@@ -145,6 +145,15 @@ import { PersistentPollutionGenerationRate } from "./models/equations/pollution/
 import { PersistentPollutionGenerationFactor } from "./models/equations/pollution/persistentPollutionGenerationFactor.js";
 import { PersistentPollutionGeneratedByIndustrialOutput } from "./models/equations/pollution/persistentPollutionGeneratedByIndustrialOutput.js";
 import { PersistentPollutionGeneratedByAgriculturalOutput } from "./models/equations/pollution/persistentPollutionGeneratedByAgriculturalOutput.js";
+import { PersistentPollution } from "./models/equations/pollution/persistentPollution.js";
+import { PersistenPollutionAppearanceRate } from "./models/equations/pollution/persistenPollutionAppearanceRate.js";
+import { IndexOfPersistentPollution } from "./models/equations/pollution/indexOfPersistentPollution.js";
+import { PersistenPollutionAssimilationRate } from "./models/equations/pollution/persistenPollutionAssimilationRate.js";
+import { AssimilationHalfLifeMultiplier } from "./models/equations/pollution/assimilationHalfLifeMultiplier.js";
+import { AssimilationHalfLife } from "./models/equations/pollution/assimilationHalfLife.js";
+import { FractionOfOutputInAgriculture } from "./models/equations/fractionOfOutputInAgriculture.js";
+import { FractionOfOutputInIndustry } from "./models/equations/fractionOfOutputInIndustry.js";
+import { FractionOfOutputInServices } from "./models/equations/fractionOfOutputInServices.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
     of World3, the social-economic-environmental model created by
@@ -1457,92 +1466,65 @@ persistentPollutionGeneratedByAgriculturalOutput.agriculturalInputsPerHectare = 
 persistentPollutionGeneratedByAgriculturalOutput.arableLand = arableLand;
 
 const persistentPollutionTransmissionDelayK = 20; // years, used in eqn 141
-var persistenPollutionAppearanceRate = new Delay3("persistenPollutionAppearanceRate", 141, persistentPollutionTransmissionDelayK);
-persistenPollutionAppearanceRate.units = "pollution units per year";
-persistenPollutionAppearanceRate.initFn = function () {
-  return persistentPollutionGenerationRate;
-};
-persistenPollutionAppearanceRate.qType = "Rate";
+const persistenPollutionAppearanceRate = new PersistenPollutionAppearanceRate(persistentPollutionTransmissionDelayK);
 qArray[141] = persistenPollutionAppearanceRate;
 rateArray.push(persistenPollutionAppearanceRate);
+persistenPollutionAppearanceRate.persistentPollutionGenerationRate = persistentPollutionGenerationRate;
 
-var persistentPollution = new Level("persistentPollution", 142, 2.5e7, startTime, qArray, levelArray);
-persistentPollution.units = "pollution units";
+const persistentPollution = new PersistentPollution(startTime);
 persistentPollution.updateFn = function () {
   return persistentPollution.j + dt * (persistenPollutionAppearanceRate.j - persistenPollutionAssimilationRate.j);
 };
 qArray[142] = persistentPollution;
 levelArray.push(persistentPollution);
+persistentPollution.persistenPollutionAppearanceRate = persistenPollutionAppearanceRate;
 
-var indexOfPersistentPollution = new Aux("indexOfPersistentPollution", 143);
-indexOfPersistentPollution.units = "dimensionless";
-indexOfPersistentPollution.pollutionValueIn1970 = 1.36e8; // pollution units, used in eqn 143
-indexOfPersistentPollution.plotColor = "#a25563";
-indexOfPersistentPollution.plotMin = 0;
-indexOfPersistentPollution.plotMax = 32;
-indexOfPersistentPollution.updateFn = function () {
-  return persistentPollution.k / indexOfPersistentPollution.pollutionValueIn1970;
-};
+const indexOfPersistentPollution = new IndexOfPersistentPollution();
 qArray[143] = indexOfPersistentPollution;
 auxArray.push(indexOfPersistentPollution);
 lifetimeMultiplierFromPollution.indexOfPersistentPollution = indexOfPersistentPollution;
 landFertilityDegradationRate.indexOfPersistentPollution = indexOfPersistentPollution;
+indexOfPersistentPollution.persistentPollution = persistentPollution;
 
-var persistenPollutionAssimilationRate = new Rate("persistenPollutionAssimilationRate", 144);
-persistenPollutionAssimilationRate.units = "pollution units per year";
-persistenPollutionAssimilationRate.updateFn = function () {
-  return persistentPollution.k / (assimilationHalfLife.k * 1.4);
-};
+const persistenPollutionAssimilationRate = new PersistenPollutionAssimilationRate();
 qArray[144] = persistenPollutionAssimilationRate;
 rateArray.push(persistenPollutionAssimilationRate);
+persistentPollution.persistenPollutionAssimilationRate = persistenPollutionAssimilationRate;
+persistenPollutionAssimilationRate.persistentPollution = persistentPollution;
 
-var assimilationHalfLifeMultiplier = new Table("assimilationHalfLifeMultiplier", 145, [1, 11, 21, 31, 41], 1, 1001, 250);
-assimilationHalfLifeMultiplier.units = "dimensionless";
-assimilationHalfLifeMultiplier.dependencies = ["indexOfPersistentPollution"];
-assimilationHalfLifeMultiplier.updateFn = function () {
-  return indexOfPersistentPollution.k;
-};
+const assimilationHalfLifeMultiplier = new AssimilationHalfLifeMultiplier();
 qArray[145] = assimilationHalfLifeMultiplier;
 auxArray.push(assimilationHalfLifeMultiplier);
+assimilationHalfLifeMultiplier.indexOfPersistentPollution = indexOfPersistentPollution;
 
-var assimilationHalfLife = new Aux("assimilationHalfLife", 146);
-assimilationHalfLife.units = "years";
-assimilationHalfLife.valueIn1970 = 1.5; // years
-assimilationHalfLife.dependencies = ["assimilationHalfLifeMultiplier"];
-assimilationHalfLife.updateFn = function () {
-  return assimilationHalfLifeMultiplier.k * assimilationHalfLife.valueIn1970;
-};
+const assimilationHalfLife = new AssimilationHalfLife();
 qArray[146] = assimilationHalfLife;
 auxArray.push(assimilationHalfLife);
+persistenPollutionAssimilationRate.assimilationHalfLife = assimilationHalfLife;
+assimilationHalfLife.assimilationHalfLifeMultiplier = assimilationHalfLifeMultiplier;
 
 // SUPPLEMENTARY EQUATIONS
 
-var fractionOfOutputInAgriculture = new Aux("fractionOfOutputInAgriculture", 147);
-fractionOfOutputInAgriculture.units = "dimensionless";
-fractionOfOutputInAgriculture.dependencies = ["food", "serviceOutput", "industrialOutput"];
-fractionOfOutputInAgriculture.updateFn = function () {
-  return (0.22 * food.k) / (0.22 * food.k + serviceOutput.k + industrialOutput.k);
-};
+const fractionOfOutputInAgriculture = new FractionOfOutputInAgriculture();
 qArray[147] = fractionOfOutputInAgriculture;
 auxArray.push(fractionOfOutputInAgriculture);
+fractionOfOutputInAgriculture.food = food;
+fractionOfOutputInAgriculture.serviceOutput = serviceOutput;
+fractionOfOutputInAgriculture.industrialOutput = industrialOutput;
 
-var fractionOfOutputInIndustry = new Aux("fractionOfOutputInIndustry", 148);
-fractionOfOutputInIndustry.units = "dimensionless";
-fractionOfOutputInIndustry.dependencies = ["food", "serviceOutput", "industrialOutput"];
-fractionOfOutputInIndustry.updateFn = function () {
-  return industrialOutput.k / (0.22 * food.k + serviceOutput.k + industrialOutput.k);
-};
+const fractionOfOutputInIndustry = new FractionOfOutputInIndustry();
 qArray[148] = fractionOfOutputInIndustry;
 auxArray.push(fractionOfOutputInIndustry);
+fractionOfOutputInIndustry.food = food;
+fractionOfOutputInIndustry.industrialOutput = industrialOutput;
+fractionOfOutputInIndustry.serviceOutput = serviceOutput;
 
-var fractionOfOutputInServices = new Aux("fractionOfOutputInServices", 149);
-fractionOfOutputInServices.units = "dimensionless";
-fractionOfOutputInServices.dependencies = ["food", "serviceOutput", "industrialOutput"];
-fractionOfOutputInServices.updateFn = function () {
-  return serviceOutput.k / (0.22 * food.k + serviceOutput.k + industrialOutput.k);
-};
+const fractionOfOutputInServices = new FractionOfOutputInServices();
 qArray[149] = fractionOfOutputInServices;
 auxArray.push(fractionOfOutputInServices);
+fractionOfOutputInServices.food = food;
+fractionOfOutputInServices.industrialOutput = industrialOutput;
+fractionOfOutputInServices.serviceOutput = serviceOutput;
 
 // ENTRY POINT: called by body.onload
 
