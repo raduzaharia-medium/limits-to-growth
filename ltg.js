@@ -116,6 +116,10 @@ import { FractionOfInputsAllocatedToLandDevelopment } from "./models/equations/a
 import { MarginalProductivityOfLandDevelopment } from "./models/equations/agriculture/land/development/marginalProductivityOfLandDevelopment.js";
 import { MarginalProductivityOfAgriculturalInputs } from "./models/equations/agriculture/marginalProductivityOfAgriculturalInputs.js";
 import { MarginalLandYieldMultiplierFromCapital } from "./models/equations/agriculture/land/yield/marginalLandYieldMultiplierFromCapital.js";
+import { AverageLifeOfLand } from "./models/equations/agriculture/land/life/averageLifeOfLand.js";
+import { LandLifeMultiplierFromYield } from "./models/equations/agriculture/land/life/landLifeMultiplierFromYield.js";
+import { LandLifeMultiplierFromYieldBefore } from "./models/equations/agriculture/land/life/landLifeMultiplierFromYieldBefore.js";
+import { LandLifeMultiplierFromYieldAfter } from "./models/equations/agriculture/land/life/landLifeMultiplierFromYieldAfter.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
     of World3, the social-economic-environmental model created by
@@ -1231,51 +1235,30 @@ marginalLandYieldMultiplierFromCapital.agriculturalInputsPerHectare = agricultur
 
 // Loop 3: Land Erosion and Urban-Industrial Use
 
-var averageLifeOfLand = new Aux("averageLifeOfLand", 112);
-averageLifeOfLand.units = "years";
-averageLifeOfLand.normal = 6000; // years
-averageLifeOfLand.dependencies = ["landLifeMultiplierFromYield"];
-averageLifeOfLand.updateFn = function () {
-  return averageLifeOfLand.normal * landLifeMultiplierFromYield.k;
-};
+const averageLifeOfLand = new AverageLifeOfLand();
 qArray[112] = averageLifeOfLand;
 auxArray.push(averageLifeOfLand);
 
-var landLifeMultiplierFromYield = new Aux("landLifeMultiplierFromYield", 113);
-landLifeMultiplierFromYield.units = "dimensionless";
-landLifeMultiplierFromYield.dependencies = ["landLifeMultiplierFromYieldBefore", "landLifeMultiplierFromYieldAfter"];
+const landLifeMultiplierFromYield = new LandLifeMultiplierFromYield();
 landLifeMultiplierFromYield.updateFn = function () {
   return clip(landLifeMultiplierFromYieldAfter.k, landLifeMultiplierFromYieldBefore.k, t, policyYear);
 };
 qArray[113] = landLifeMultiplierFromYield;
 auxArray.push(landLifeMultiplierFromYield);
+averageLifeOfLand.landLifeMultiplierFromYield = landLifeMultiplierFromYield;
 
-var inherentLandFertilityK = 600; // kilograms per hectare-year, used in eqns 114, 115 and 124
-
-var landLifeMultiplierFromYieldBefore = new Table(
-  "landLifeMultiplierFromYieldBefore",
-  114,
-  [1.2, 1, 0.63, 0.36, 0.16, 0.055, 0.04, 0.025, 0.015, 0.01],
-  0,
-  9,
-  1
-);
-landLifeMultiplierFromYieldBefore.units = "dimensionless";
-landLifeMultiplierFromYieldBefore.dependencies = ["landYield"];
-landLifeMultiplierFromYieldBefore.updateFn = function () {
-  return landYield.k / inherentLandFertilityK;
-};
+const inherentLandFertilityK = 600; // kilograms per hectare-year, used in eqns 114, 115 and 124
+const landLifeMultiplierFromYieldBefore = new LandLifeMultiplierFromYieldBefore(inherentLandFertilityK);
 qArray[114] = landLifeMultiplierFromYieldBefore;
 auxArray.push(landLifeMultiplierFromYieldBefore);
+landLifeMultiplierFromYield.landLifeMultiplierFromYieldBefore = landLifeMultiplierFromYieldBefore;
+landLifeMultiplierFromYieldBefore.landYield = landYield;
 
-var landLifeMultiplierFromYieldAfter = new Table("landLifeMultiplierFromYieldAfter", 115, [1.2, 1, 0.63, 0.36, 0.16, 0.055, 0.04, 0.025, 0.015, 0.01], 0, 9, 1);
-landLifeMultiplierFromYieldAfter.units = "dimensionless";
-landLifeMultiplierFromYieldAfter.dependencies = ["landYield"];
-landLifeMultiplierFromYieldAfter.updateFn = function () {
-  return landYield.k / inherentLandFertilityK;
-};
+const landLifeMultiplierFromYieldAfter = new LandLifeMultiplierFromYieldAfter(inherentLandFertilityK);
 qArray[115] = landLifeMultiplierFromYieldAfter;
 auxArray.push(landLifeMultiplierFromYieldAfter);
+landLifeMultiplierFromYield.landLifeMultiplierFromYieldAfter = landLifeMultiplierFromYieldAfter;
+landLifeMultiplierFromYieldAfter.landYield = landYield;
 
 var landErosionRate = new Rate("landErosionRate", 116);
 landErosionRate.units = "hectares per year";
