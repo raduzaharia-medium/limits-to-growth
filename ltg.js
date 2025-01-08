@@ -91,10 +91,15 @@ import { CapitalUtilizationFraction } from "./models/equations/capital/jobs/capi
 import { LandFractionCultivated } from "./models/equations/agriculture/landDevelopment/landFractionCultivated.js";
 import { ArableLand } from "./models/equations/agriculture/landDevelopment/arableLand.js";
 import { PotentiallyArableLand } from "./models/equations/agriculture/landDevelopment/potentiallyArableLand.js";
-import { Food } from "./models/equations/agriculture/landDevelopment/food.js";
-import { FoodPerCapita } from "./models/equations/agriculture/landDevelopment/foodPerCapita.js";
-import { IndicatedFoodPerCapita } from "./models/equations/agriculture/landDevelopment/indicatedFoodPerCapita.js";
-import { IndicatedFoodPerCapitaBefore } from "./models/equations/agriculture/landDevelopment/indicatedFoodPerCapitaBefore.js";
+import { Food } from "./models/equations/agriculture/food/food.js";
+import { FoodPerCapita } from "./models/equations/agriculture/food/foodPerCapita.js";
+import { IndicatedFoodPerCapita } from "./models/equations/agriculture/food/indicatedFoodPerCapita.js";
+import { IndicatedFoodPerCapitaBefore } from "./models/equations/agriculture/food/indicatedFoodPerCapitaBefore.js";
+import { IndicatedFoodPerCapitaAfter } from "./models/equations/agriculture/food/indicatedFoodPerCapitaAfter.js";
+import { TotalAgriculturalInvestment } from "./models/equations/agriculture/totalAgriculturalInvestment.js";
+import { FractionOfIndustrialOutputAllocatedToAgriculture } from "./models/equations/agriculture/fractionOfIndustrialOutputAllocatedToAgriculture.js";
+import { FractionOfIndustrialOutputAllocatedToAgricultureBefore } from "./models/equations/agriculture/fractionOfIndustrialOutputAllocatedToAgricultureBefore.js";
+import { FractionOfIndustrialOutputAllocatedToAgricultureAfter } from "./models/equations/agriculture/fractionOfIndustrialOutputAllocatedToAgricultureAfter.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
     of World3, the social-economic-environmental model created by
@@ -1064,69 +1069,40 @@ auxArray.push(indicatedFoodPerCapitaBefore);
 indicatedFoodPerCapita.indicatedFoodPerCapitaBefore = indicatedFoodPerCapitaBefore;
 indicatedFoodPerCapitaBefore.industrialOutputPerCapita = industrialOutputPerCapita;
 
-var indicatedFoodPerCapitaAfter = new Table("indicatedFoodPerCapitaAfter", 91, [230, 480, 690, 850, 970, 1070, 1150, 1210, 1250], 0, 1600, 200);
-indicatedFoodPerCapitaAfter.units = "kilograms per person-year";
-indicatedFoodPerCapitaAfter.dependencies = ["industrialOutputPerCapita"];
-indicatedFoodPerCapitaAfter.updateFn = function () {
-  return industrialOutputPerCapita.k;
-};
+const indicatedFoodPerCapitaAfter = new IndicatedFoodPerCapitaAfter();
 qArray[91] = indicatedFoodPerCapitaAfter;
 auxArray.push(indicatedFoodPerCapitaAfter);
 indicatedFoodPerCapita.indicatedFoodPerCapitaAfter = indicatedFoodPerCapitaAfter;
+indicatedFoodPerCapitaAfter.industrialOutputPerCapita = industrialOutputPerCapita;
 
-var totalAgriculturalInvestment = new Aux("totalAgriculturalInvestment", 92);
-totalAgriculturalInvestment.units = "dollars per year";
-totalAgriculturalInvestment.dependencies = ["industrialOutput", "fractionOfIndustrialOutputAllocatedToAgriculture"];
-totalAgriculturalInvestment.updateFn = function () {
-  return industrialOutput.k * fractionOfIndustrialOutputAllocatedToAgriculture.k;
-};
+const totalAgriculturalInvestment = new TotalAgriculturalInvestment();
 qArray[92] = totalAgriculturalInvestment;
 auxArray.push(totalAgriculturalInvestment);
+totalAgriculturalInvestment.industrialOutput = industrialOutput;
 
-var fractionOfIndustrialOutputAllocatedToAgriculture = new Aux("fractionOfIndustrialOutputAllocatedToAgriculture", 93);
-fractionOfIndustrialOutputAllocatedToAgriculture.units = "dimensionless";
-fractionOfIndustrialOutputAllocatedToAgriculture.dependencies = [
-  "fractionOfIndustrialOutputAllocatedToAgricultureBefore",
-  "fractionOfIndustrialOutputAllocatedToAgricultureAfter",
-];
+const fractionOfIndustrialOutputAllocatedToAgriculture = new FractionOfIndustrialOutputAllocatedToAgriculture(policyYear);
 fractionOfIndustrialOutputAllocatedToAgriculture.updateFn = function () {
   return clip(fractionOfIndustrialOutputAllocatedToAgricultureAfter.k, fractionOfIndustrialOutputAllocatedToAgricultureBefore.k, t, policyYear);
 };
 qArray[93] = fractionOfIndustrialOutputAllocatedToAgriculture;
 auxArray.push(fractionOfIndustrialOutputAllocatedToAgriculture);
 fractionOfIndustrialOutputAllocatedToIndustry._fractionOfIndustrialOutputAllocatedToAgriculture = fractionOfIndustrialOutputAllocatedToAgriculture;
+totalAgriculturalInvestment.fractionOfIndustrialOutputAllocatedToAgriculture = fractionOfIndustrialOutputAllocatedToAgriculture;
 
-var fractionOfIndustrialOutputAllocatedToAgricultureBefore = new Table(
-  "fractionOfIndustrialOutputAllocatedToAgricultureBefore",
-  94,
-  [0.4, 0.2, 0.1, 0.025, 0, 0],
-  0,
-  2.5,
-  0.5
-);
-fractionOfIndustrialOutputAllocatedToAgricultureBefore.units = "dimensionless";
-fractionOfIndustrialOutputAllocatedToAgricultureBefore.dependencies = ["foodPerCapita", "indicatedFoodPerCapita"];
-fractionOfIndustrialOutputAllocatedToAgricultureBefore.updateFn = function () {
-  return foodPerCapita.k / indicatedFoodPerCapita.k;
-};
+const fractionOfIndustrialOutputAllocatedToAgricultureBefore = new FractionOfIndustrialOutputAllocatedToAgricultureBefore();
 qArray[94] = fractionOfIndustrialOutputAllocatedToAgricultureBefore;
 auxArray.push(fractionOfIndustrialOutputAllocatedToAgricultureBefore);
+fractionOfIndustrialOutputAllocatedToAgriculture.fractionOfIndustrialOutputAllocatedToAgricultureBefore =
+  fractionOfIndustrialOutputAllocatedToAgricultureBefore;
+fractionOfIndustrialOutputAllocatedToAgricultureBefore.foodPerCapita = foodPerCapita;
+fractionOfIndustrialOutputAllocatedToAgricultureBefore.indicatedFoodPerCapita = indicatedFoodPerCapita;
 
-var fractionOfIndustrialOutputAllocatedToAgricultureAfter = new Table(
-  "fractionOfIndustrialOutputAllocatedToAgricultureAfter",
-  95,
-  [0.4, 0.2, 0.1, 0.025, 0, 0],
-  0,
-  2.5,
-  0.5
-);
-fractionOfIndustrialOutputAllocatedToAgricultureAfter.units = "dimensionless";
-fractionOfIndustrialOutputAllocatedToAgricultureAfter.dependencies = ["foodPerCapita", "indicatedFoodPerCapita"];
-fractionOfIndustrialOutputAllocatedToAgricultureAfter.updateFn = function () {
-  return foodPerCapita.k / indicatedFoodPerCapita.k;
-};
+const fractionOfIndustrialOutputAllocatedToAgricultureAfter = new FractionOfIndustrialOutputAllocatedToAgricultureAfter();
 qArray[95] = fractionOfIndustrialOutputAllocatedToAgricultureAfter;
 auxArray.push(fractionOfIndustrialOutputAllocatedToAgricultureAfter);
+fractionOfIndustrialOutputAllocatedToAgriculture.fractionOfIndustrialOutputAllocatedToAgricultureAfter = fractionOfIndustrialOutputAllocatedToAgricultureAfter;
+fractionOfIndustrialOutputAllocatedToAgricultureAfter.foodPerCapita = foodPerCapita;
+fractionOfIndustrialOutputAllocatedToAgricultureAfter.indicatedFoodPerCapita = indicatedFoodPerCapita;
 
 var landDevelopmentRate = new Rate("landDevelopmentRate", 96);
 landDevelopmentRate.units = "hectares per year";
