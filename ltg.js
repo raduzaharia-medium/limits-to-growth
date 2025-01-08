@@ -137,6 +137,10 @@ import { NonRenewableResources } from "./models/equations/nonRenewables/nonRenew
 import { NonRenewableResourceUsageRate } from "./models/equations/nonRenewables/nonRenewableResourceUsageRate.js";
 import { NonRenewableResourceUsageFactor } from "./models/equations/nonRenewables/nonRenewableResourceUsageFactor.js";
 import { PerCapitaResourceUsageMultiplier } from "./models/equations/perCapitaResourceUsageMultiplier.js";
+import { NonRenewableResourceFractionRemaining } from "./models/equations/nonRenewables/nonRenewableResourceFractionRemaining.js";
+import { FractionOfCapitalAllocatedToObtainingResources } from "./models/equations/capital/fractionOfCapitalAllocatedToObtainingResources.js";
+import { FractionOfCapitalAllocatedToObtainingResourcesBefore } from "./models/equations/capital/fractionOfCapitalAllocatedToObtainingResourcesBefore.js";
+import { FractionOfCapitalAllocatedToObtainingResourcesAfter } from "./models/equations/capital/fractionOfCapitalAllocatedToObtainingResourcesAfter.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
     of World3, the social-economic-environmental model created by
@@ -1389,29 +1393,18 @@ qArray[131] = nonrenewableResourceUsageFactor;
 auxArray.push(nonrenewableResourceUsageFactor);
 nonrenewableResourceUsageRate.nonRenewableResourceUsageFactor = nonrenewableResourceUsageFactor;
 
-const perCapitaResourceUsageMultiplier = new PerCapitaResourceUsageMultiplier(nonrenewableResourcesInitialK);
+const perCapitaResourceUsageMultiplier = new PerCapitaResourceUsageMultiplier();
 qArray[132] = perCapitaResourceUsageMultiplier;
 auxArray.push(perCapitaResourceUsageMultiplier);
 nonrenewableResourceUsageRate.perCapitaResourceUsageMultiplier = perCapitaResourceUsageMultiplier;
 perCapitaResourceUsageMultiplier.industrialOutputPerCapita = industrialOutputPerCapita;
 
-var nonrenewableResourceFractionRemaining = new Aux("nonrenewableResourceFractionRemaining", 133);
-nonrenewableResourceFractionRemaining.units = "dimensionless";
-nonrenewableResourceFractionRemaining.plotColor = "#b0875e";
-nonrenewableResourceFractionRemaining.plotMin = 0.0;
-nonrenewableResourceFractionRemaining.plotMax = 1.0;
-nonrenewableResourceFractionRemaining.updateFn = function () {
-  return nonrenewableResources.k / nonrenewableResourcesInitialK;
-};
+const nonrenewableResourceFractionRemaining = new NonRenewableResourceFractionRemaining(nonrenewableResourcesInitialK);
 qArray[133] = nonrenewableResourceFractionRemaining;
 auxArray.push(nonrenewableResourceFractionRemaining);
+nonrenewableResourceFractionRemaining.nonRenewableResources = nonrenewableResources;
 
-var fractionOfCapitalAllocatedToObtainingResources = new Aux("fractionOfCapitalAllocatedToObtainingResources", 134);
-fractionOfCapitalAllocatedToObtainingResources.units = "dimensionless";
-fractionOfCapitalAllocatedToObtainingResources.dependencies = [
-  "fractionOfCapitalAllocatedToObtainingResourcesBefore",
-  "fractionOfCapitalAllocatedToObtainingResourcesAfter",
-];
+const fractionOfCapitalAllocatedToObtainingResources = new FractionOfCapitalAllocatedToObtainingResources(policyYear);
 fractionOfCapitalAllocatedToObtainingResources.updateFn = function () {
   return clip(fractionOfCapitalAllocatedToObtainingResourcesAfter.k, fractionOfCapitalAllocatedToObtainingResourcesBefore.k, t, policyYear);
 };
@@ -1419,37 +1412,17 @@ qArray[134] = fractionOfCapitalAllocatedToObtainingResources;
 auxArray.push(fractionOfCapitalAllocatedToObtainingResources);
 industrialOutput.fractionOfCapitalAllocatedToObtainingResources = fractionOfCapitalAllocatedToObtainingResources;
 
-var fractionOfCapitalAllocatedToObtainingResourcesBefore = new Table(
-  "fractionOfCapitalAllocatedToObtainingResourcesBefore",
-  135,
-  [1, 0.9, 0.7, 0.5, 0.2, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05],
-  0,
-  1,
-  0.1
-);
-fractionOfCapitalAllocatedToObtainingResourcesBefore.units = "dimensionless";
-fractionOfCapitalAllocatedToObtainingResourcesBefore.dependencies = ["nonrenewableResourceFractionRemaining"];
-fractionOfCapitalAllocatedToObtainingResourcesBefore.updateFn = function () {
-  return nonrenewableResourceFractionRemaining.k;
-};
+const fractionOfCapitalAllocatedToObtainingResourcesBefore = new FractionOfCapitalAllocatedToObtainingResourcesBefore();
 qArray[135] = fractionOfCapitalAllocatedToObtainingResourcesBefore;
 auxArray.push(fractionOfCapitalAllocatedToObtainingResourcesBefore);
+fractionOfCapitalAllocatedToObtainingResources.fractionOfCapitalAllocatedToObtainingResourcesBefore = fractionOfCapitalAllocatedToObtainingResourcesBefore;
+fractionOfCapitalAllocatedToObtainingResourcesBefore.nonRenewableResourceFractionRemaining = nonrenewableResourceFractionRemaining;
 
-var fractionOfCapitalAllocatedToObtainingResourcesAfter = new Table(
-  "fractionOfCapitalAllocatedToObtainingResourcesAfter",
-  136,
-  [1, 0.9, 0.7, 0.5, 0.2, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05],
-  0,
-  1,
-  0.1
-);
-fractionOfCapitalAllocatedToObtainingResourcesAfter.units = "dimensionless";
-fractionOfCapitalAllocatedToObtainingResourcesAfter.dependencies = ["nonrenewableResourceFractionRemaining"];
-fractionOfCapitalAllocatedToObtainingResourcesAfter.updateFn = function () {
-  return nonrenewableResourceFractionRemaining.k;
-};
+const fractionOfCapitalAllocatedToObtainingResourcesAfter = new FractionOfCapitalAllocatedToObtainingResourcesAfter();
 qArray[136] = fractionOfCapitalAllocatedToObtainingResourcesAfter;
 auxArray.push(fractionOfCapitalAllocatedToObtainingResourcesAfter);
+fractionOfCapitalAllocatedToObtainingResources.fractionOfCapitalAllocatedToObtainingResourcesAfter = fractionOfCapitalAllocatedToObtainingResourcesAfter;
+fractionOfCapitalAllocatedToObtainingResourcesAfter.nonRenewableResourceFractionRemaining = nonrenewableResourceFractionRemaining;
 
 // PERSISTENT POLLUTION SECTOR
 
