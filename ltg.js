@@ -131,6 +131,8 @@ import { LandFertilityDegradation } from "./models/equations/agriculture/land/fe
 import { LandFertilityRegeneration } from "./models/equations/agriculture/land/fertility/landFertilityRegeneration.js";
 import { LandFertilityRegenerationTime } from "./models/equations/agriculture/land/fertility/landFertilityRegenerationTime.js";
 import { FractionOfInputsAllocatedToLandMaintenance } from "./models/equations/agriculture/land/development/fractionOfInputsAllocatedToLandMaintenance.js";
+import { FoodRatio } from "./models/equations/agriculture/food/foodRatio.js";
+import { PerceivedFoodRatio } from "./models/equations/agriculture/food/perceivedFoodRatio.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
     of World3, the social-economic-environmental model created by
@@ -1347,50 +1349,17 @@ auxArray.push(fractionOfInputsAllocatedToLandMaintenance);
 agriculturalInputsPerHectare.fractionOfInputsAllocatedToLandMaintenance = fractionOfInputsAllocatedToLandMaintenance;
 landFertilityRegenerationTime.fractionOfInputsAllocatedToLandMaintenance = fractionOfInputsAllocatedToLandMaintenance;
 
-var foodRatio = new Aux("foodRatio", 127);
-foodRatio.units = "dimensionless";
-foodRatio.dependencies = ["foodPerCapita"];
-foodRatio.updateFn = function () {
-  return foodPerCapita.k / subsistenceFoodPerCapitaK;
-};
+const foodRatio = new FoodRatio(subsistenceFoodPerCapitaK);
 qArray[127] = foodRatio;
 auxArray.push(foodRatio);
+foodRatio.foodPerCapita = foodPerCapita;
 
-var foodShortagePerceptionDelayK = 2; // years, used in eqn 128
-
-var perceivedFoodRatio = new Smooth("perceivedFoodRatio", 128, foodShortagePerceptionDelayK);
-perceivedFoodRatio.units = "dimensionless";
-perceivedFoodRatio.dependencies = []; // "foodRatio" removed to break cycle
-perceivedFoodRatio.initFn = function () {
-  return foodRatio;
-};
-perceivedFoodRatio.initVal = 1.0;
+const foodShortagePerceptionDelayK = 2; // years, used in eqn 128
+const perceivedFoodRatio = new PerceivedFoodRatio(foodShortagePerceptionDelayK);
 qArray[128] = perceivedFoodRatio;
 auxArray.push(perceivedFoodRatio);
 fractionOfInputsAllocatedToLandMaintenance.perceivedFoodRatio = perceivedFoodRatio;
-
-/*
-var perceivedFoodRatio = new Smooth("perceivedFoodRatio", 128, foodShortagePerceptionDelayK);
-  perceivedFoodRatio.units = "dimensionless";
-  perceivedFoodRatio.dependencies = [];   // "foodRatio" removed to break cycle
-  perceivedFoodRatio.initFn = function() { return foodRatio; }
-  perceivedFoodRatio.init = function() {
-    perceivedFoodRatio.theInput = perceivedFoodRatio.initFn;
-    perceivedFoodRatio.j = perceivedFoodRatio.k = 1.0;    
-  }
-  perceivedFoodRatio.update = function() {
-    if (perceivedFoodRatio.firstCall) {
-      perceivedFoodRatio.firstCall = false;
-      return perceivedFoodRatio.k;
-    }
-    else {
-      perceivedFoodRatio.k = perceivedFoodRatio.j + dt * (perceivedFoodRatio.theInput.j - perceivedFoodRatio.j) / perceivedFoodRatio.del;
-      return perceivedFoodRatio.k;
-    }
-  }
-    qArray[128] = perceivedFoodRatio;
-    auxArray.push(perceivedFoodRatio);
-*/
+perceivedFoodRatio.foodRatio = foodRatio;
 
 // NONRENEWABLE RESOURCE SECTOR
 
