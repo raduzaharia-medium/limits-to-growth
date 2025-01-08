@@ -1,4 +1,4 @@
-import { clip } from "../../../tools.js";
+import { clip } from "../../../../tools.js";
 import { Aux } from "../../aux.js";
 
 export class LifetimeMultiplierFromHealthServices extends Aux {

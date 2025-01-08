@@ -1,4 +1,4 @@
-import { Equation } from "./equation.js";
+import { Equation } from "../equation.js";
 
 export class Aux extends Equation {
   constructor(qName, qNumber) {

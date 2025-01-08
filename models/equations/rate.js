@@ -1,4 +1,4 @@
-import { Equation } from "./equation.js";
+import { Equation } from "../equation.js";
 
 export class Rate extends Equation {
   constructor(qName, qNumber) {

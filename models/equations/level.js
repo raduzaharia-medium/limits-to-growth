@@ -1,4 +1,4 @@
-import { Equation } from "./equation.js";
+import { Equation } from "../equation.js";
 
 export class Level extends Equation {
   constructor(qName, qNumber, initVal, startTime) {
