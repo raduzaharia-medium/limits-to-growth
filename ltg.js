@@ -120,6 +120,13 @@ import { AverageLifeOfLand } from "./models/equations/agriculture/land/life/aver
 import { LandLifeMultiplierFromYield } from "./models/equations/agriculture/land/life/landLifeMultiplierFromYield.js";
 import { LandLifeMultiplierFromYieldBefore } from "./models/equations/agriculture/land/life/landLifeMultiplierFromYieldBefore.js";
 import { LandLifeMultiplierFromYieldAfter } from "./models/equations/agriculture/land/life/landLifeMultiplierFromYieldAfter.js";
+import { LandErosionRate } from "./models/equations/agriculture/land/life/landErosionRate.js";
+import { UrbanIndustrialLandPerCapita } from "./models/equations/agriculture/land/urbanIndustrialLandPerCapita.js";
+import { UrbanIndustrialLandRequired } from "./models/equations/agriculture/land/urbanIndustrialLandRequired.js";
+import { LandRemovalForUrbanIndustrialUse } from "./models/equations/agriculture/land/landRemovalForUrbanIndustrialUse.js";
+import { UrbanIndustrialLand } from "./models/equations/agriculture/land/urbanIndustrialLand.js";
+import { LandFertility } from "./models/equations/agriculture/land/fertility/landFertility.js";
+import { LandFertilityDegradationRate } from "./models/equations/agriculture/land/fertility/landFertilityDegradationRate.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
     of World3, the social-economic-environmental model created by
@@ -1260,59 +1267,42 @@ auxArray.push(landLifeMultiplierFromYieldAfter);
 landLifeMultiplierFromYield.landLifeMultiplierFromYieldAfter = landLifeMultiplierFromYieldAfter;
 landLifeMultiplierFromYieldAfter.landYield = landYield;
 
-var landErosionRate = new Rate("landErosionRate", 116);
-landErosionRate.units = "hectares per year";
-landErosionRate.updateFn = function () {
-  return arableLand.k / averageLifeOfLand.k;
-};
+const landErosionRate = new LandErosionRate();
 qArray[116] = landErosionRate;
 rateArray.push(landErosionRate);
 arableLand.landErosionRate = landErosionRate;
+landErosionRate.arableLand = arableLand;
+landErosionRate.averageLifeOfLand = averageLifeOfLand;
 
-// 2016-08-09: Neil S. Grant reported an error in the table of values
-// for urbanIndustrialLandPerCapita. The third element of the array
-// should be 0.015, not 0.15. Corrected.
-
-var urbanIndustrialLandPerCapita = new Table("urbanIndustrialLandPerCapita", 117, [0.005, 0.008, 0.015, 0.025, 0.04, 0.055, 0.07, 0.08, 0.09], 0, 1600, 200);
-urbanIndustrialLandPerCapita.units = "hectares per person";
-urbanIndustrialLandPerCapita.dependencies = ["industrialOutputPerCapita"];
-urbanIndustrialLandPerCapita.updateFn = function () {
-  return industrialOutputPerCapita.k;
-};
+const urbanIndustrialLandPerCapita = new UrbanIndustrialLandPerCapita();
 qArray[117] = urbanIndustrialLandPerCapita;
 auxArray.push(urbanIndustrialLandPerCapita);
+urbanIndustrialLandPerCapita.industrialOutputPerCapita = industrialOutputPerCapita;
 
-var urbanIndustrialLandRequired = new Aux("urbanIndustrialLandRequired", 118);
-urbanIndustrialLandRequired.units = "hectares";
-urbanIndustrialLandRequired.dependencies = ["urbanIndustrialLandPerCapita", "population"];
-urbanIndustrialLandRequired.updateFn = function () {
-  return urbanIndustrialLandPerCapita.k * population.k;
-};
+const urbanIndustrialLandRequired = new UrbanIndustrialLandRequired();
 qArray[118] = urbanIndustrialLandRequired;
 auxArray.push(urbanIndustrialLandRequired);
+urbanIndustrialLandRequired.population = population;
+urbanIndustrialLandRequired.urbanIndustrialLandPerCapita = urbanIndustrialLandPerCapita;
 
-var landRemovalForUrbanIndustrialUse = new Rate("landRemovalForUrbanIndustrialUse", 119);
-landRemovalForUrbanIndustrialUse.units = "hectares per year";
-landRemovalForUrbanIndustrialUse.developmentTime = 10; // years
-landRemovalForUrbanIndustrialUse.updateFn = function () {
-  return Math.max(0, (urbanIndustrialLandRequired.k - urbanIndustrialLand.k) / landRemovalForUrbanIndustrialUse.developmentTime);
-};
+const landRemovalForUrbanIndustrialUse = new LandRemovalForUrbanIndustrialUse();
 qArray[119] = landRemovalForUrbanIndustrialUse;
 rateArray.push(landRemovalForUrbanIndustrialUse);
 arableLand.landRemovalForUrbanIndustrialUse = landRemovalForUrbanIndustrialUse;
+landRemovalForUrbanIndustrialUse.urbanIndustrialLandRequired = urbanIndustrialLandRequired;
 
-var urbanIndustrialLand = new Level("urbanIndustrialLand", 120, 8.2e6, startTime, qArray, levelArray);
-urbanIndustrialLand.units = "hectares";
+const urbanIndustrialLand = new UrbanIndustrialLand(startTime);
 urbanIndustrialLand.updateFn = function () {
   return urbanIndustrialLand.j + dt * landRemovalForUrbanIndustrialUse.j;
 };
 qArray[120] = urbanIndustrialLand;
 levelArray.push(urbanIndustrialLand);
+landRemovalForUrbanIndustrialUse.urbanIndustrialLand = urbanIndustrialLand;
+urbanIndustrialLand.landRemovalForUrbanIndustrialUse = landRemovalForUrbanIndustrialUse;
 
 // Loop 4: Land fertility degradation
 
-var landFertility = new Level("landFertility", 121, 600, startTime, qArray, levelArray);
-landFertility.units = "kilograms per hectare-year";
+const landFertility = new LandFertility(startTime);
 landFertility.updateFn = function () {
   return landFertility.j + dt * (landFertilityRegeneration.j - landFertilityDegradation.j);
 };
@@ -1320,12 +1310,7 @@ qArray[121] = landFertility;
 levelArray.push(landFertility);
 landYield.landFertility = landFertility;
 
-var landFertilityDegradationRate = new Table("landFertilityDegradationRate", 122, [0, 0.1, 0.3, 0.5], 0, 30, 10);
-landFertilityDegradationRate.units = "inverse years";
-landFertilityDegradationRate.dependencies = ["indexOfPersistentPollution"];
-landFertilityDegradationRate.updateFn = function () {
-  return indexOfPersistentPollution.k;
-};
+const landFertilityDegradationRate = new LandFertilityDegradationRate();
 qArray[122] = landFertilityDegradationRate;
 auxArray.push(landFertilityDegradationRate);
 
@@ -1336,6 +1321,7 @@ landFertilityDegradation.updateFn = function () {
 };
 qArray[123] = landFertilityDegradation;
 rateArray.push(landFertilityDegradation);
+landFertility.landFertilityDegradation = landFertilityDegradation;
 
 // Loop 5: Land fertility regeneration
 
@@ -1346,6 +1332,7 @@ landFertilityRegeneration.updateFn = function () {
 };
 qArray[124] = landFertilityRegeneration;
 rateArray.push(landFertilityRegeneration);
+landFertility.landFertilityRegeneration = landFertilityRegeneration;
 
 var landFertilityRegenerationTime = new Table("landFertilityRegenerationTime", 125, [20, 13, 8, 4, 2, 2], 0, 0.1, 0.02);
 landFertilityRegenerationTime.units = "years";
@@ -1592,6 +1579,7 @@ indexOfPersistentPollution.updateFn = function () {
 qArray[143] = indexOfPersistentPollution;
 auxArray.push(indexOfPersistentPollution);
 lifetimeMultiplierFromPollution.indexOfPersistentPollution = indexOfPersistentPollution;
+landFertilityDegradationRate.indexOfPersistentPollution = indexOfPersistentPollution;
 
 var persistenPollutionAssimilationRate = new Rate("persistenPollutionAssimilationRate", 144);
 persistenPollutionAssimilationRate.units = "pollution units per year";
