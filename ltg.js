@@ -100,6 +100,15 @@ import { TotalAgriculturalInvestment } from "./models/equations/agriculture/tota
 import { FractionOfIndustrialOutputAllocatedToAgriculture } from "./models/equations/agriculture/fractionOfIndustrialOutputAllocatedToAgriculture.js";
 import { FractionOfIndustrialOutputAllocatedToAgricultureBefore } from "./models/equations/agriculture/fractionOfIndustrialOutputAllocatedToAgricultureBefore.js";
 import { FractionOfIndustrialOutputAllocatedToAgricultureAfter } from "./models/equations/agriculture/fractionOfIndustrialOutputAllocatedToAgricultureAfter.js";
+import { LandDevelopmentRate } from "./models/equations/agriculture/landDevelopment/landDevelopmentRate.js";
+import { DevelopmentCostPerHectare } from "./models/equations/agriculture/landDevelopment/developmentCostPerHectare.js";
+import { CurrentAgriculturalInputs } from "./models/equations/agriculture/currentAgriculturalInputs.js";
+import { AgriculturalInputs } from "./models/equations/agriculture/agriculturalInputs.js";
+import { AverageLifetimeOfAgriculturalInputs } from "./models/equations/agriculture/averageLifetimeOfAgriculturalInputs.js";
+import { AgriculturalInputsPerHectare } from "./models/equations/agriculture/agriculturalInputsPerHectare.js";
+import { LandYieldMultiplierFromCapital } from "./models/equations/agriculture/landYieldMultiplierFromCapital.js";
+import { LandYield } from "./models/equations/agriculture/landYield.js";
+import { LandYieldFactor } from "./models/equations/agriculture/landYieldFactor.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
     of World3, the social-economic-environmental model created by
@@ -1042,7 +1051,6 @@ potentiallyArableLand.updateFn = function () {
 };
 qArray[86] = potentiallyArableLand;
 levelArray.push(potentiallyArableLand);
-potentiallyArableLand.landDevelopmentRate = landDevelopmentRate;
 
 const food = new Food();
 qArray[87] = food;
@@ -1104,130 +1112,66 @@ fractionOfIndustrialOutputAllocatedToAgriculture.fractionOfIndustrialOutputAlloc
 fractionOfIndustrialOutputAllocatedToAgricultureAfter.foodPerCapita = foodPerCapita;
 fractionOfIndustrialOutputAllocatedToAgricultureAfter.indicatedFoodPerCapita = indicatedFoodPerCapita;
 
-var landDevelopmentRate = new Rate("landDevelopmentRate", 96);
-landDevelopmentRate.units = "hectares per year";
-landDevelopmentRate.updateFn = function () {
-  return (totalAgriculturalInvestment.k * fractionOfInputsAllocatedToLandDevelopment.k) / developmentCostPerHectare.k;
-};
+const landDevelopmentRate = new LandDevelopmentRate();
 qArray[96] = landDevelopmentRate;
 rateArray.push(landDevelopmentRate);
 arableLand.landDevelopmentRate = landDevelopmentRate;
 potentiallyArableLand.landDevelopmentRate = landDevelopmentRate;
+landDevelopmentRate.totalAgriculturalInvestment = totalAgriculturalInvestment;
 
-var developmentCostPerHectare = new Table("developmentCostPerHectare", 97, [100000, 7400, 5200, 3500, 2400, 1500, 750, 300, 150, 75, 50], 0, 1.0, 0.1);
-developmentCostPerHectare.units = "dollars per hectare";
-developmentCostPerHectare.updateFn = function () {
-  return potentiallyArableLand.k / potentiallyArableLandTotal;
-};
+const developmentCostPerHectare = new DevelopmentCostPerHectare();
 qArray[97] = developmentCostPerHectare;
 auxArray.push(developmentCostPerHectare);
+landDevelopmentRate.developmentCostPerHectare = developmentCostPerHectare;
+developmentCostPerHectare.potentiallyArableLand = potentiallyArableLand;
+developmentCostPerHectare.potentiallyArableLandTotal = potentiallyArableLandTotal;
 
 // Loop 2: Food from Investment in Agricultural Inputs
 
-var currentAgriculturalInputs = new Aux("currentAgriculturalInputs", 98);
-currentAgriculturalInputs.units = "dollars per year";
-currentAgriculturalInputs.dependencies = ["totalAgriculturalInvestment", "fractionOfInputsAllocatedToLandDevelopment"];
-currentAgriculturalInputs.updateFn = function () {
-  return totalAgriculturalInvestment.k * (1 - fractionOfInputsAllocatedToLandDevelopment.k);
-};
+const currentAgriculturalInputs = new CurrentAgriculturalInputs();
 qArray[98] = currentAgriculturalInputs;
 auxArray.push(currentAgriculturalInputs);
+currentAgriculturalInputs.totalAgriculturalInvestment = totalAgriculturalInvestment;
 
-var averageLifetimeOfAgriculturalInputsK = 2; // years, eqn 99 (in lieu of 100)
-
-var agriculturalInputs = new Smooth("agriculturalInputs", 99, averageLifetimeOfAgriculturalInputsK);
-agriculturalInputs.units = "dollars per year";
-agriculturalInputs.dependencies = []; // "currentAgriculturalInputs" removed to break cycle
-agriculturalInputs.initFn = function () {
-  return currentAgriculturalInputs;
-};
-agriculturalInputs.initVal = 5.0e9;
+const averageLifetimeOfAgriculturalInputsK = 2; // years, eqn 99 (in lieu of 100)
+const agriculturalInputs = new AgriculturalInputs(averageLifetimeOfAgriculturalInputsK);
 qArray[99] = agriculturalInputs;
 auxArray.push(agriculturalInputs);
-
-/*
-var agriculturalInputs = new Smooth("agriculturalInputs", 99, averageLifetimeOfAgriculturalInputsK);
-  agriculturalInputs.units = "dollars per year";
-  agriculturalInputs.dependencies = [];   // "currentAgriculturalInputs" removed to break cycle
-  agriculturalInputs.initFn = function() { return currentAgriculturalInputs; }
-  agriculturalInputs.initVal = 5.0e9;
-   = function() {
-    agriculturalInputs.theInput = agriculturalInputs.initFn;
-    agriculturalInputs.j = agriculturalInputs.k = 5.0e9;
-  }
-  agriculturalInputs.update = function() {
-    if (agriculturalInputs.firstCall) {
-      agriculturalInputs.firstCall = false;
-      return agriculturalInputs.k;
-    }
-    else {
-      agriculturalInputs.k = agriculturalInputs.j + dt * (agriculturalInputs.theInput.j - agriculturalInputs.j) / agriculturalInputs.del;
-      return agriculturalInputs.k;
-    }
-  }
-    qArray[99] = agriculturalInputs;
-    auxArray.push(agriculturalInputs);
-*/
+agriculturalInputs.currentAgriculturalInputs = currentAgriculturalInputs;
 
 // note: output of this equation goes unused
-var averageLifetimeOfAgriculturalInputs = new Aux("averageLifetimeOfAgriculturalInputs", 100);
-averageLifetimeOfAgriculturalInputs.units = "years";
-averageLifetimeOfAgriculturalInputs.before = 2;
-averageLifetimeOfAgriculturalInputs.after = 2;
+const averageLifetimeOfAgriculturalInputs = new AverageLifetimeOfAgriculturalInputs(policyYear);
 averageLifetimeOfAgriculturalInputs.updateFn = function () {
   return clip(this.after, this.before, t, policyYear);
 };
 qArray[100] = averageLifetimeOfAgriculturalInputs;
 auxArray.push(averageLifetimeOfAgriculturalInputs);
 
-var agriculturalInputsPerHectare = new Aux("agriculturalInputsPerHectare", 101);
-agriculturalInputsPerHectare.units = "dollars per hectare-year";
-agriculturalInputsPerHectare.dependencies = ["agriculturalInputs", "fractionOfInputsAllocatedToLandMaintenance"];
-agriculturalInputsPerHectare.updateFn = function () {
-  return (agriculturalInputs.k * (1 - fractionOfInputsAllocatedToLandMaintenance.k)) / arableLand.k;
-};
+const agriculturalInputsPerHectare = new AgriculturalInputsPerHectare();
 qArray[101] = agriculturalInputsPerHectare;
 auxArray.push(agriculturalInputsPerHectare);
 jobsPerHectare.agriculturalInputsPerHectare = agriculturalInputsPerHectare;
+agriculturalInputsPerHectare.agriculturalInputs = agriculturalInputs;
+agriculturalInputsPerHectare.arableLand = arableLand;
 
-var landYieldMultiplierFromCapital = new Table(
-  "landYieldMultiplierFromCapital",
-  102,
-  [1, 3, 3.8, 4.4, 4.9, 5.4, 5.7, 6, 6.3, 6.6, 6.9, 7.2, 7.4, 7.6, 7.8, 8, 8.2, 8.4, 8.6, 8.8, 9, 9.2, 9.4, 9.6, 9.8, 10],
-  0,
-  1000,
-  40
-);
-landYieldMultiplierFromCapital.units = "dimensionless";
-landYieldMultiplierFromCapital.dependencies = ["agriculturalInputsPerHectare"];
-landYieldMultiplierFromCapital.updateFn = function () {
-  return agriculturalInputsPerHectare.k;
-};
+const landYieldMultiplierFromCapital = new LandYieldMultiplierFromCapital();
 qArray[102] = landYieldMultiplierFromCapital;
 auxArray.push(landYieldMultiplierFromCapital);
+landYieldMultiplierFromCapital.agriculturalInputsPerHectare = agriculturalInputsPerHectare;
 
-var landYield = new Aux("landYield", 103);
-landYield.units = "kilograms per hectare-year";
-landYield.plotColor = "#185103";
-landYield.plotMin = 0;
-landYield.plotMax = 3000;
-landYield.dependencies = ["landYieldFactor", "landYieldMultiplierFromCapital", "landYieldMultiplierFromAirPollution"];
-landYield.updateFn = function () {
-  return landYieldFactor.k * landFertility.k * landYieldMultiplierFromCapital.k * landYieldMultiplierFromAirPollution.k;
-};
+const landYield = new LandYield();
 qArray[103] = landYield;
 auxArray.push(landYield);
 food.landYield = landYield;
+landYield._landYieldMultiplierFromCapital = landYieldMultiplierFromCapital;
 
-var landYieldFactor = new Aux("landYieldFactor", 104);
-landYieldFactor.units = "dimensionless";
-landYieldFactor.before = 1;
-landYieldFactor.after = 1;
+const landYieldFactor = new LandYieldFactor();
 landYieldFactor.updateFn = function () {
   return clip(this.after, this.before, t, policyYear);
 };
 qArray[104] = landYieldFactor;
 auxArray.push(landYieldFactor);
+landYield.landYieldFactor = landYieldFactor;
 
 var landYieldMultiplierFromAirPollution = new Aux("landYieldMultiplierFromAirPollution", 105);
 landYieldMultiplierFromAirPollution.units = "dimensionless";
@@ -1237,6 +1181,7 @@ landYieldMultiplierFromAirPollution.updateFn = function () {
 };
 qArray[105] = landYieldMultiplierFromAirPollution;
 auxArray.push(landYieldMultiplierFromAirPollution);
+landYield.landYieldMultiplierFromAirPollution = landYieldMultiplierFromAirPollution;
 
 var landYieldMultiplierFromAirPollutionBefore = new Table("landYieldMultiplierFromAirPollutionBefore", 106, [1, 1, 0.7, 0.4], 0, 30, 10);
 landYieldMultiplierFromAirPollutionBefore.units = "dimensionless";
@@ -1273,6 +1218,8 @@ fractionOfInputsAllocatedToLandDevelopment.updateFn = function () {
 };
 qArray[108] = fractionOfInputsAllocatedToLandDevelopment;
 auxArray.push(fractionOfInputsAllocatedToLandDevelopment);
+landDevelopmentRate.fractionOfInputsAllocatedToLandDevelopment = fractionOfInputsAllocatedToLandDevelopment;
+currentAgriculturalInputs.fractionOfInputsAllocatedToLandDevelopment = fractionOfInputsAllocatedToLandDevelopment;
 
 var marginalProductivityOfLandDevelopment = new Aux("marginalProductivityOfLandDevelopment", 109);
 marginalProductivityOfLandDevelopment.units = "kilograms per dollar";
@@ -1420,6 +1367,7 @@ landFertility.updateFn = function () {
 };
 qArray[121] = landFertility;
 levelArray.push(landFertility);
+landYield.landFertility = landFertility;
 
 var landFertilityDegradationRate = new Table("landFertilityDegradationRate", 122, [0, 0.1, 0.3, 0.5], 0, 30, 10);
 landFertilityDegradationRate.units = "inverse years";
@@ -1467,6 +1415,7 @@ fractionOfInputsAllocatedToLandMaintenance.updateFn = function () {
 };
 qArray[126] = fractionOfInputsAllocatedToLandMaintenance;
 auxArray.push(fractionOfInputsAllocatedToLandMaintenance);
+agriculturalInputsPerHectare.fractionOfInputsAllocatedToLandMaintenance = fractionOfInputsAllocatedToLandMaintenance;
 
 var foodRatio = new Aux("foodRatio", 127);
 foodRatio.units = "dimensionless";
