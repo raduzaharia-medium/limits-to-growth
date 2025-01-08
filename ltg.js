@@ -141,6 +141,10 @@ import { NonRenewableResourceFractionRemaining } from "./models/equations/nonRen
 import { FractionOfCapitalAllocatedToObtainingResources } from "./models/equations/capital/fractionOfCapitalAllocatedToObtainingResources.js";
 import { FractionOfCapitalAllocatedToObtainingResourcesBefore } from "./models/equations/capital/fractionOfCapitalAllocatedToObtainingResourcesBefore.js";
 import { FractionOfCapitalAllocatedToObtainingResourcesAfter } from "./models/equations/capital/fractionOfCapitalAllocatedToObtainingResourcesAfter.js";
+import { PersistentPollutionGenerationRate } from "./models/equations/pollution/persistentPollutionGenerationRate.js";
+import { PersistentPollutionGenerationFactor } from "./models/equations/pollution/persistentPollutionGenerationFactor.js";
+import { PersistentPollutionGeneratedByIndustrialOutput } from "./models/equations/pollution/persistentPollutionGeneratedByIndustrialOutput.js";
+import { PersistentPollutionGeneratedByAgriculturalOutput } from "./models/equations/pollution/persistentPollutionGeneratedByAgriculturalOutput.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
     of World3, the social-economic-environmental model created by
@@ -1426,60 +1430,33 @@ fractionOfCapitalAllocatedToObtainingResourcesAfter.nonRenewableResourceFraction
 
 // PERSISTENT POLLUTION SECTOR
 
-var persistentPollutionGenerationRate = new Rate("persistentPollutionGenerationRate", 137);
-persistentPollutionGenerationRate.units = "pollution units per year";
-persistentPollutionGenerationRate.updateFn = function () {
-  return (persistentPollutionGeneratedByIndustrialOutput.k + persistentPollutionGeneratedByAgriculturalOutput.k) * persistentPollutionGenerationFactor.k;
-};
+const persistentPollutionGenerationRate = new PersistentPollutionGenerationRate();
 qArray[137] = persistentPollutionGenerationRate;
 rateArray.push(persistentPollutionGenerationRate);
 
-var persistentPollutionGenerationFactor = new Aux("persistentPollutionGenerationFactor", 138);
-persistentPollutionGenerationFactor.units = "dimensionless";
-persistentPollutionGenerationFactor.before = 1;
-persistentPollutionGenerationFactor.after = 1;
+const persistentPollutionGenerationFactor = new PersistentPollutionGenerationFactor(policyYear);
 persistentPollutionGenerationFactor.updateFn = function () {
   return clip(this.after, this.before, t, policyYear);
 };
 qArray[138] = persistentPollutionGenerationFactor;
 auxArray.push(persistentPollutionGenerationFactor);
+persistentPollutionGenerationRate.persistentPollutionGenerationFactor = persistentPollutionGenerationFactor;
 
-var persistentPollutionGeneratedByIndustrialOutput = new Aux("persistentPollutionGeneratedByIndustrialOutput", 139);
-persistentPollutionGeneratedByIndustrialOutput.units = "pollution units per year";
-persistentPollutionGeneratedByIndustrialOutput.fractionOfResourcesAsPersistentMaterial = 0.02; // dimensionless
-persistentPollutionGeneratedByIndustrialOutput.industrialMaterialsEmissionFactor = 0.1; // dimensionless
-persistentPollutionGeneratedByIndustrialOutput.industrialMaterialsToxicityIndex = 10; // pollution units per resource unit
-persistentPollutionGeneratedByIndustrialOutput.dependencies = ["perCapitaResourceUsageMultiplier", "population"];
-persistentPollutionGeneratedByIndustrialOutput.updateFn = function () {
-  return (
-    perCapitaResourceUsageMultiplier.k *
-    population.k *
-    persistentPollutionGeneratedByIndustrialOutput.fractionOfResourcesAsPersistentMaterial *
-    persistentPollutionGeneratedByIndustrialOutput.industrialMaterialsEmissionFactor *
-    persistentPollutionGeneratedByIndustrialOutput.industrialMaterialsToxicityIndex
-  );
-};
+const persistentPollutionGeneratedByIndustrialOutput = new PersistentPollutionGeneratedByIndustrialOutput();
 qArray[139] = persistentPollutionGeneratedByIndustrialOutput;
 auxArray.push(persistentPollutionGeneratedByIndustrialOutput);
+persistentPollutionGenerationRate.persistentPollutionGeneratedByIndustrialOutput = persistentPollutionGeneratedByIndustrialOutput;
+persistentPollutionGeneratedByIndustrialOutput.perCapitaResourceUsageMultiplier = perCapitaResourceUsageMultiplier;
+persistentPollutionGeneratedByIndustrialOutput.population = population;
 
-var persistentPollutionGeneratedByAgriculturalOutput = new Aux("persistentPollutionGeneratedByAgriculturalOutput", 140);
-persistentPollutionGeneratedByAgriculturalOutput.units = "pollution units per year";
-persistentPollutionGeneratedByAgriculturalOutput.fractionOfInputsAsPersistentMaterial = 0.001; // dimensionless
-persistentPollutionGeneratedByAgriculturalOutput.agriculturalMaterialsToxicityIndex = 1; // pollution units per dollar
-persistentPollutionGeneratedByAgriculturalOutput.dependencies = ["agriculturalInputsPerHectare"];
-persistentPollutionGeneratedByAgriculturalOutput.updateFn = function () {
-  return (
-    agriculturalInputsPerHectare.k *
-    arableLand.k *
-    persistentPollutionGeneratedByAgriculturalOutput.fractionOfInputsAsPersistentMaterial *
-    persistentPollutionGeneratedByAgriculturalOutput.agriculturalMaterialsToxicityIndex
-  );
-};
+const persistentPollutionGeneratedByAgriculturalOutput = new PersistentPollutionGeneratedByAgriculturalOutput();
 qArray[140] = persistentPollutionGeneratedByAgriculturalOutput;
 auxArray.push(persistentPollutionGeneratedByAgriculturalOutput);
+persistentPollutionGenerationRate.persistentPollutionGeneratedByAgriculturalOutput = persistentPollutionGeneratedByAgriculturalOutput;
+persistentPollutionGeneratedByAgriculturalOutput.agriculturalInputsPerHectare = agriculturalInputsPerHectare;
+persistentPollutionGeneratedByAgriculturalOutput.arableLand = arableLand;
 
-var persistentPollutionTransmissionDelayK = 20; // years, used in eqn 141
-
+const persistentPollutionTransmissionDelayK = 20; // years, used in eqn 141
 var persistenPollutionAppearanceRate = new Delay3("persistenPollutionAppearanceRate", 141, persistentPollutionTransmissionDelayK);
 persistenPollutionAppearanceRate.units = "pollution units per year";
 persistenPollutionAppearanceRate.initFn = function () {
