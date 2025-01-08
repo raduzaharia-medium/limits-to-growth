@@ -127,6 +127,10 @@ import { LandRemovalForUrbanIndustrialUse } from "./models/equations/agriculture
 import { UrbanIndustrialLand } from "./models/equations/agriculture/land/urbanIndustrialLand.js";
 import { LandFertility } from "./models/equations/agriculture/land/fertility/landFertility.js";
 import { LandFertilityDegradationRate } from "./models/equations/agriculture/land/fertility/landFertilityDegradationRate.js";
+import { LandFertilityDegradation } from "./models/equations/agriculture/land/fertility/landFertilityDegradation.js";
+import { LandFertilityRegeneration } from "./models/equations/agriculture/land/fertility/landFertilityRegeneration.js";
+import { LandFertilityRegenerationTime } from "./models/equations/agriculture/land/fertility/landFertilityRegenerationTime.js";
+import { FractionOfInputsAllocatedToLandMaintenance } from "./models/equations/agriculture/land/development/fractionOfInputsAllocatedToLandMaintenance.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
     of World3, the social-economic-environmental model created by
@@ -1314,46 +1318,34 @@ const landFertilityDegradationRate = new LandFertilityDegradationRate();
 qArray[122] = landFertilityDegradationRate;
 auxArray.push(landFertilityDegradationRate);
 
-var landFertilityDegradation = new Rate("landFertilityDegradation", 123);
-landFertilityDegradation.units = "kilograms per hectare-year-year";
-landFertilityDegradation.updateFn = function () {
-  return landFertility.k * landFertilityDegradationRate.k;
-};
+const landFertilityDegradation = new LandFertilityDegradation();
 qArray[123] = landFertilityDegradation;
 rateArray.push(landFertilityDegradation);
 landFertility.landFertilityDegradation = landFertilityDegradation;
+landFertilityDegradation.landFertility = landFertility;
+landFertilityDegradation.landFertilityDegradationRate = landFertilityDegradationRate;
 
 // Loop 5: Land fertility regeneration
 
-var landFertilityRegeneration = new Rate("landFertilityRegeneration", 124);
-landFertilityRegeneration.units = "kilograms per hectare-year-year";
-landFertilityRegeneration.updateFn = function () {
-  return (inherentLandFertilityK - landFertility.k) / landFertilityRegenerationTime.k;
-};
+const landFertilityRegeneration = new LandFertilityRegeneration();
 qArray[124] = landFertilityRegeneration;
 rateArray.push(landFertilityRegeneration);
 landFertility.landFertilityRegeneration = landFertilityRegeneration;
+landFertilityRegeneration.landFertility = landFertility;
+landFertilityRegeneration.inherentLandFertilityK = inherentLandFertilityK;
 
-var landFertilityRegenerationTime = new Table("landFertilityRegenerationTime", 125, [20, 13, 8, 4, 2, 2], 0, 0.1, 0.02);
-landFertilityRegenerationTime.units = "years";
-landFertilityRegenerationTime.dependencies = ["fractionOfInputsAllocatedToLandMaintenance"];
-landFertilityRegenerationTime.updateFn = function () {
-  return fractionOfInputsAllocatedToLandMaintenance.k;
-};
+const landFertilityRegenerationTime = new LandFertilityRegenerationTime();
 qArray[125] = landFertilityRegenerationTime;
 auxArray.push(landFertilityRegenerationTime);
+landFertilityRegeneration.landFertilityRegenerationTime = landFertilityRegenerationTime;
 
 // Loop 6: Discontinuing land maintenance
 
-var fractionOfInputsAllocatedToLandMaintenance = new Table("fractionOfInputsAllocatedToLandMaintenance", 126, [0, 0.04, 0.07, 0.09, 0.1], 0, 4, 1);
-fractionOfInputsAllocatedToLandMaintenance.units = "dimensionless";
-fractionOfInputsAllocatedToLandMaintenance.dependencies = ["perceivedFoodRatio"];
-fractionOfInputsAllocatedToLandMaintenance.updateFn = function () {
-  return perceivedFoodRatio.k;
-};
+const fractionOfInputsAllocatedToLandMaintenance = new FractionOfInputsAllocatedToLandMaintenance();
 qArray[126] = fractionOfInputsAllocatedToLandMaintenance;
 auxArray.push(fractionOfInputsAllocatedToLandMaintenance);
 agriculturalInputsPerHectare.fractionOfInputsAllocatedToLandMaintenance = fractionOfInputsAllocatedToLandMaintenance;
+landFertilityRegenerationTime.fractionOfInputsAllocatedToLandMaintenance = fractionOfInputsAllocatedToLandMaintenance;
 
 var foodRatio = new Aux("foodRatio", 127);
 foodRatio.units = "dimensionless";
@@ -1375,6 +1367,7 @@ perceivedFoodRatio.initFn = function () {
 perceivedFoodRatio.initVal = 1.0;
 qArray[128] = perceivedFoodRatio;
 auxArray.push(perceivedFoodRatio);
+fractionOfInputsAllocatedToLandMaintenance.perceivedFoodRatio = perceivedFoodRatio;
 
 /*
 var perceivedFoodRatio = new Smooth("perceivedFoodRatio", 128, foodShortagePerceptionDelayK);
