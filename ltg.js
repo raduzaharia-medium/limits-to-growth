@@ -133,6 +133,10 @@ import { LandFertilityRegenerationTime } from "./models/equations/agriculture/la
 import { FractionOfInputsAllocatedToLandMaintenance } from "./models/equations/agriculture/land/development/fractionOfInputsAllocatedToLandMaintenance.js";
 import { FoodRatio } from "./models/equations/agriculture/food/foodRatio.js";
 import { PerceivedFoodRatio } from "./models/equations/agriculture/food/perceivedFoodRatio.js";
+import { NonRenewableResources } from "./models/equations/nonRenewables/nonRenewableResources.js";
+import { NonRenewableResourceUsageRate } from "./models/equations/nonRenewables/nonRenewableResourceUsageRate.js";
+import { NonRenewableResourceUsageFactor } from "./models/equations/nonRenewables/nonRenewableResourceUsageFactor.js";
+import { PerCapitaResourceUsageMultiplier } from "./models/equations/perCapitaResourceUsageMultiplier.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
     of World3, the social-economic-environmental model created by
@@ -1363,42 +1367,33 @@ perceivedFoodRatio.foodRatio = foodRatio;
 
 // NONRENEWABLE RESOURCE SECTOR
 
-var nonrenewableResourcesInitialK = 1.0e12; // resource units, used in eqns 129 and 133
-
-var nonrenewableResources = new Level("nonrenewableResources", 129, nonrenewableResourcesInitialK, startTime, qArray, levelArray);
-nonrenewableResources.units = "resource units";
+let nonrenewableResourcesInitialK = 1.0e12; // resource units, used in eqns 129 and 133
+const nonrenewableResources = new NonRenewableResources(nonrenewableResourcesInitialK, startTime);
 nonrenewableResources.updateFn = function () {
   return nonrenewableResources.j + dt * -nonrenewableResourceUsageRate.j;
 };
 qArray[129] = nonrenewableResources;
 levelArray.push(nonrenewableResources);
 
-var nonrenewableResourceUsageRate = new Rate("nonrenewableResourceUsageRate", 130);
-nonrenewableResourceUsageRate.units = "resource units per year";
-nonrenewableResourceUsageRate.updateFn = function () {
-  return population.k * perCapitaResourceUsageMultiplier.k * nonrenewableResourceUsageFactor.k;
-};
+const nonrenewableResourceUsageRate = new NonRenewableResourceUsageRate();
 qArray[130] = nonrenewableResourceUsageRate;
 rateArray.push(nonrenewableResourceUsageRate);
+nonrenewableResources.nonRenewableResourceUsageRate = nonrenewableResourceUsageRate;
+nonrenewableResourceUsageRate.population = population;
 
-var nonrenewableResourceUsageFactor = new Aux("nonrenewableResourceUsageFactor", 131);
-nonrenewableResourceUsageFactor.units = "dimensionless";
-nonrenewableResourceUsageFactor.before = 1;
-nonrenewableResourceUsageFactor.after = 1;
+const nonrenewableResourceUsageFactor = new NonRenewableResourceUsageFactor(policyYear);
 nonrenewableResourceUsageFactor.updateFn = function () {
   return clip(this.after, this.before, t, policyYear);
 };
 qArray[131] = nonrenewableResourceUsageFactor;
 auxArray.push(nonrenewableResourceUsageFactor);
+nonrenewableResourceUsageRate.nonRenewableResourceUsageFactor = nonrenewableResourceUsageFactor;
 
-var perCapitaResourceUsageMultiplier = new Table("perCapitaResourceUsageMultiplier", 132, [0, 0.85, 2.6, 4.4, 5.4, 6.2, 6.8, 7, 7], 0, 1600, 200);
-perCapitaResourceUsageMultiplier.units = "resource units per person-year";
-perCapitaResourceUsageMultiplier.dependencies = ["industrialOutputPerCapita"];
-perCapitaResourceUsageMultiplier.updateFn = function () {
-  return industrialOutputPerCapita.k;
-};
+const perCapitaResourceUsageMultiplier = new PerCapitaResourceUsageMultiplier(nonrenewableResourcesInitialK);
 qArray[132] = perCapitaResourceUsageMultiplier;
 auxArray.push(perCapitaResourceUsageMultiplier);
+nonrenewableResourceUsageRate.perCapitaResourceUsageMultiplier = perCapitaResourceUsageMultiplier;
+perCapitaResourceUsageMultiplier.industrialOutputPerCapita = industrialOutputPerCapita;
 
 var nonrenewableResourceFractionRemaining = new Aux("nonrenewableResourceFractionRemaining", 133);
 nonrenewableResourceFractionRemaining.units = "dimensionless";
