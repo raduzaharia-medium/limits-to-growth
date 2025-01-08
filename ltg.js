@@ -88,9 +88,9 @@ import { LaborForce } from "./models/equations/capital/jobs/laborForce.js";
 import { LaborUtilizationFraction } from "./models/equations/capital/jobs/laborUtilizationFraction.js";
 import { LaborUtilizationFractionDelayed } from "./models/equations/capital/jobs/laborUtilizationFractionDelayed.js";
 import { CapitalUtilizationFraction } from "./models/equations/capital/jobs/capitalUtilizationFraction.js";
-import { LandFractionCultivated } from "./models/equations/agriculture/landDevelopment/landFractionCultivated.js";
-import { ArableLand } from "./models/equations/agriculture/landDevelopment/arableLand.js";
-import { PotentiallyArableLand } from "./models/equations/agriculture/landDevelopment/potentiallyArableLand.js";
+import { LandFractionCultivated } from "./models/equations/agriculture/land/development/landFractionCultivated.js";
+import { ArableLand } from "./models/equations/agriculture/land/development/arableLand.js";
+import { PotentiallyArableLand } from "./models/equations/agriculture/land/development/potentiallyArableLand.js";
 import { Food } from "./models/equations/agriculture/food/food.js";
 import { FoodPerCapita } from "./models/equations/agriculture/food/foodPerCapita.js";
 import { IndicatedFoodPerCapita } from "./models/equations/agriculture/food/indicatedFoodPerCapita.js";
@@ -100,15 +100,22 @@ import { TotalAgriculturalInvestment } from "./models/equations/agriculture/tota
 import { FractionOfIndustrialOutputAllocatedToAgriculture } from "./models/equations/agriculture/fractionOfIndustrialOutputAllocatedToAgriculture.js";
 import { FractionOfIndustrialOutputAllocatedToAgricultureBefore } from "./models/equations/agriculture/fractionOfIndustrialOutputAllocatedToAgricultureBefore.js";
 import { FractionOfIndustrialOutputAllocatedToAgricultureAfter } from "./models/equations/agriculture/fractionOfIndustrialOutputAllocatedToAgricultureAfter.js";
-import { LandDevelopmentRate } from "./models/equations/agriculture/landDevelopment/landDevelopmentRate.js";
-import { DevelopmentCostPerHectare } from "./models/equations/agriculture/landDevelopment/developmentCostPerHectare.js";
+import { LandDevelopmentRate } from "./models/equations/agriculture/land/development/landDevelopmentRate.js";
+import { DevelopmentCostPerHectare } from "./models/equations/agriculture/land/development/developmentCostPerHectare.js";
 import { CurrentAgriculturalInputs } from "./models/equations/agriculture/currentAgriculturalInputs.js";
 import { AgriculturalInputs } from "./models/equations/agriculture/agriculturalInputs.js";
 import { AverageLifetimeOfAgriculturalInputs } from "./models/equations/agriculture/averageLifetimeOfAgriculturalInputs.js";
 import { AgriculturalInputsPerHectare } from "./models/equations/agriculture/agriculturalInputsPerHectare.js";
-import { LandYieldMultiplierFromCapital } from "./models/equations/agriculture/landYieldMultiplierFromCapital.js";
-import { LandYield } from "./models/equations/agriculture/landYield.js";
-import { LandYieldFactor } from "./models/equations/agriculture/landYieldFactor.js";
+import { LandYieldMultiplierFromCapital } from "./models/equations/agriculture/land/yield/landYieldMultiplierFromCapital.js";
+import { LandYield } from "./models/equations/agriculture/land/yield/landYield.js";
+import { LandYieldFactor } from "./models/equations/agriculture/land/yield/landYieldFactor.js";
+import { LandYieldMultiplierFromAirPollution } from "./models/equations/agriculture/land/yield/landYieldMultiplierFromAirPollution.js";
+import { LandYieldMultiplierFromAirPollutionBefore } from "./models/equations/agriculture/land/yield/landYieldMultiplierFromAirPollutionBefore.js";
+import { LandYieldMultiplierFromAirPollutionAfter } from "./models/equations/agriculture/land/yield/landYieldMultiplierFromAirPollutionAfter.js";
+import { FractionOfInputsAllocatedToLandDevelopment } from "./models/equations/agriculture/land/development/fractionOfInputsAllocatedToLandDevelopment.js";
+import { MarginalProductivityOfLandDevelopment } from "./models/equations/agriculture/land/development/marginalProductivityOfLandDevelopment.js";
+import { MarginalProductivityOfAgriculturalInputs } from "./models/equations/agriculture/marginalProductivityOfAgriculturalInputs.js";
+import { MarginalLandYieldMultiplierFromCapital } from "./models/equations/agriculture/land/yield/marginalLandYieldMultiplierFromCapital.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript
     of World3, the social-economic-environmental model created by
@@ -1173,9 +1180,7 @@ qArray[104] = landYieldFactor;
 auxArray.push(landYieldFactor);
 landYield.landYieldFactor = landYieldFactor;
 
-var landYieldMultiplierFromAirPollution = new Aux("landYieldMultiplierFromAirPollution", 105);
-landYieldMultiplierFromAirPollution.units = "dimensionless";
-landYieldMultiplierFromAirPollution.dependencies = ["landYieldMultiplierFromAirPollutionBefore", "landYieldMultiplierFromAirPollutionAfter"];
+const landYieldMultiplierFromAirPollution = new LandYieldMultiplierFromAirPollution(policyYear);
 landYieldMultiplierFromAirPollution.updateFn = function () {
   return clip(landYieldMultiplierFromAirPollutionAfter.k, landYieldMultiplierFromAirPollutionBefore.k, t, policyYear);
 };
@@ -1183,83 +1188,46 @@ qArray[105] = landYieldMultiplierFromAirPollution;
 auxArray.push(landYieldMultiplierFromAirPollution);
 landYield.landYieldMultiplierFromAirPollution = landYieldMultiplierFromAirPollution;
 
-var landYieldMultiplierFromAirPollutionBefore = new Table("landYieldMultiplierFromAirPollutionBefore", 106, [1, 1, 0.7, 0.4], 0, 30, 10);
-landYieldMultiplierFromAirPollutionBefore.units = "dimensionless";
-landYieldMultiplierFromAirPollutionBefore.dependencies = ["industrialOutput"];
-landYieldMultiplierFromAirPollutionBefore.updateFn = function () {
-  return industrialOutput.k / industrialOutput.valueIn1970;
-};
+const landYieldMultiplierFromAirPollutionBefore = new LandYieldMultiplierFromAirPollutionBefore();
 qArray[106] = landYieldMultiplierFromAirPollutionBefore;
 auxArray.push(landYieldMultiplierFromAirPollutionBefore);
+landYieldMultiplierFromAirPollution.landYieldMultiplierFromAirPollutionBefore = landYieldMultiplierFromAirPollutionBefore;
+landYieldMultiplierFromAirPollutionBefore.industrialOutput = industrialOutput;
 
-var landYieldMultiplierFromAirPollutionAfter = new Table("landYieldMultiplierFromAirPollutionAfter", 107, [1, 1, 0.7, 0.4], 0, 30, 10);
-landYieldMultiplierFromAirPollutionAfter.units = "dimensionless";
-landYieldMultiplierFromAirPollutionAfter.dependencies = ["industrialOutput"];
-landYieldMultiplierFromAirPollutionAfter.updateFn = function () {
-  return industrialOutput.k / industrialOutput.valueIn1970;
-};
+const landYieldMultiplierFromAirPollutionAfter = new LandYieldMultiplierFromAirPollutionAfter();
 qArray[107] = landYieldMultiplierFromAirPollutionAfter;
 auxArray.push(landYieldMultiplierFromAirPollutionAfter);
+landYieldMultiplierFromAirPollution.landYieldMultiplierFromAirPollutionAfter = landYieldMultiplierFromAirPollutionAfter;
+landYieldMultiplierFromAirPollutionAfter.industrialOutput = industrialOutput;
 
 // Loops 1 and 2: The Investment Allocation Decision
 
-var fractionOfInputsAllocatedToLandDevelopment = new Table(
-  "fractionOfInputsAllocatedToLandDevelopment",
-  108,
-  [0, 0.05, 0.15, 0.3, 0.5, 0.7, 0.85, 0.95, 1],
-  0,
-  2,
-  0.25
-);
-fractionOfInputsAllocatedToLandDevelopment.units = "dimensionless";
-fractionOfInputsAllocatedToLandDevelopment.dependencies = ["marginalProductivityOfLandDevelopment", "marginalProductivityOfAgriculturalInputs"];
-fractionOfInputsAllocatedToLandDevelopment.updateFn = function () {
-  return marginalProductivityOfLandDevelopment.k / marginalProductivityOfAgriculturalInputs.k;
-};
+const fractionOfInputsAllocatedToLandDevelopment = new FractionOfInputsAllocatedToLandDevelopment();
 qArray[108] = fractionOfInputsAllocatedToLandDevelopment;
 auxArray.push(fractionOfInputsAllocatedToLandDevelopment);
 landDevelopmentRate.fractionOfInputsAllocatedToLandDevelopment = fractionOfInputsAllocatedToLandDevelopment;
 currentAgriculturalInputs.fractionOfInputsAllocatedToLandDevelopment = fractionOfInputsAllocatedToLandDevelopment;
 
-var marginalProductivityOfLandDevelopment = new Aux("marginalProductivityOfLandDevelopment", 109);
-marginalProductivityOfLandDevelopment.units = "kilograms per dollar";
-marginalProductivityOfLandDevelopment.socialDiscount = 0.07;
-marginalProductivityOfLandDevelopment.dependencies = ["landYield", "developmentCostPerHectare"];
-marginalProductivityOfLandDevelopment.updateFn = function () {
-  return landYield.k / (developmentCostPerHectare.k * marginalProductivityOfLandDevelopment.socialDiscount);
-};
+const marginalProductivityOfLandDevelopment = new MarginalProductivityOfLandDevelopment();
 qArray[109] = marginalProductivityOfLandDevelopment;
 auxArray.push(marginalProductivityOfLandDevelopment);
+fractionOfInputsAllocatedToLandDevelopment.marginalProductivityOfLandDevelopment = marginalProductivityOfLandDevelopment;
+marginalProductivityOfLandDevelopment.landYield = landYield;
+marginalProductivityOfLandDevelopment.developmentCostPerHectare = developmentCostPerHectare;
 
-var marginalProductivityOfAgriculturalInputs = new Aux("marginalProductivityOfAgriculturalInputs", 110);
-marginalProductivityOfAgriculturalInputs.units = "kilograms per dollar";
-marginalProductivityOfAgriculturalInputs.dependencies = [
-  "averageLifetimeOfAgriculturalInputs",
-  "landYield",
-  "marginalLandYieldMultiplierFromCapital",
-  "landYieldMultiplierFromCapital",
-];
-marginalProductivityOfAgriculturalInputs.updateFn = function () {
-  return averageLifetimeOfAgriculturalInputsK * landYield.k * (marginalLandYieldMultiplierFromCapital.k / landYieldMultiplierFromCapital.k);
-};
+const marginalProductivityOfAgriculturalInputs = new MarginalProductivityOfAgriculturalInputs();
 qArray[110] = marginalProductivityOfAgriculturalInputs;
 auxArray.push(marginalProductivityOfAgriculturalInputs);
+fractionOfInputsAllocatedToLandDevelopment.marginalProductivityOfAgriculturalInputs = marginalProductivityOfAgriculturalInputs;
+marginalProductivityOfAgriculturalInputs.landYield = landYield;
+marginalProductivityOfAgriculturalInputs.averageLifetimeOfAgriculturalInputsK = averageLifetimeOfAgriculturalInputsK;
+marginalProductivityOfAgriculturalInputs.landYieldMultiplierFromCapital = landYieldMultiplierFromCapital;
 
-var marginalLandYieldMultiplierFromCapital = new Table(
-  "marginalLandYieldMultiplierFromCapital",
-  111,
-  [0.075, 0.03, 0.015, 0.011, 0.009, 0.008, 0.007, 0.006, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005],
-  0,
-  600,
-  40
-);
-marginalLandYieldMultiplierFromCapital.units = "hectares per dollar";
-marginalLandYieldMultiplierFromCapital.dependencies = ["agriculturalInputsPerHectare"];
-marginalLandYieldMultiplierFromCapital.updateFn = function () {
-  return agriculturalInputsPerHectare.k;
-};
+const marginalLandYieldMultiplierFromCapital = new MarginalLandYieldMultiplierFromCapital();
 qArray[111] = marginalLandYieldMultiplierFromCapital;
 auxArray.push(marginalLandYieldMultiplierFromCapital);
+marginalProductivityOfAgriculturalInputs.marginalLandYieldMultiplierFromCapital = marginalLandYieldMultiplierFromCapital;
+marginalLandYieldMultiplierFromCapital.agriculturalInputsPerHectare = agriculturalInputsPerHectare;
 
 // Loop 3: Land Erosion and Urban-Industrial Use
 
