@@ -182,46 +182,20 @@ export const resetModel = () => {
   setUpGraph();
 };
 
-var updateAuxen = function () {
-  for (var i = 0; i < auxArray.length; i++) {
-    auxArray[i].update(t, startTime, stopTime, gLeft, gRight, gBottom, gTop, dt);
-  }
-};
-
-var updateRates = function () {
-  for (var i = 0; i < rateArray.length; i++) {
-    rateArray[i].update(t, startTime, stopTime, gLeft, gRight, gBottom, gTop, dt);
-  }
-};
-
-var updateLevels = function () {
-  for (var i = 0; i < levelArray.length; i++) {
-    levelArray[i].update(t, startTime, stopTime, gLeft, gRight, gBottom, gTop, dt);
-  }
-};
-
 var warmupAuxen = function () {
-  for (var i = 0; i < auxArray.length; i++) {
-    auxArray[i].warmup();
-  }
+  auxArray.forEach((e) => e.warmup());
 };
 
 var warmupRates = function () {
-  for (var i = 0; i < rateArray.length; i++) {
-    rateArray[i].warmup();
-  }
+  rateArray.forEach((e) => e.warmup());
 };
 
 var warmupLevels = function () {
-  for (var i = 0; i < levelArray.length; i++) {
-    levelArray[i].warmup();
-  }
+  levelArray.forEach((e) => e.warmup());
 };
 
 var tock = function () {
-  for (var i = 1; i < qArray.length; i++) {
-    qArray[i].tick();
-  }
+  qArray.forEach((e) => e.tick());
 };
 
 var initModel = function () {
@@ -232,9 +206,14 @@ var initModel = function () {
 };
 
 var timeStep = function () {
-  updateLevels();
-  updateAuxen();
-  updateRates();
+  levelArray.forEach((e) => e.update(t, startTime, stopTime, gLeft, gRight, gBottom, gTop, dt));
+  auxArray.forEach((e) => e.update(t, startTime, stopTime, gLeft, gRight, gBottom, gTop, dt));
+  rateArray.forEach((e) => e.update(t, startTime, stopTime, gLeft, gRight, gBottom, gTop, dt));
+
+  //qArray.filter((e) => e.qType === "Level").forEach((e) => e.update(t, startTime, stopTime, gLeft, gRight, gBottom, gTop, dt));
+  //qArray.filter((e) => e.qType === "Aux").forEach((e) => e.update(t, startTime, stopTime, gLeft, gRight, gBottom, gTop, dt));
+  //qArray.filter((e) => e.qType === "Rate").forEach((e) => e.update(t, startTime, stopTime, gLeft, gRight, gBottom, gTop, dt));
+
   tock();
   t += dt;
 };
@@ -257,26 +236,33 @@ export const stopModel = () => {
 const plotDelay = 0 * dt; // milliseconds
 let plotTimer = null;
 
-export const runModel = () => {
-  disableControls();
-  setStopButton();
-  resetModel();
-  initModel();
-  setUpGraph();
+const warmup = () => {
   for (var i = 1; i <= 3; i++) {
     warmupAuxen();
     warmupRates();
+
     tock();
   }
   for (var i = 1; i <= 10; i++) {
     warmupAuxen();
     warmupRates();
     warmupLevels();
+
     tock();
   }
-  for (var i = 0; i < levelArray.length; i++) {
-    levelArray[i].reset(startTime);
-  }
+};
+
+export const runModel = () => {
+  disableControls();
+  setStopButton();
+  resetModel();
+  initModel();
+  setUpGraph();
+
+  warmup();
+
+  levelArray.forEach((e) => e.reset(startTime));
+
   plotTimer = setInterval(animationStep, plotDelay); // note GLOBAL
 };
 
@@ -284,11 +270,13 @@ export const fastRun = () => {
   resetModel();
   initModel();
   setUpGraph();
+
   for (var i = 1; i <= 100; i++) {
     warmupAuxen();
     warmupRates();
     tock();
   }
+
   while (t <= stopTime) {
     timeStep();
   }

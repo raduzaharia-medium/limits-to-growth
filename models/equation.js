@@ -21,7 +21,8 @@ export class Equation {
   }
 
   reset() {
-    this.j = this.k = null;
+    this.j = null;
+    this.k = null;
     this.data = [];
   }
 
