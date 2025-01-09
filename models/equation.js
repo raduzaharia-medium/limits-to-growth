@@ -16,8 +16,8 @@ export class Equation {
     this.plotMax = 1000;
   }
 
-  warmup() {
-    this.k = this.updateFn();
+  warmup(t, dt) {
+    this.k = this.updateFn(t, dt);
   }
 
   reset() {
@@ -27,7 +27,7 @@ export class Equation {
   }
 
   update(t, startTime, stopTime, gLeft, gRight, gBottom, gTop, dt) {
-    this.k = this.updateFn();
+    this.k = this.updateFn(t, dt);
 
     if (this.plotThisVar) {
       this.data.push({ x: t, y: this.k });
@@ -61,7 +61,7 @@ export class Equation {
     context.closePath();
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this.j;
   }
 }

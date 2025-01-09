@@ -12,7 +12,7 @@ export class AssimilationHalfLifeMultiplier extends Table {
     this._indexOfPersistentPollution = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._indexOfPersistentPollution.k;
   }
 }

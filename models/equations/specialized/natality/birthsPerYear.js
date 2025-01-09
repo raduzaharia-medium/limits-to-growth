@@ -1,3 +1,4 @@
+import { clip } from "../../../../tools.js";
 import { Rate } from "../../rate.js";
 
 export class BirthsPerYear extends Rate {
@@ -22,7 +23,7 @@ export class BirthsPerYear extends Rate {
     this._population15To44 = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     const after = this._deathsPerYear.k;
     const before = (this._totalFertility.k * this._population15To44.k * 0.5) / this.reproductiveLifetime;
 

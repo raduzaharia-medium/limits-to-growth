@@ -15,7 +15,7 @@ export class IndexOfPersistentPollution extends Aux {
     this._persistentPollution = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._persistentPollution.k / this.pollutionValueIn1970;
   }
 }

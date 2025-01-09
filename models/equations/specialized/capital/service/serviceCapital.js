@@ -16,7 +16,7 @@ export class ServiceCapital extends Level {
     this._serviceCapitalDepreciationRate = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this.j + dt * (this._serviceCapitalInvestmentRate.j - this._serviceCapitalDepreciationRate.j);
   }
 }

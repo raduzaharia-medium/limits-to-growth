@@ -14,7 +14,7 @@ export class HealthServicesAllocationPerCapita extends Table {
     this._serviceOutputPerCapita = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._serviceOutputPerCapita.k;
   }
 }

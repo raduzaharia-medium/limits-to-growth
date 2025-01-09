@@ -12,7 +12,7 @@ export class CompensatoryMultiplierFromPerceivedLifeExpectancy extends Table {
     this._perceivedLifeExpectancy = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._perceivedLifeExpectancy.k;
   }
 }

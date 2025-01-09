@@ -14,7 +14,7 @@ export class Mortality45To64 extends Table {
     this._lifeExpectancy = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._lifeExpectancy.k;
   }
 }

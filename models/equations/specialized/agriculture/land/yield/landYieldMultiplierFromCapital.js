@@ -19,7 +19,7 @@ export class LandYieldMultiplierFromCapital extends Table {
     this._agriculturalInputsPerHectare = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._agriculturalInputsPerHectare.k;
   }
 }

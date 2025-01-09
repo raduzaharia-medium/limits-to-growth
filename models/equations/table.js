@@ -37,13 +37,13 @@ export class Table extends Aux {
     return null;
   }
 
-  update() {
-    this.k = this.lookup(this.updateFn());
+  update(t, dt) {
+    this.k = this.lookup(this.updateFn(t, dt));
     return this.k;
   }
 
-  warmup() {
-    this.k = this.lookup(this.updateFn());
+  warmup(t, dt) {
+    this.k = this.lookup(this.updateFn(t, dt));
     return this.k;
   }
 }

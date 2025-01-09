@@ -13,7 +13,7 @@ export class FamilyResponseToSocialNorm extends Table {
     this._familyIncomeExpectation = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._familyIncomeExpectation.k;
   }
 }

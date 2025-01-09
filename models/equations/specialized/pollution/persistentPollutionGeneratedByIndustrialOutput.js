@@ -20,7 +20,7 @@ export class PersistentPollutionGeneratedByIndustrialOutput extends Aux {
     this._population = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return (
       this._perCapitaResourceUsageMultiplier.k *
       this._population.k *

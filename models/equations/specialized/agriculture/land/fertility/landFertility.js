@@ -16,7 +16,7 @@ export class LandFertility extends Level {
     this._landFertilityRegeneration = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this.j + dt * (this._landFertilityRegeneration.j - this._landFertilityDegradation.j);
   }
 }

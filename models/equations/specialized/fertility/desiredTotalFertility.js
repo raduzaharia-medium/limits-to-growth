@@ -16,7 +16,7 @@ export class DesiredTotalFertility extends Aux {
     this._compensatoryMultiplierFromPerceivedLifeExpectancy = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._desiredCompletedFamilySize.k * this._compensatoryMultiplierFromPerceivedLifeExpectancy.k;
   }
 }

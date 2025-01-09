@@ -18,7 +18,7 @@ export class TotalAgriculturalInvestment extends Aux {
     this._fractionOfIndustrialOutputAllocatedToAgriculture = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._industrialOutput.k * this._fractionOfIndustrialOutputAllocatedToAgriculture.k;
   }
 }

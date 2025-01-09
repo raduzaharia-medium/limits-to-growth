@@ -12,7 +12,7 @@ export class PotentiallyArableLand extends Level {
     this._landDevelopmentRate = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this.j + dt * -this._landDevelopmentRate.j;
   }
 }

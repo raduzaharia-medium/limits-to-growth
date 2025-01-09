@@ -17,7 +17,7 @@ export class LaborUtilizationFraction extends Aux {
     this._laborForce = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._jobs.k / this._laborForce.k;
   }
 }

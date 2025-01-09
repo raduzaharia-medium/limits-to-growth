@@ -13,7 +13,7 @@ export class FractionOfInputsAllocatedToLandMaintenance extends Table {
     this._perceivedFoodRatio = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._perceivedFoodRatio.k;
   }
 }

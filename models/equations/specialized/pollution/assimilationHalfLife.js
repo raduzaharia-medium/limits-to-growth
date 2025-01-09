@@ -15,7 +15,7 @@ export class AssimilationHalfLife extends Aux {
     this._assimilationHalfLifeMultiplier = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._assimilationHalfLifeMultiplier.k * this.valueIn1970;
   }
 }

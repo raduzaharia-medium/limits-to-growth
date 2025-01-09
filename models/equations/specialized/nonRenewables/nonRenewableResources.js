@@ -11,7 +11,7 @@ export class NonRenewableResources extends Level {
     this._nonRenewableResourceUsageRate = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this.j + dt * -this._nonRenewableResourceUsageRate.j;
   }
 }

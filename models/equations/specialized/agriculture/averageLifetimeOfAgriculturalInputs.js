@@ -1,3 +1,4 @@
+import { clip } from "../../../../tools.js";
 import { Aux } from "../../aux.js";
 
 export class AverageLifetimeOfAgriculturalInputs extends Aux {
@@ -11,7 +12,7 @@ export class AverageLifetimeOfAgriculturalInputs extends Aux {
     this.sequenceNumber = 16;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return clip(this.after, this.before, t, this.policyYear);
   }
 }

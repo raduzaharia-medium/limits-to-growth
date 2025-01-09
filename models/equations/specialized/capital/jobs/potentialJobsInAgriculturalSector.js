@@ -18,7 +18,7 @@ export class PotentialJobsInAgriculturalSector extends Aux {
     this._jobsPerHectare = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._arableLand.k * this._jobsPerHectare.k;
   }
 }

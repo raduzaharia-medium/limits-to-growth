@@ -18,7 +18,7 @@ export class PotentialJobsInIndustrialSector extends Aux {
     this._jobsPerIndustrialCapitalUnit = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._industrialCapital.k * this._jobsPerIndustrialCapitalUnit.k;
   }
 }

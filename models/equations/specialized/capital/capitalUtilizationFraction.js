@@ -13,7 +13,7 @@ export class CapitalUtilizationFraction extends Table {
     this._laborUtilizationFractionDelayed = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._laborUtilizationFractionDelayed.k || 1.0; // to break circularity
   }
 }

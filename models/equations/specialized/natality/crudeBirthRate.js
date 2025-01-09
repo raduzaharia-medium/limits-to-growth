@@ -20,7 +20,7 @@ export class CrudeBirthRate extends Aux {
     this._population = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return (1000 * this._birthsPerYear.j) / this._population.k;
   }
 }

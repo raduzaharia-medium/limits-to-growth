@@ -20,7 +20,7 @@ export class LandDevelopmentRate extends Rate {
     this._developmentCostPerHectare = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return (this._totalAgriculturalInvestment.k * this._fractionOfInputsAllocatedToLandDevelopment.k) / this._developmentCostPerHectare.k;
   }
 }

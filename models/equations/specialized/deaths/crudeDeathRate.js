@@ -20,7 +20,7 @@ export class CrudeDeathRate extends Aux {
     this._population = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return (1000 * this._deathsPerYear.k) / this._population.k;
   }
 }

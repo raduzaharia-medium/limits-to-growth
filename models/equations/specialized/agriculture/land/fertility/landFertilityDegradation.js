@@ -16,7 +16,7 @@ export class LandFertilityDegradation extends Rate {
     this._landFertilityDegradationRate = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._landFertility.k * this._landFertilityDegradationRate.k;
   }
 }

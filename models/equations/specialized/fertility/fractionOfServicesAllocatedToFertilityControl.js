@@ -13,7 +13,7 @@ export class FractionOfServicesAllocatedToFertilityControl extends Table {
     this._needForFertilityControl = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._needForFertilityControl.k;
   }
 }

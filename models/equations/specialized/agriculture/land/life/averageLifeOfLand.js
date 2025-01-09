@@ -15,7 +15,7 @@ export class AverageLifeOfLand extends Aux {
     this._landLifeMultiplierFromYield = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this.normal * this._landLifeMultiplierFromYield.k;
   }
 }

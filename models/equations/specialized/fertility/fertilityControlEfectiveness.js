@@ -12,7 +12,7 @@ export class FertilityControlEffectiveness extends Table {
     this._fertilityControlFacilitiesPerCapita = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._fertilityControlFacilitiesPerCapita.k;
   }
 }

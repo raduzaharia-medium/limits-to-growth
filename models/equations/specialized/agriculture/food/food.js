@@ -20,7 +20,7 @@ export class Food extends Aux {
     this._arableLand = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._landYield.k * this._arableLand.k * this.landFractionHarvestedK * (1 - this.processingLossK);
   }
 }

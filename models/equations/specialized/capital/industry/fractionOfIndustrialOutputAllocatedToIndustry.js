@@ -25,7 +25,7 @@ export class FractionOfIndustrialOutputAllocatedToIndustry extends Aux {
     this._fractionOfIndustrialOutputAllocatedToConsumption = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return (
       1 -
       this._fractionOfIndustrialOutputAllocatedToAgriculture.k -

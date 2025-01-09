@@ -25,7 +25,7 @@ export class MarginalProductivityOfAgriculturalInputs extends Aux {
     this._landYieldMultiplierFromCapital = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return (
       this._averageLifetimeOfAgriculturalInputsK * this._landYield.k * (this._marginalLandYieldMultiplierFromCapital.k / this._landYieldMultiplierFromCapital.k)
     );

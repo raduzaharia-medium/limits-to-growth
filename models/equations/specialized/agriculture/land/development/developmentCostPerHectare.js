@@ -16,7 +16,7 @@ export class DevelopmentCostPerHectare extends Table {
     this._potentiallyArableLandTotal = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._potentiallyArableLand.k / this._potentiallyArableLandTotal;
   }
 }

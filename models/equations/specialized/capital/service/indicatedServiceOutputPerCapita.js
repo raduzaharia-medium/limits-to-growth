@@ -1,3 +1,4 @@
+import { clip } from "../../../../../tools.js";
 import { Aux } from "../../../aux.js";
 
 export class IndicatedServiceOutputPerCapita extends Aux {
@@ -18,7 +19,7 @@ export class IndicatedServiceOutputPerCapita extends Aux {
     this._indicatedServiceOutputPerCapitaBefore = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return clip(this._indicatedServiceOutputPerCapitaAfter.k, this._indicatedServiceOutputPerCapitaBefore.k, t, this.policyYear);
   }
 }

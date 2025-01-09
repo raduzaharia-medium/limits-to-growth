@@ -27,7 +27,7 @@ export class Population extends Aux {
     this._population65AndOver = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._population0To14.k + this._population15To44.k + this._population45To64.k + this._population65AndOver.k;
   }
 }

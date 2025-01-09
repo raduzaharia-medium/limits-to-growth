@@ -14,7 +14,7 @@ export class LifetimeMultiplierFromFood extends Table {
     this._foodPerCapita = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._foodPerCapita.k / this.subsistenceFoodPerCapitaK;
   }
 }

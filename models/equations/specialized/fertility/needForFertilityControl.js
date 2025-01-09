@@ -17,7 +17,7 @@ export class NeedForFertilityControl extends Aux {
     this._desiredTotalFertility = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._maxTotalFertility.k / this._desiredTotalFertility.k - 1;
   }
 }

@@ -12,7 +12,7 @@ export class UrbanIndustrialLand extends Level {
     this._landRemovalForUrbanIndustrialUse = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this.j + dt * this._landRemovalForUrbanIndustrialUse.j;
   }
 }

@@ -17,7 +17,7 @@ export class UrbanIndustrialLandRequired extends Aux {
     this._population = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._urbanIndustrialLandPerCapita.k * this._population.k;
   }
 }

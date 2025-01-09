@@ -183,15 +183,15 @@ export const resetModel = () => {
 };
 
 var warmupAuxen = function () {
-  auxArray.forEach((e) => e.warmup());
+  auxArray.forEach((e) => e.warmup(t, dt));
 };
 
 var warmupRates = function () {
-  rateArray.forEach((e) => e.warmup());
+  rateArray.forEach((e) => e.warmup(t, dt));
 };
 
 var warmupLevels = function () {
-  levelArray.forEach((e) => e.warmup());
+  levelArray.forEach((e) => e.warmup(t, dt));
 };
 
 var tock = function () {
@@ -259,7 +259,7 @@ export const runModel = () => {
   initModel();
   setUpGraph();
 
-  warmup();
+  warmup(t, dt);
 
   levelArray.forEach((e) => e.reset(startTime));
 
@@ -288,10 +288,7 @@ const population = new Population();
 qArray[1] = population;
 auxArray.push(population);
 
-const population0To14 = new Population0To14(startTime, dt);
-population0To14.updateFn = function () {
-  return population0To14.j + dt * (birthsPerYear.j - deathsPerYear0To14.j - maturationsPerYear14to15.j);
-};
+const population0To14 = new Population0To14(startTime);
 qArray[2] = population0To14;
 levelArray.push(population0To14);
 population.population0To14 = population0To14;
@@ -300,6 +297,7 @@ const deathsPerYear0To14 = new DeathsPerYear0To14();
 qArray[3] = deathsPerYear0To14;
 rateArray.push(deathsPerYear0To14);
 deathsPerYear0To14.population0To14 = population0To14;
+population0To14.deathsPerYear0To14 = deathsPerYear0To14;
 
 const mortality0To14 = new Mortality0To14();
 qArray[4] = mortality0To14;
@@ -311,19 +309,19 @@ qArray[5] = maturationsPerYear14to15;
 rateArray.push(maturationsPerYear14to15);
 maturationsPerYear14to15.population0To14 = population0To14;
 maturationsPerYear14to15.mortality0To14 = mortality0To14;
+population0To14.maturationsPerYear14to15 = maturationsPerYear14to15;
 
 const population15To44 = new Population15To44(startTime, dt);
-population15To44.updateFn = function () {
-  return population15To44.j + dt * (maturationsPerYear14to15.j - deathsPerYear15To44.j - maturationsPerYear44to45.j);
-};
 qArray[6] = population15To44;
 levelArray.push(population15To44);
 population.population15To44 = population15To44;
+population15To44.maturationsPerYear14to15 = maturationsPerYear14to15;
 
 const deathsPerYear15To44 = new DeathsPerYear15To44();
 qArray[7] = deathsPerYear15To44;
 rateArray.push(deathsPerYear15To44);
 deathsPerYear15To44.population15To44 = population15To44;
+population15To44.deathsPerYear15To44 = deathsPerYear15To44;
 
 const mortality15To44 = new Mortality15To44();
 qArray[8] = mortality15To44;
@@ -335,14 +333,13 @@ qArray[9] = maturationsPerYear44to45;
 rateArray.push(maturationsPerYear44to45);
 maturationsPerYear44to45.population15To44 = population15To44;
 maturationsPerYear44to45.mortality15To44 = mortality15To44;
+population15To44.maturationsPerYear44to45 = maturationsPerYear44to45;
 
-const population45To64 = new Population45To64(startTime, dt);
-population45To64.updateFn = function () {
-  return population45To64.j + dt * (maturationsPerYear44to45.j - deathsPerYear45To64.j - maturationsPerYear64to65.j);
-};
+const population45To64 = new Population45To64(startTime);
 qArray[10] = population45To64;
 levelArray.push(population45To64);
 population.population45To64 = population45To64;
+population45To64.maturationsPerYear44to45 = maturationsPerYear44to45;
 
 const deathsPerYear45To64 = new DeathsPerYear45To64();
 deathsPerYear45To64.units = "persons per year";
@@ -352,6 +349,7 @@ deathsPerYear45To64.updateFn = function () {
 qArray[11] = deathsPerYear45To64;
 rateArray.push(deathsPerYear45To64);
 deathsPerYear45To64.population45To64 = population45To64;
+population45To64.deathsPerYear45To64 = deathsPerYear45To64;
 
 const mortality45To64 = new Mortality45To64();
 qArray[12] = mortality45To64;
@@ -363,19 +361,19 @@ qArray[13] = maturationsPerYear64to65;
 rateArray.push(maturationsPerYear64to65);
 maturationsPerYear64to65.population45To64 = population45To64;
 maturationsPerYear64to65.mortality45To64 = mortality45To64;
+population45To64.maturationsPerYear64to65 = maturationsPerYear64to65;
 
 const population65AndOver = new Population65AndOver(startTime);
-population65AndOver.updateFn = function () {
-  return population65AndOver.j + dt * (maturationsPerYear64to65.j - deathsPerYear65AndOver.j);
-};
 qArray[14] = population65AndOver;
 levelArray.push(population65AndOver);
 population.population65AndOver = population65AndOver;
+population65AndOver.maturationsPerYear64To65 = maturationsPerYear64to65;
 
 const deathsPerYear65AndOver = new DeathsPerYear65AndOver();
 qArray[15] = deathsPerYear65AndOver;
 rateArray.push(deathsPerYear65AndOver);
 deathsPerYear65AndOver.population65AndOver = population65AndOver;
+population65AndOver.deathsPerYear65AndOver = deathsPerYear65AndOver;
 
 const mortality65AndOver = new Mortality65AndOver();
 qArray[16] = mortality65AndOver;
@@ -423,9 +421,6 @@ auxArray.push(effectiveHealthServicesPerCapita);
 effectiveHealthServicesPerCapita.healthServicesAllocationsPerCapita = healthServicesAllocationsPerCapita;
 
 const lifetimeMultiplierFromHealthServices = new LifetimeMultiplierFromHealthServices();
-lifetimeMultiplierFromHealthServices.updateFn = function () {
-  return clip(lifetimeMultiplierFromHealthServicesAfter.k, lifetimeMultiplierFromHealthServicesBefore.k, t, lifetimeMultiplierFromHealthServices.policyYear);
-};
 qArray[23] = lifetimeMultiplierFromHealthServices;
 auxArray.push(lifetimeMultiplierFromHealthServices);
 lifeExpectancy.lifetimeMultiplierFromHealthServices = lifetimeMultiplierFromHealthServices;
@@ -466,16 +461,11 @@ lifeExpectancy.lifetimeMultiplierFromPollution = lifetimeMultiplierFromPollution
 // The Birth-Rate Subsector
 
 const birthsPerYear = new BirthsPerYear();
-birthsPerYear.updateFn = function () {
-  const after = deathsPerYear.k;
-  const before = (totalFertility.k * population15To44.k * 0.5) / birthsPerYear.reproductiveLifetime;
-
-  return clip(after, before, t, birthsPerYear.populationEquilibriumTime);
-};
 qArray[30] = birthsPerYear;
 rateArray.push(birthsPerYear);
 birthsPerYear.deathsPerYear = deathsPerYear;
 birthsPerYear.population15To44 = population15To44;
+population0To14.birthsPerYear = birthsPerYear;
 
 const crudeBirthRate = new CrudeBirthRate();
 qArray[31] = crudeBirthRate;
@@ -486,6 +476,7 @@ crudeBirthRate.population = population;
 const totalFertility = new TotalFertility();
 qArray[32] = totalFertility;
 auxArray.push(totalFertility);
+birthsPerYear.totalFertility = totalFertility;
 
 const maxTotalFertility = new MaxTotalFertility();
 qArray[33] = maxTotalFertility;
@@ -517,9 +508,6 @@ perceivedLifeExpectancy.lifeExpectancy = lifeExpectancy;
 
 const zeroPopulationGrowthTargetYear = 4000;
 const desiredCompletedFamilySize = new DesiredCompletedFamilySize(zeroPopulationGrowthTargetYear);
-desiredCompletedFamilySize.updateFn = function () {
-  return clip(2.0, desiredCompletedFamilySize.normal * familyResponseToSocialNorm.k * socialFamilySizeNorm.k, t, zeroPopulationGrowthTargetYear);
-};
 qArray[38] = desiredCompletedFamilySize;
 auxArray.push(desiredCompletedFamilySize);
 desiredTotalFertility.desiredCompletedFamilySize = desiredCompletedFamilySize;
@@ -598,17 +586,11 @@ auxArray.push(industrialOutput);
 industrialOutputPerCapita.industrialOutput = industrialOutput;
 
 const industrialCapitalOutputRatio = new IndustrialCapitalOutputRatio(policyYear);
-industrialCapitalOutputRatio.updateFn = function () {
-  return clip(industrialCapitalOutputRatio.after, industrialCapitalOutputRatio.before, t, policyYear);
-};
 qArray[51] = industrialCapitalOutputRatio;
 auxArray.push(industrialCapitalOutputRatio);
 industrialOutput.industrialCapitalOutputRatio = industrialCapitalOutputRatio;
 
-const industrialCapital = new IndustrialCapital(startTime, dt);
-industrialCapital.updateFn = function () {
-  return industrialCapital.j + dt * (industrialCapitalInvestmentRate.j - industrialCapitalDepreciationRate.j);
-};
+const industrialCapital = new IndustrialCapital(startTime);
 qArray[52] = industrialCapital;
 levelArray.push(industrialCapital);
 industrialOutput.industrialCapital = industrialCapital;
@@ -620,9 +602,6 @@ industrialCapital.industrialCapitalDepreciationRate = industrialCapitalDepreciat
 industrialCapitalDepreciationRate.industrialCapital = industrialCapital;
 
 const averageLifetimeOfIndustrialCapital = new AverageLifetimeOfIndustrialCapital(policyYear);
-averageLifetimeOfIndustrialCapital.updateFn = function () {
-  return clip(averageLifetimeOfIndustrialCapital.after, averageLifetimeOfIndustrialCapital.before, t, policyYear);
-};
 qArray[54] = averageLifetimeOfIndustrialCapital;
 auxArray.push(averageLifetimeOfIndustrialCapital);
 industrialCapitalDepreciationRate.averageLifetimeOfIndustrialCapital = averageLifetimeOfIndustrialCapital;
@@ -639,22 +618,11 @@ auxArray.push(fractionOfIndustrialOutputAllocatedToIndustry);
 industrialCapitalInvestmentRate.fractionOfIndustrialOutputAllocatedToIndustry = fractionOfIndustrialOutputAllocatedToIndustry;
 
 const fractionOfIndustrialOutputAllocatedToConsumption = new FractionOfIndustrialOutputAllocatedToConsumption();
-fractionOfIndustrialOutputAllocatedToConsumption.updateFn = function () {
-  return clip(
-    fractionOfIndustrialOutputAllocatedToConsumptionVariable.k,
-    fractionOfIndustrialOutputAllocatedToConsumptionConstant.k,
-    t,
-    fractionOfIndustrialOutputAllocatedToConsumption.industrialEquilibriumTime
-  );
-};
 qArray[57] = fractionOfIndustrialOutputAllocatedToConsumption;
 auxArray.push(fractionOfIndustrialOutputAllocatedToConsumption);
 fractionOfIndustrialOutputAllocatedToIndustry.fractionOfIndustrialOutputAllocatedToConsumption = fractionOfIndustrialOutputAllocatedToConsumption;
 
 const fractionOfIndustrialOutputAllocatedToConsumptionConstant = new FractionOfIndustrialOutputAllocatedToConsumptionConstant(policyYear);
-fractionOfIndustrialOutputAllocatedToConsumptionConstant.updateFn = function () {
-  return clip(fractionOfIndustrialOutputAllocatedToConsumptionConstant.after, fractionOfIndustrialOutputAllocatedToConsumptionConstant.before, t, policyYear);
-};
 qArray[58] = fractionOfIndustrialOutputAllocatedToConsumptionConstant;
 auxArray.push(fractionOfIndustrialOutputAllocatedToConsumptionConstant);
 fractionOfIndustrialOutputAllocatedToConsumption.fractionOfIndustrialOutputAllocatedToConsumptionConstant =
@@ -670,9 +638,6 @@ fractionOfIndustrialOutputAllocatedToConsumptionVariable.industrialOutputPerCapi
 // The Service Subsector
 
 const indicatedServiceOutputPerCapita = new IndicatedServiceOutputPerCapita(policyYear);
-indicatedServiceOutputPerCapita.updateFn = function () {
-  return clip(indicatedServiceOutputPerCapitaAfter.k, indicatedServiceOutputPerCapitaBefore.k, t, policyYear);
-};
 qArray[60] = indicatedServiceOutputPerCapita;
 auxArray.push(indicatedServiceOutputPerCapita);
 
@@ -689,9 +654,6 @@ indicatedServiceOutputPerCapita.indicatedServiceOutputPerCapitaAfter = indicated
 indicatedServiceOutputPerCapitaAfter.industrialOutputPerCapita = industrialOutputPerCapita;
 
 const fractionOfIndustrialOutputAllocatedToServices = new FractionOfIndustrialOutputAllocatedToServices(policyYear);
-fractionOfIndustrialOutputAllocatedToServices.updateFn = function () {
-  return clip(fractionOfIndustrialOutputAllocatedToServicesAfter.k, fractionOfIndustrialOutputAllocatedToServicesBefore.k, t, policyYear);
-};
 qArray[63] = fractionOfIndustrialOutputAllocatedToServices;
 auxArray.push(fractionOfIndustrialOutputAllocatedToServices);
 fractionOfIndustrialOutputAllocatedToIndustry.fractionOfIndustrialOutputAllocatedToServices = fractionOfIndustrialOutputAllocatedToServices;
@@ -715,9 +677,6 @@ serviceCapitalInvestmentRate.industrialOutput = industrialOutput;
 serviceCapitalInvestmentRate.fractionOfIndustrialOutputAllocatedToServices = fractionOfIndustrialOutputAllocatedToServices;
 
 const serviceCapital = new ServiceCapital();
-serviceCapital.updateFn = function () {
-  return serviceCapital.j + dt * (serviceCapitalInvestmentRate.j - serviceCapitalDepreciationRate.j);
-};
 qArray[67] = serviceCapital;
 levelArray.push(serviceCapital);
 serviceCapital.serviceCapitalInvestmentRate = serviceCapitalInvestmentRate;
@@ -729,9 +688,6 @@ serviceCapital.serviceCapitalDepreciationRate = serviceCapitalDepreciationRate;
 serviceCapitalDepreciationRate.serviceCapital = serviceCapital;
 
 const averageLifetimeOfServiceCapital = new AverageLifetimeOfServiceCapital(policyYear);
-averageLifetimeOfServiceCapital.updateFn = function () {
-  return clip(averageLifetimeOfServiceCapital.after, averageLifetimeOfServiceCapital.before, t, policyYear);
-};
 qArray[69] = averageLifetimeOfServiceCapital;
 auxArray.push(averageLifetimeOfServiceCapital);
 serviceCapitalDepreciationRate.averageLifetimeOfServiceCapital = averageLifetimeOfServiceCapital;
@@ -752,9 +708,6 @@ serviceOutputPerCapita.population = population;
 serviceOutputPerCapita.serviceOutput = serviceOutput;
 
 const serviceCapitalOutputRatio = new ServiceCapitalOutputRatio(policyYear);
-serviceCapitalOutputRatio.updateFn = function () {
-  return clip(serviceCapitalOutputRatio.after, serviceCapitalOutputRatio.before, t, policyYear);
-};
 qArray[72] = serviceCapitalOutputRatio;
 auxArray.push(serviceCapitalOutputRatio);
 serviceOutput.serviceCapitalOutputRatio = serviceCapitalOutputRatio;
@@ -834,18 +787,12 @@ qArray[84] = landFractionCultivated;
 auxArray.push(landFractionCultivated);
 
 const arableLand = new ArableLand();
-arableLand.updateFn = function () {
-  return arableLand.j + dt * (landDevelopmentRate.j - landErosionRate.j - landRemovalForUrbanIndustrialUse.j);
-};
 qArray[85] = arableLand;
 levelArray.push(arableLand);
 potentialJobsInAgriculturalSector.arableLand = arableLand;
 landFractionCultivated.arableLand = arableLand;
 
 const potentiallyArableLand = new PotentiallyArableLand();
-potentiallyArableLand.updateFn = function () {
-  return potentiallyArableLand.j + dt * -landDevelopmentRate.j;
-};
 qArray[86] = potentiallyArableLand;
 levelArray.push(potentiallyArableLand);
 
@@ -862,9 +809,6 @@ foodPerCapita.food = food;
 foodPerCapita.population = population;
 
 const indicatedFoodPerCapita = new IndicatedFoodPerCapita(policyYear);
-indicatedFoodPerCapita.updateFn = function () {
-  return clip(indicatedFoodPerCapitaAfter.k, indicatedFoodPerCapitaBefore.k, t, policyYear);
-};
 qArray[89] = indicatedFoodPerCapita;
 auxArray.push(indicatedFoodPerCapita);
 
@@ -886,9 +830,6 @@ auxArray.push(totalAgriculturalInvestment);
 totalAgriculturalInvestment.industrialOutput = industrialOutput;
 
 const fractionOfIndustrialOutputAllocatedToAgriculture = new FractionOfIndustrialOutputAllocatedToAgriculture(policyYear);
-fractionOfIndustrialOutputAllocatedToAgriculture.updateFn = function () {
-  return clip(fractionOfIndustrialOutputAllocatedToAgricultureAfter.k, fractionOfIndustrialOutputAllocatedToAgricultureBefore.k, t, policyYear);
-};
 qArray[93] = fractionOfIndustrialOutputAllocatedToAgriculture;
 auxArray.push(fractionOfIndustrialOutputAllocatedToAgriculture);
 fractionOfIndustrialOutputAllocatedToIndustry._fractionOfIndustrialOutputAllocatedToAgriculture = fractionOfIndustrialOutputAllocatedToAgriculture;
@@ -938,9 +879,6 @@ agriculturalInputs.currentAgriculturalInputs = currentAgriculturalInputs;
 
 // note: output of this equation goes unused
 const averageLifetimeOfAgriculturalInputs = new AverageLifetimeOfAgriculturalInputs(policyYear);
-averageLifetimeOfAgriculturalInputs.updateFn = function () {
-  return clip(this.after, this.before, t, policyYear);
-};
 qArray[100] = averageLifetimeOfAgriculturalInputs;
 auxArray.push(averageLifetimeOfAgriculturalInputs);
 
@@ -963,17 +901,11 @@ food.landYield = landYield;
 landYield._landYieldMultiplierFromCapital = landYieldMultiplierFromCapital;
 
 const landYieldFactor = new LandYieldFactor();
-landYieldFactor.updateFn = function () {
-  return clip(this.after, this.before, t, policyYear);
-};
 qArray[104] = landYieldFactor;
 auxArray.push(landYieldFactor);
 landYield.landYieldFactor = landYieldFactor;
 
 const landYieldMultiplierFromAirPollution = new LandYieldMultiplierFromAirPollution(policyYear);
-landYieldMultiplierFromAirPollution.updateFn = function () {
-  return clip(landYieldMultiplierFromAirPollutionAfter.k, landYieldMultiplierFromAirPollutionBefore.k, t, policyYear);
-};
 qArray[105] = landYieldMultiplierFromAirPollution;
 auxArray.push(landYieldMultiplierFromAirPollution);
 landYield.landYieldMultiplierFromAirPollution = landYieldMultiplierFromAirPollution;
@@ -1026,9 +958,6 @@ qArray[112] = averageLifeOfLand;
 auxArray.push(averageLifeOfLand);
 
 const landLifeMultiplierFromYield = new LandLifeMultiplierFromYield();
-landLifeMultiplierFromYield.updateFn = function () {
-  return clip(landLifeMultiplierFromYieldAfter.k, landLifeMultiplierFromYieldBefore.k, t, policyYear);
-};
 qArray[113] = landLifeMultiplierFromYield;
 auxArray.push(landLifeMultiplierFromYield);
 averageLifeOfLand.landLifeMultiplierFromYield = landLifeMultiplierFromYield;
@@ -1071,9 +1000,6 @@ arableLand.landRemovalForUrbanIndustrialUse = landRemovalForUrbanIndustrialUse;
 landRemovalForUrbanIndustrialUse.urbanIndustrialLandRequired = urbanIndustrialLandRequired;
 
 const urbanIndustrialLand = new UrbanIndustrialLand(startTime);
-urbanIndustrialLand.updateFn = function () {
-  return urbanIndustrialLand.j + dt * landRemovalForUrbanIndustrialUse.j;
-};
 qArray[120] = urbanIndustrialLand;
 levelArray.push(urbanIndustrialLand);
 landRemovalForUrbanIndustrialUse.urbanIndustrialLand = urbanIndustrialLand;
@@ -1082,9 +1008,6 @@ urbanIndustrialLand.landRemovalForUrbanIndustrialUse = landRemovalForUrbanIndust
 // Loop 4: Land fertility degradation
 
 const landFertility = new LandFertility(startTime);
-landFertility.updateFn = function () {
-  return landFertility.j + dt * (landFertilityRegeneration.j - landFertilityDegradation.j);
-};
 qArray[121] = landFertility;
 levelArray.push(landFertility);
 landYield.landFertility = landFertility;
@@ -1138,9 +1061,6 @@ perceivedFoodRatio.foodRatio = foodRatio;
 
 let nonrenewableResourcesInitialK = 1.0e12; // resource units, used in eqns 129 and 133
 const nonrenewableResources = new NonRenewableResources(nonrenewableResourcesInitialK, startTime);
-nonrenewableResources.updateFn = function () {
-  return nonrenewableResources.j + dt * -nonrenewableResourceUsageRate.j;
-};
 qArray[129] = nonrenewableResources;
 levelArray.push(nonrenewableResources);
 
@@ -1151,9 +1071,6 @@ nonrenewableResources.nonRenewableResourceUsageRate = nonrenewableResourceUsageR
 nonrenewableResourceUsageRate.population = population;
 
 const nonrenewableResourceUsageFactor = new NonRenewableResourceUsageFactor(policyYear);
-nonrenewableResourceUsageFactor.updateFn = function () {
-  return clip(this.after, this.before, t, policyYear);
-};
 qArray[131] = nonrenewableResourceUsageFactor;
 auxArray.push(nonrenewableResourceUsageFactor);
 nonrenewableResourceUsageRate.nonRenewableResourceUsageFactor = nonrenewableResourceUsageFactor;
@@ -1170,9 +1087,6 @@ auxArray.push(nonrenewableResourceFractionRemaining);
 nonrenewableResourceFractionRemaining.nonRenewableResources = nonrenewableResources;
 
 const fractionOfCapitalAllocatedToObtainingResources = new FractionOfCapitalAllocatedToObtainingResources(policyYear);
-fractionOfCapitalAllocatedToObtainingResources.updateFn = function () {
-  return clip(fractionOfCapitalAllocatedToObtainingResourcesAfter.k, fractionOfCapitalAllocatedToObtainingResourcesBefore.k, t, policyYear);
-};
 qArray[134] = fractionOfCapitalAllocatedToObtainingResources;
 auxArray.push(fractionOfCapitalAllocatedToObtainingResources);
 industrialOutput.fractionOfCapitalAllocatedToObtainingResources = fractionOfCapitalAllocatedToObtainingResources;
@@ -1196,9 +1110,6 @@ qArray[137] = persistentPollutionGenerationRate;
 rateArray.push(persistentPollutionGenerationRate);
 
 const persistentPollutionGenerationFactor = new PersistentPollutionGenerationFactor(policyYear);
-persistentPollutionGenerationFactor.updateFn = function () {
-  return clip(this.after, this.before, t, policyYear);
-};
 qArray[138] = persistentPollutionGenerationFactor;
 auxArray.push(persistentPollutionGenerationFactor);
 persistentPollutionGenerationRate.persistentPollutionGenerationFactor = persistentPollutionGenerationFactor;
@@ -1224,9 +1135,6 @@ rateArray.push(persistenPollutionAppearanceRate);
 persistenPollutionAppearanceRate.persistentPollutionGenerationRate = persistentPollutionGenerationRate;
 
 const persistentPollution = new PersistentPollution(startTime);
-persistentPollution.updateFn = function () {
-  return persistentPollution.j + dt * (persistenPollutionAppearanceRate.j - persistenPollutionAssimilationRate.j);
-};
 qArray[142] = persistentPollution;
 levelArray.push(persistentPollution);
 persistentPollution.persistenPollutionAppearanceRate = persistenPollutionAppearanceRate;

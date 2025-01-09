@@ -17,7 +17,7 @@ export class FractionOfInputsAllocatedToLandDevelopment extends Table {
     this._marginalProductivityOfAgriculturalInputs = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._marginalProductivityOfLandDevelopment.k / this._marginalProductivityOfAgriculturalInputs.k;
   }
 }

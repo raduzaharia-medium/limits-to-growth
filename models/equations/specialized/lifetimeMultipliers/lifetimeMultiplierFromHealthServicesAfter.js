@@ -12,7 +12,7 @@ export class LifetimeMultiplierFromHealthServicesAfter extends Table {
     this._effectiveHealthServicesPerCapita = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._effectiveHealthServicesPerCapita.k;
   }
 }

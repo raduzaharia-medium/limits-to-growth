@@ -19,7 +19,7 @@ export class PersistentPollutionGeneratedByAgriculturalOutput extends Aux {
     this._arableLand = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._agriculturalInputsPerHectare.k * this._arableLand.k * this.fractionOfInputsAsPersistentMaterial * this.agriculturalMaterialsToxicityIndex;
   }
 }

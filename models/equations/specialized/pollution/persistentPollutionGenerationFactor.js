@@ -1,3 +1,4 @@
+import { clip } from "../../../../tools.js";
 import { Aux } from "../../aux.js";
 
 export class PersistentPollutionGenerationFactor extends Aux {
@@ -10,7 +11,7 @@ export class PersistentPollutionGenerationFactor extends Aux {
     this.sequenceNumber = 13;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return clip(this.after, this.before, t, this.policyYear);
   }
 }

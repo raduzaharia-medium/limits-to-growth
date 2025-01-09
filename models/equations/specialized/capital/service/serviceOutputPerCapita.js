@@ -17,7 +17,7 @@ export class ServiceOutputPerCapita extends Aux {
     this._population = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._serviceOutput.k / this._population.k;
   }
 }

@@ -13,7 +13,7 @@ export class IndicatedServiceOutputPerCapitaAfter extends Table {
     this._industrialOutputPerCapita = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._industrialOutputPerCapita.k;
   }
 }

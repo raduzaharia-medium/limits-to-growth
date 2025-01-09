@@ -22,7 +22,7 @@ export class AgriculturalInputsPerHectare extends Aux {
     this._arableLand = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return (this._agriculturalInputs.k * (1 - this._fractionOfInputsAllocatedToLandMaintenance.k)) / this._arableLand.k;
   }
 }

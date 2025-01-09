@@ -15,7 +15,7 @@ export class NonRenewableResourceFractionRemaining extends Aux {
     this._nonRenewableResources = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._nonRenewableResources.k / this.nonRenewableResourcesInitialK;
   }
 }

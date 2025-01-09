@@ -18,7 +18,7 @@ export class FertilityControlAllocationPerCapita extends Aux {
     this._serviceOutputPerCapita = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._fractionOfServicesAllocatedToFertilityControl.k * this._serviceOutputPerCapita.k;
   }
 }

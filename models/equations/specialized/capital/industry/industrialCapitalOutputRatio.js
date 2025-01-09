@@ -1,3 +1,4 @@
+import { clip } from "../../../../../tools.js";
 import { Aux } from "../../../aux.js";
 
 export class IndustrialCapitalOutputRatio extends Aux {
@@ -12,7 +13,7 @@ export class IndustrialCapitalOutputRatio extends Aux {
     this.sequenceNumber = 3;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return clip(this.after, this.before, t, this.policyYear);
   }
 }

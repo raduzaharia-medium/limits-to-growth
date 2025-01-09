@@ -16,7 +16,7 @@ export class UrbanIndustrialLandPerCapita extends Table {
     this._industrialOutputPerCapita = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._industrialOutputPerCapita.k;
   }
 }

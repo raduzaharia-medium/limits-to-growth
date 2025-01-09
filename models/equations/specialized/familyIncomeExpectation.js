@@ -17,7 +17,7 @@ export class FamilyIncomeExpectation extends Aux {
     this._averageIndustrialOutputPerCapita = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return (this._industrialOutputPerCapita.k - this._averageIndustrialOutputPerCapita.k) / this._averageIndustrialOutputPerCapita.k;
   }
 }

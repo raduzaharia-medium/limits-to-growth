@@ -1,11 +1,10 @@
 import { Level } from "../../../level.js";
 
 export class IndustrialCapital extends Level {
-  constructor(startTime, dt) {
+  constructor(startTime) {
     super("industrialCapital", 52, 2.1e11, startTime);
 
     this.units = "dollars";
-    this.dt = dt;
     this.plottable = true;
   }
 
@@ -17,7 +16,7 @@ export class IndustrialCapital extends Level {
     this._industrialCapitalDepreciationRate = value;
   }
 
-  updateFn() {
-    return this.j + this.dt * (this._industrialCapitalInvestmentRate.j - this._industrialCapitalDepreciationRate.j);
+  updateFn(t, dt) {
+    return this.j + dt * (this._industrialCapitalInvestmentRate.j - this._industrialCapitalDepreciationRate.j);
   }
 }

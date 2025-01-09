@@ -16,7 +16,7 @@ export class ServiceCapitalDepreciationRate extends Rate {
     this._averageLifetimeOfServiceCapital = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._serviceCapital.k / this._averageLifetimeOfServiceCapital.k;
   }
 }

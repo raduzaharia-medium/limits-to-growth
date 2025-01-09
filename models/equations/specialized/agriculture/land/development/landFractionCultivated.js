@@ -13,7 +13,7 @@ export class LandFractionCultivated extends Aux {
     this._arableLand = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._arableLand.k / this.potentiallyArableLandTotal;
   }
 }

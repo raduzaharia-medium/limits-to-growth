@@ -1,11 +1,10 @@
 import { Level } from "../../level.js";
 
 export class Population15To44 extends Level {
-  constructor(startTime, dt) {
+  constructor(startTime) {
     super("population15To44", 6, 7.0e8, startTime);
 
     this.units = "persons";
-    this.dt = dt;
   }
 
   set maturationsPerYear14to15(value) {
@@ -20,7 +19,7 @@ export class Population15To44 extends Level {
     this._maturationsPerYear44to45 = value;
   }
 
-  updateFn() {
-    return this.j + this.dt * (this._maturationsPerYear14to15.j - this._deathsPerYear15To44.j - this._maturationsPerYear44to45.j);
+  updateFn(t, dt) {
+    return this.j + dt * (this._maturationsPerYear14to15.j - this._deathsPerYear15To44.j - this._maturationsPerYear44to45.j);
   }
 }

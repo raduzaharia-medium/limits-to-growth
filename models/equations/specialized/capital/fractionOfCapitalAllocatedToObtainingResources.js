@@ -1,3 +1,4 @@
+import { clip } from "../../../../tools.js";
 import { Aux } from "../../aux.js";
 
 export class FractionOfCapitalAllocatedToObtainingResources extends Aux {
@@ -18,7 +19,7 @@ export class FractionOfCapitalAllocatedToObtainingResources extends Aux {
     this._fractionOfCapitalAllocatedToObtainingResourcesBefore = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return clip(this._fractionOfCapitalAllocatedToObtainingResourcesAfter.k, this._fractionOfCapitalAllocatedToObtainingResourcesBefore.k, t, this.policyYear);
   }
 }

@@ -20,7 +20,7 @@ export class LandFertilityRegeneration extends Rate {
     this._landFertilityRegenerationTime = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return (this._inherentLandFertilityK - this._landFertility.k) / this._landFertilityRegenerationTime.k;
   }
 }

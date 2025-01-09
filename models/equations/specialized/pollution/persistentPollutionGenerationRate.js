@@ -20,7 +20,7 @@ export class PersistentPollutionGenerationRate extends Rate {
     this._persistentPollutionGenerationFactor = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return (
       (this._persistentPollutionGeneratedByIndustrialOutput.k + this._persistentPollutionGeneratedByAgriculturalOutput.k) *
       this._persistentPollutionGenerationFactor.k

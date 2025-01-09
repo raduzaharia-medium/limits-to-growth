@@ -1,3 +1,4 @@
+import { clip } from "../../../../../../tools.js";
 import { Aux } from "../../../../aux.js";
 
 export class LandLifeMultiplierFromYield extends Aux {
@@ -18,7 +19,7 @@ export class LandLifeMultiplierFromYield extends Aux {
     this._landLifeMultiplierFromYieldBefore = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return clip(this._landLifeMultiplierFromYieldAfter.k, this._landLifeMultiplierFromYieldBefore.k, t, this.policyYear);
   }
 }

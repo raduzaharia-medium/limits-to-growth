@@ -25,7 +25,7 @@ export class ServiceOutput extends Aux {
     this._serviceCapitalOutputRatio = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return (this._serviceCapital.k * this._capitalUtilizationFraction.k) / this._serviceCapitalOutputRatio.k;
   }
 }

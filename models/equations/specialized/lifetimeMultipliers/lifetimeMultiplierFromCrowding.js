@@ -16,7 +16,7 @@ export class LifetimeMultiplierFromCrowding extends Aux {
     this._fractionOfPopulationUrban = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return 1 - this._crowdingMultiplierFromIndustrialization.k * this._fractionOfPopulationUrban.k;
   }
 }

@@ -16,7 +16,7 @@ export class FractionOfIndustrialOutputAllocatedToServicesAfter extends Table {
     this._indicatedServiceOutputPerCapita = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._serviceOutputPerCapita.k / this._indicatedServiceOutputPerCapita.k;
   }
 }

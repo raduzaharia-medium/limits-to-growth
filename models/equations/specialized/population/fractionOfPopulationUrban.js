@@ -13,7 +13,7 @@ export class FractionOfPopulationUrban extends Table {
     this._population = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._population.k;
   }
 }

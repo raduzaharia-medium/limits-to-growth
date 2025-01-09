@@ -24,7 +24,7 @@ export class DeathsPerYear extends Aux {
     this._deathsPerYear65AndOver = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._deathsPerYear0To14.j + this._deathsPerYear15To44.j + this._deathsPerYear45To64.j + this._deathsPerYear65AndOver.j;
   }
 }

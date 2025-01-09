@@ -17,7 +17,7 @@ export class LandRemovalForUrbanIndustrialUse extends Rate {
     this._urbanIndustrialLandRequired = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return Math.max(0, (this._urbanIndustrialLandRequired.k - this._urbanIndustrialLand.k) / this.developmentTime);
   }
 }

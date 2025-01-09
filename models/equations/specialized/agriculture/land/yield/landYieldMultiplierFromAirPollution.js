@@ -1,3 +1,4 @@
+import { clip } from "../../../../../../tools.js";
 import { Aux } from "../../../../aux.js";
 
 export class LandYieldMultiplierFromAirPollution extends Aux {
@@ -17,7 +18,7 @@ export class LandYieldMultiplierFromAirPollution extends Aux {
     this._landYieldMultiplierFromAirPollutionBefore = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return clip(this._landYieldMultiplierFromAirPollutionAfter.k, this._landYieldMultiplierFromAirPollutionBefore.k, t, this.policyYear);
   }
 }

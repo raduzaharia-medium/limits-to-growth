@@ -12,7 +12,7 @@ export class LandYieldMultiplierFromAirPollutionBefore extends Table {
     this._industrialOutput = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._industrialOutput.k / this._industrialOutput.valueIn1970;
   }
 }

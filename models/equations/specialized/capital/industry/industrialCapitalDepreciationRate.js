@@ -16,7 +16,7 @@ export class IndustrialCapitalDepreciationRate extends Rate {
     this._averageLifetimeOfIndustrialCapital = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._industrialCapital.k / this._averageLifetimeOfIndustrialCapital.k;
   }
 }

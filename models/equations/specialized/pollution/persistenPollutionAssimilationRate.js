@@ -16,7 +16,7 @@ export class PersistenPollutionAssimilationRate extends Rate {
     this._assimilationHalfLife = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._persistentPollution.k / (this._assimilationHalfLife.k * 1.4);
   }
 }

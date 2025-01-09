@@ -15,7 +15,7 @@ export class PersistentPollution extends Level {
     this._persistenPollutionAssimilationRate = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this.j + dt * (this._persistenPollutionAppearanceRate.j - this._persistenPollutionAssimilationRate.j);
   }
 }

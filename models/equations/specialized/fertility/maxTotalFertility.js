@@ -13,7 +13,7 @@ export class MaxTotalFertility extends Aux {
     this._fecundityMultiplier = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this.normal * this._fecundityMultiplier.k;
   }
 }

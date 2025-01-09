@@ -12,7 +12,7 @@ export class FractionOfCapitalAllocatedToObtainingResourcesBefore extends Table 
     this._nonRenewableResourceFractionRemaining = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._nonRenewableResourceFractionRemaining.k;
   }
 }

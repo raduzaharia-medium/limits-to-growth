@@ -21,7 +21,7 @@ export class FractionOfOutputInServices extends Aux {
     this._industrialOutput = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._serviceOutput.k / (0.22 * this._food.k + this._serviceOutput.k + this._industrialOutput.k);
   }
 }

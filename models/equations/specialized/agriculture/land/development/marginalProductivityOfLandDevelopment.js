@@ -18,7 +18,7 @@ export class MarginalProductivityOfLandDevelopment extends Aux {
     this._developmentCostPerHectare = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._landYield.k / (this._developmentCostPerHectare.k * this.socialDiscount);
   }
 }

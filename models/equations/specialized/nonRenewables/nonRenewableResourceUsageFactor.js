@@ -1,3 +1,4 @@
+import { clip } from "../../../../tools.js";
 import { Aux } from "../../aux.js";
 
 export class NonRenewableResourceUsageFactor extends Aux {
@@ -10,7 +11,7 @@ export class NonRenewableResourceUsageFactor extends Aux {
     this.sequenceNumber = 11;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return clip(this.after, this.before, t, this.policyYear);
   }
 }

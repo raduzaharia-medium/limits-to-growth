@@ -16,7 +16,7 @@ export class FractionOfIndustrialOutputAllocatedToAgricultureAfter extends Table
     this._indicatedFoodPerCapita = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._foodPerCapita.k / this._indicatedFoodPerCapita.k;
   }
 }

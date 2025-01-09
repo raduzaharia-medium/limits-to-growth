@@ -13,7 +13,7 @@ export class FractionOfIndustrialOutputAllocatedToConsumptionVariable extends Ta
     this._industrialOutputPerCapita = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._industrialOutputPerCapita.k / this.industrialOutputPerCapitaDesired;
   }
 }

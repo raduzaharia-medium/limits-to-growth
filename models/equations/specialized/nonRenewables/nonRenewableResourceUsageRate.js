@@ -20,7 +20,7 @@ export class NonRenewableResourceUsageRate extends Rate {
     this._nonRenewableResourceUsageFactor = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._population.k * this._perCapitaResourceUsageMultiplier.k * this._nonRenewableResourceUsageFactor.k;
   }
 }

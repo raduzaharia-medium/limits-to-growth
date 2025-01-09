@@ -34,7 +34,7 @@ export class LifeExpectancy extends Aux {
     this._lifetimeMultiplierFromCrowding = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return (
       this.normal *
       this._lifetimeMultiplierFromFood.k *

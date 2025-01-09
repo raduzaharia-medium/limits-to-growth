@@ -1,3 +1,4 @@
+import { clip } from "../../../../../tools.js";
 import { Aux } from "../../../aux.js";
 
 export class FractionOfIndustrialOutputAllocatedToServices extends Aux {
@@ -18,7 +19,7 @@ export class FractionOfIndustrialOutputAllocatedToServices extends Aux {
     this._fractionOfIndustrialOutputAllocatedToServicesBefore = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return clip(this._fractionOfIndustrialOutputAllocatedToServicesAfter.k, this._fractionOfIndustrialOutputAllocatedToServicesBefore.k, t, this.policyYear);
   }
 }

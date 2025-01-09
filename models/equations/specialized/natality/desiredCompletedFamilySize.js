@@ -1,3 +1,4 @@
+import { clip } from "../../../../tools.js";
 import { Aux } from "../../aux.js";
 
 export class DesiredCompletedFamilySize extends Aux {
@@ -19,7 +20,7 @@ export class DesiredCompletedFamilySize extends Aux {
     this._socialFamilySizeNorm = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return clip(2.0, this.normal * this._familyResponseToSocialNorm.k * this._socialFamilySizeNorm.k, t, this.zeroPopulationGrowthTargetYear);
   }
 }

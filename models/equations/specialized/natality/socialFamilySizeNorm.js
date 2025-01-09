@@ -13,7 +13,7 @@ export class SocialFamilySizeNorm extends Table {
     this._delayedIndustrialOutputPerCapita = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._delayedIndustrialOutputPerCapita.k;
   }
 }

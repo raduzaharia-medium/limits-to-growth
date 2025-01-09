@@ -20,7 +20,7 @@ export class FoodPerCapita extends Aux {
     this._population = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._food.k / this._population.k;
   }
 }

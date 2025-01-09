@@ -21,7 +21,7 @@ export class TotalFertility extends Aux {
     this._desiredTotalFertility = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return Math.min(
       this._maxTotalFertility.k,
       this._maxTotalFertility.k * (1 - this._fertilityControlEffectiveness.k) + this._desiredTotalFertility.k * this._fertilityControlEffectiveness.k

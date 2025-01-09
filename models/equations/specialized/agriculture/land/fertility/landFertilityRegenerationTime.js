@@ -13,7 +13,7 @@ export class LandFertilityRegenerationTime extends Table {
     this._fractionOfInputsAllocatedToLandMaintenance = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._fractionOfInputsAllocatedToLandMaintenance.k;
   }
 }

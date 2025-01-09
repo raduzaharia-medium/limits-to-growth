@@ -28,7 +28,7 @@ export class LandYield extends Aux {
     this._landYieldMultiplierFromAirPollution = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._landYieldFactor.k * this._landFertility.k * this._landYieldMultiplierFromCapital.k * this._landYieldMultiplierFromAirPollution.k;
   }
 }

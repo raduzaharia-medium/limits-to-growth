@@ -22,7 +22,7 @@ export class Jobs extends Aux {
     this._potentialJobsInServiceSector = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._potentialJobsInIndustrialSector.k + this._potentialJobsInAgriculturalSector.k + this._potentialJobsInServiceSector.k;
   }
 }

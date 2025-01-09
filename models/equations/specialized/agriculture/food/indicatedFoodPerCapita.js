@@ -1,3 +1,4 @@
+import { clip } from "../../../../../tools.js";
 import { Aux } from "../../../aux.js";
 
 export class IndicatedFoodPerCapita extends Aux {
@@ -8,6 +9,7 @@ export class IndicatedFoodPerCapita extends Aux {
     this.dependencies = ["indicatedFoodPerCapitaBefore", "indicatedFoodPerCapitaAfter"];
     this.policyYear;
     this.sequenceNumber = 76;
+    this.policyYear = policyYear;
   }
 
   set indicatedFoodPerCapitaAfter(value) {
@@ -18,7 +20,7 @@ export class IndicatedFoodPerCapita extends Aux {
     this._indicatedFoodPerCapitaBefore = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return clip(this._indicatedFoodPerCapitaAfter.k, this._indicatedFoodPerCapitaBefore.k, t, this.policyYear);
   }
 }

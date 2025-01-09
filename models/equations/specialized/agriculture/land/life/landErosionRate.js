@@ -16,7 +16,7 @@ export class LandErosionRate extends Rate {
     this._averageLifeOfLand = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._arableLand.k / this._averageLifeOfLand.k;
   }
 }

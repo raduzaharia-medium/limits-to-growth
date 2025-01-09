@@ -1,3 +1,4 @@
+import { clip } from "../../../../tools.js";
 import { Aux } from "../../aux.js";
 
 export class FractionOfIndustrialOutputAllocatedToAgriculture extends Aux {
@@ -18,7 +19,7 @@ export class FractionOfIndustrialOutputAllocatedToAgriculture extends Aux {
     this._fractionOfIndustrialOutputAllocatedToAgricultureBefore = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return clip(
       this._fractionOfIndustrialOutputAllocatedToAgricultureAfter.k,
       this._fractionOfIndustrialOutputAllocatedToAgricultureBefore.k,

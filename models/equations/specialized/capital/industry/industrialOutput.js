@@ -27,7 +27,7 @@ export class IndustrialOutput extends Aux {
     this._industrialCapitalOutputRatio = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return (
       (this._industrialCapital.k * (1 - this._fractionOfCapitalAllocatedToObtainingResources.k) * this._capitalUtilizationFraction.k) /
       this._industrialCapitalOutputRatio.k

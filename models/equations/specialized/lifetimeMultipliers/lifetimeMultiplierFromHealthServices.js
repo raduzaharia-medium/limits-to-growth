@@ -19,11 +19,7 @@ export class LifetimeMultiplierFromHealthServices extends Aux {
     this._lifetimeMultiplierFromHealthServicesAfter = value;
   }
 
-  set t(value) {
-    this._t = value;
-  }
-
-  updateFn() {
-    return clip(this._lifetimeMultiplierFromHealthServicesAfter.k, this._lifetimeMultiplierFromHealthServicesBefore.k, this._t, this.policyYear);
+  updateFn(t, dt) {
+    return clip(this._lifetimeMultiplierFromHealthServicesAfter.k, this._lifetimeMultiplierFromHealthServicesBefore.k, t, this.policyYear);
   }
 }

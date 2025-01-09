@@ -1,3 +1,4 @@
+import { clip } from "../../../../../tools.js";
 import { Aux } from "../../../aux.js";
 
 export class AverageLifetimeOfIndustrialCapital extends Aux {
@@ -11,7 +12,7 @@ export class AverageLifetimeOfIndustrialCapital extends Aux {
     this.sequenceNumber = 4;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return clip(this.after, this.before, t, this.policyYear);
   }
 }

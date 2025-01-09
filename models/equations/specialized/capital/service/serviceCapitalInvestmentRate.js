@@ -16,7 +16,7 @@ export class ServiceCapitalInvestmentRate extends Rate {
     this._fractionOfIndustrialOutputAllocatedToServices = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._industrialOutput.k * this._fractionOfIndustrialOutputAllocatedToServices.k;
   }
 }

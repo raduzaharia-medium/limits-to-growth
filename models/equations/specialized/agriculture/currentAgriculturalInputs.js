@@ -17,7 +17,7 @@ export class CurrentAgriculturalInputs extends Aux {
     this._fractionOfInputsAllocatedToLandDevelopment = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._totalAgriculturalInvestment.k * (1 - this._fractionOfInputsAllocatedToLandDevelopment.k);
   }
 }

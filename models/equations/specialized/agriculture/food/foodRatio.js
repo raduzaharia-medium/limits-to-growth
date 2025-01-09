@@ -13,7 +13,7 @@ export class FoodRatio extends Aux {
     this._foodPerCapita = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._foodPerCapita.k / this.subsistenceFoodPerCapitaK;
   }
 }

@@ -15,7 +15,7 @@ export class DeathsPerYear0To14 extends Rate {
     this._mortality0To14 = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._population0To14.k * this._mortality0To14.k;
   }
 }

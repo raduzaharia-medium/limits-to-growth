@@ -13,7 +13,7 @@ export class LandLifeMultiplierFromYieldBefore extends Table {
     this._landYield = value;
   }
 
-  updateFn() {
+  updateFn(t, dt) {
     return this._landYield.k / this.inherentLandFertilityK;
   }
 }

@@ -51,7 +51,7 @@ export class Delay3 extends Aux {
     }
   }
 
-  warmup() {
+  warmup(t, dt) {
     this.theInput = this.initFn();
     this.j = this.k = this.theInput.k;
     this.alpha.j = this.alpha.k = this.theInput.j;
