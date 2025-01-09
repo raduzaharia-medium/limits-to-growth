@@ -6,6 +6,8 @@ export class LandErosionRate extends Rate {
 
     this.units = "hectares per year";
     this.plottable = true;
+
+    this.dependencies = ["arableLand", "averageLifeOfLand"];
   }
 
   set arableLand(value) {

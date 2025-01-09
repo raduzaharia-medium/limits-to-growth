@@ -7,6 +7,7 @@ export class PersistenPollutionAppearanceRate extends Delay3 {
     this.units = "pollution units per year";
     this.qType = "Rate";
     this.plottable = true;
+    this.dependencies = ["persistentPollutionGenerationRate"];
   }
 
   set persistentPollutionGenerationRate(value) {

@@ -6,6 +6,8 @@ export class LandFertility extends Level {
 
     this.units = "kilograms per hectare-year";
     this.plottable = true;
+
+    this.dependencies = ["landFertilityDegradation", "landFertilityRegeneration"];
   }
 
   set landFertilityDegradation(value) {

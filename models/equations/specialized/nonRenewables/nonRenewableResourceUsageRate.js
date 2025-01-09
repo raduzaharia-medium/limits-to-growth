@@ -6,6 +6,7 @@ export class NonRenewableResourceUsageRate extends Rate {
 
     this.units = "resource units per year";
     this.plottable = true;
+    this.dependencies = ["population", "perCapitaResourceUsageMultiplier", "nonRenewableResourceUsageFactor"];
   }
 
   set population(value) {

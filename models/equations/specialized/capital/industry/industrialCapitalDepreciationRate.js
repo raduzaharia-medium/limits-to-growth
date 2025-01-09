@@ -6,6 +6,8 @@ export class IndustrialCapitalDepreciationRate extends Rate {
 
     this.units = "dollars per year";
     this.plottable = true;
+
+    this.dependencies = ["industrialCapital", "averageLifetimeOfIndustrialCapital"];
   }
 
   set industrialCapital(value) {

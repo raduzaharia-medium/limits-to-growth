@@ -5,6 +5,7 @@ export class Population0To14 extends Level {
     super("population0To14", 2, 6.5e8, startTime);
 
     this.units = "persons";
+    this.dependencies = ["birthsPerYear", "deathsPerYear0To14", "maturationsPerYear14to15"];
   }
 
   set birthsPerYear(value) {

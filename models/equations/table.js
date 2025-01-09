@@ -8,6 +8,7 @@ export class Table extends Aux {
     this.iMin = iMin;
     this.iMax = iMax;
     this.iDelta = iDelta;
+    this.qType = "Aux";
 
     this.indices = [];
     for (var i = iMin; i <= iMax; i += iDelta) this.indices.push(i);

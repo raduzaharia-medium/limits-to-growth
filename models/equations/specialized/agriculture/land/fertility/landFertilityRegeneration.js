@@ -6,6 +6,8 @@ export class LandFertilityRegeneration extends Rate {
 
     this.units = "kilograms per hectare-year-year";
     this.plottable = true;
+
+    this.dependencies = ["inherentLandFertilityK", "landFertility", "landFertilityRegenerationTime"];
   }
 
   set inherentLandFertilityK(value) {

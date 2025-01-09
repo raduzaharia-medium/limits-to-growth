@@ -9,6 +9,7 @@ export class NonRenewableResourceFractionRemaining extends Aux {
     this.plotMax = 1.0;
     this.nonRenewableResourcesInitialK = nonRenewableResourcesInitialK;
     this.sequenceNumber = 12;
+    this.dependencies = ["nonRenewableResources"];
   }
 
   set nonRenewableResources(value) {

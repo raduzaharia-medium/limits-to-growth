@@ -6,6 +6,8 @@ export class LandDevelopmentRate extends Rate {
 
     this.units = "hectares per year";
     this.plottable = true;
+
+    this.dependencies = ["totalAgriculturalInvestment", "fractionOfInputsAllocatedToLandDevelopment", "developmentCostPerHectare"];
   }
 
   set totalAgriculturalInvestment(value) {

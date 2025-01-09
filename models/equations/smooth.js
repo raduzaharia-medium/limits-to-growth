@@ -6,6 +6,7 @@ export class Smooth extends Aux {
 
     this.del = delay;
     this.firstCall = true;
+    this.qType = "Aux";
   }
 
   init() {

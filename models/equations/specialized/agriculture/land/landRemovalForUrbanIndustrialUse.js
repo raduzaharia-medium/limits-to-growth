@@ -7,6 +7,8 @@ export class LandRemovalForUrbanIndustrialUse extends Rate {
     this.units = "hectares per year";
     this.developmentTime = 10; // years
     this.plottable = true;
+
+    this.dependencies = ["urbanIndustrialLand", "urbanIndustrialLandRequired"];
   }
 
   set urbanIndustrialLand(value) {

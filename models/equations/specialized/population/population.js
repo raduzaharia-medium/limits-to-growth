@@ -9,6 +9,8 @@ export class Population extends Aux {
     this.plotMin = 0;
     this.plotMax = 1.6e10;
     this.sequenceNumber = 0;
+
+    this.dependencies = ["population0To14", "population15To44", "population45To64", "population65AndOver"];
   }
 
   set population0To14(value) {

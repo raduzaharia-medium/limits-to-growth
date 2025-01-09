@@ -8,7 +8,7 @@ export class ServiceOutput extends Aux {
     this.plotColor = "#4a8a91";
     this.plotMin = 0;
     this.plotMax = 1.0e13;
-    this.dependencies = ["capitalUtilizationFraction", "serviceCapitalOutputRatio"];
+    this.dependencies = ["capitalUtilizationFraction", "serviceCapitalOutputRatio", "serviceCapital"];
     this.plottable = true;
     this.sequenceNumber = 45;
   }

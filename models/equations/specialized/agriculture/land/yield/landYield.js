@@ -8,7 +8,7 @@ export class LandYield extends Aux {
     this.plotColor = "#185103";
     this.plotMin = 0;
     this.plotMax = 3000;
-    this.dependencies = ["landYieldFactor", "landYieldMultiplierFromCapital", "landYieldMultiplierFromAirPollution"];
+    this.dependencies = ["landYieldFactor", "landYieldMultiplierFromCapital", "landYieldMultiplierFromAirPollution", "landFertility"];
     this.sequenceNumber = 67;
   }
 

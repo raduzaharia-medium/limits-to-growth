@@ -7,6 +7,8 @@ export class LandFractionCultivated extends Aux {
     this.potentiallyArableLandTotal = potentiallyArableLandTotal; // hectares, used here and in eqn 97
     this.plottable = true;
     this.sequenceNumber = 8;
+
+    this.dependencies = ["arableLand"];
   }
 
   set arableLand(value) {

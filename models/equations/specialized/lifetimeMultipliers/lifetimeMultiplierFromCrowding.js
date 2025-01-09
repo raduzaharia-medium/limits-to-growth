@@ -6,6 +6,8 @@ export class LifetimeMultiplierFromCrowding extends Aux {
 
     this.plottable = true;
     this.sequenceNumber = 2;
+
+    this.dependencies = ["crowdingMultiplierFromIndustrialization", "fractionOfPopulationUrban"];
   }
 
   set crowdingMultiplierFromIndustrialization(value) {

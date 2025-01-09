@@ -7,6 +7,7 @@ export class Delay3 extends Aux {
 
     this.delayPerStage = delay / 3;
     this.firstCall = true;
+    this.qType = "Aux";
 
     this.alpha = { j: null, k: null };
     this.beta = { j: null, k: null };

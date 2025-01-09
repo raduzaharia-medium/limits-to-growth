@@ -6,6 +6,8 @@ export class DevelopmentCostPerHectare extends Table {
 
     this.units = "dollars per hectare";
     this.sequenceNumber = 9;
+
+    this.dependencies = ["potentiallyArableLand", "potentiallyArableLandTotal"];
   }
 
   set potentiallyArableLand(value) {

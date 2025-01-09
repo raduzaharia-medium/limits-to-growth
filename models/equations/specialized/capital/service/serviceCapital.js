@@ -6,6 +6,8 @@ export class ServiceCapital extends Level {
 
     this.units = "dollars";
     this.plottable = true;
+
+    this.dependencies = ["serviceCapitalInvestmentRate", "serviceCapitalDepreciationRate"];
   }
 
   set serviceCapitalInvestmentRate(value) {

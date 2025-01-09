@@ -5,6 +5,7 @@ export class PersistentPollution extends Level {
     super("persistentPollution", 142, 2.5e7, startTime);
 
     this.units = "pollution units";
+    this.dependencies = ["persistenPollutionAppearanceRate", "persistenPollutionAssimilationRate"];
   }
 
   set persistenPollutionAppearanceRate(value) {

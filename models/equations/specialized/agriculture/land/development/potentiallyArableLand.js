@@ -6,6 +6,8 @@ export class PotentiallyArableLand extends Level {
 
     this.units = "hectares";
     this.plottable = true;
+
+    this.dependencies = ["landDevelopmentRate"];
   }
 
   set landDevelopmentRate(value) {

@@ -8,6 +8,8 @@ export class ArableLand extends Level {
     this.plotColor = "#513210";
     this.plotMin = 0;
     this.plotMax = 3.0e9;
+
+    this.dependencies = ["landDevelopmentRate", "landErosionRate", "landRemovalForUrbanIndustrialUse"];
   }
 
   set landDevelopmentRate(value) {

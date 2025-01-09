@@ -4,7 +4,7 @@ export class PerceivedFoodRatio extends Smooth {
   constructor(foodShortagePerceptionDelayK) {
     super("perceivedFoodRatio", 128, foodShortagePerceptionDelayK);
 
-    this.dependencies = []; // "foodRatio" removed to break cycle
+    this.dependencies = ["foodRatio"];
     this.initVal = 1.0;
     this.plottable = true;
     this.sequenceNumber = 19;

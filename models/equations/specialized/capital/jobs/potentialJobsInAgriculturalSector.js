@@ -5,7 +5,7 @@ export class PotentialJobsInAgriculturalSector extends Aux {
     super("potentialJobsInAgriculturalSector", 78);
 
     this.units = "persons";
-    this.dependencies = ["jobsPerHectare"];
+    this.dependencies = ["jobsPerHectare", "arableLand"];
     this.plottable = true;
     this.sequenceNumber = 60;
   }

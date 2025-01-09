@@ -6,6 +6,8 @@ export class IndustrialCapitalInvestmentRate extends Rate {
 
     this.units = "dollars per year";
     this.plottable = true;
+
+    this.dependencies = ["industrialOutput", "fractionOfIndustrialOutputAllocatedToIndustry"];
   }
 
   set industrialOutput(value) {

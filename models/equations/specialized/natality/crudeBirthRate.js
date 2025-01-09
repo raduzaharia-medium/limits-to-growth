@@ -5,7 +5,7 @@ export class CrudeBirthRate extends Aux {
     super("crudeBirthRate", 31);
 
     this.units = "births per 1000 person-years";
-    this.dependencies = ["population"];
+    this.dependencies = ["population", "birthsPerYear"];
     this.plotColor = "#f6f648";
     this.plotMin = 0;
     this.plotMax = 50;

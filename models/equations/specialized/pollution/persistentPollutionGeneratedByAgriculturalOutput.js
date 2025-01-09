@@ -7,7 +7,7 @@ export class PersistentPollutionGeneratedByAgriculturalOutput extends Aux {
     this.units = "pollution units per year";
     this.fractionOfInputsAsPersistentMaterial = 0.001; // dimensionless
     this.agriculturalMaterialsToxicityIndex = 1; // pollution units per dollar
-    this.dependencies = ["agriculturalInputsPerHectare"];
+    this.dependencies = ["agriculturalInputsPerHectare", "arableLand"];
     this.sequenceNumber = 109;
   }
 

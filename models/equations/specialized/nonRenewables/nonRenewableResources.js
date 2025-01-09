@@ -5,6 +5,7 @@ export class NonRenewableResources extends Level {
     super("nonrenewableResources", 129, nonrenewableResourcesInitialK, startTime);
 
     this.units = "resource units";
+    this.dependencies = ["nonRenewableResourceUsageRate"];
   }
 
   set nonRenewableResourceUsageRate(value) {

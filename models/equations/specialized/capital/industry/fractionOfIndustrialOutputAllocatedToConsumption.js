@@ -5,7 +5,7 @@ export class FractionOfIndustrialOutputAllocatedToConsumption extends Aux {
   constructor() {
     super("fractionOfIndustrialOutputAllocatedToConsumption", 57);
 
-    this.dependencies = ["fractionOfIndustrialOutputAllocatedToConsumptionVariable"];
+    this.dependencies = ["fractionOfIndustrialOutputAllocatedToConsumptionVariable", "fractionOfIndustrialOutputAllocatedToConsumptionConstant"];
     this.industrialEquilibriumTime = 4000; // year
     this.sequenceNumber = 42;
   }

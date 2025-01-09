@@ -6,6 +6,8 @@ export class ServiceCapitalDepreciationRate extends Rate {
 
     this.units = "dollars per year";
     this.plottable = true;
+
+    this.dependencies = ["serviceCapital", "averageLifetimeOfServiceCapital"];
   }
 
   set serviceCapital(value) {

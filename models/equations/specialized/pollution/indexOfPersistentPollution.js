@@ -9,6 +9,7 @@ export class IndexOfPersistentPollution extends Aux {
     this.plotMin = 0;
     this.plotMax = 32;
     this.sequenceNumber = 14;
+    this.dependencies = ["persistentPollution"];
   }
 
   set persistentPollution(value) {

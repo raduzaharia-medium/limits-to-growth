@@ -8,6 +8,8 @@ export class LaborForce extends Aux {
     this.participationFraction = 0.75; // dimensionless
     this.plottable = true;
     this.sequenceNumber = 7;
+
+    this.dependencies = ["population15To44", "population45To64"];
   }
 
   set population15To44(value) {

@@ -6,6 +6,8 @@ export class UrbanIndustrialLand extends Level {
 
     this.units = "hectares";
     this.plottable = true;
+
+    this.dependencies = ["landRemovalForUrbanIndustrialUse"];
   }
 
   set landRemovalForUrbanIndustrialUse(value) {

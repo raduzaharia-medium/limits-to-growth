@@ -5,7 +5,7 @@ export class Food extends Aux {
     super("food", 87);
 
     this.units = "kilograms per year";
-    this.dependencies = ["landYield"];
+    this.dependencies = ["landYield", "arableLand"];
     this.landFractionHarvestedK = 0.7; // dimensionless
     this.processingLossK = 0.1; // dimensionless
     this.plottable = true;

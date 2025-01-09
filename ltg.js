@@ -1,4 +1,3 @@
-import { clip } from "./tools.js";
 import { Population } from "./models/equations/specialized/population/population.js";
 import { Population0To14 } from "./models/equations/specialized/population/population0To14.js";
 import { Population15To44 } from "./models/equations/specialized/population/population15To44.js";
@@ -210,10 +209,6 @@ var timeStep = function () {
   auxArray.forEach((e) => e.update(t, startTime, stopTime, gLeft, gRight, gBottom, gTop, dt));
   rateArray.forEach((e) => e.update(t, startTime, stopTime, gLeft, gRight, gBottom, gTop, dt));
 
-  //qArray.filter((e) => e.qType === "Level").forEach((e) => e.update(t, startTime, stopTime, gLeft, gRight, gBottom, gTop, dt));
-  //qArray.filter((e) => e.qType === "Aux").forEach((e) => e.update(t, startTime, stopTime, gLeft, gRight, gBottom, gTop, dt));
-  //qArray.filter((e) => e.qType === "Rate").forEach((e) => e.update(t, startTime, stopTime, gLeft, gRight, gBottom, gTop, dt));
-
   tock();
   t += dt;
 };
@@ -343,9 +338,6 @@ population45To64.maturationsPerYear44to45 = maturationsPerYear44to45;
 
 const deathsPerYear45To64 = new DeathsPerYear45To64();
 deathsPerYear45To64.units = "persons per year";
-deathsPerYear45To64.updateFn = function () {
-  return population45To64.k * mortality45To64.k;
-};
 qArray[11] = deathsPerYear45To64;
 rateArray.push(deathsPerYear45To64);
 deathsPerYear45To64.population45To64 = population45To64;

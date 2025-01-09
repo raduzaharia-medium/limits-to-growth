@@ -9,6 +9,8 @@ export class BirthsPerYear extends Rate {
     this.plotThisVar = true;
     this.reproductiveLifetime = 30; // years
     this.populationEquilibriumTime = 4000; // year
+
+    this.dependencies = ["deathsPerYear", "totalFertility", "population15To44"];
   }
 
   set deathsPerYear(value) {

@@ -6,6 +6,11 @@ export class PersistentPollutionGenerationRate extends Rate {
 
     this.units = "pollution units per year";
     this.plottable = true;
+    this.dependencies = [
+      "persistentPollutionGeneratedByIndustrialOutput",
+      "persistentPollutionGeneratedByAgriculturalOutput",
+      "persistentPollutionGenerationFactor",
+    ];
   }
 
   set persistentPollutionGeneratedByIndustrialOutput(value) {

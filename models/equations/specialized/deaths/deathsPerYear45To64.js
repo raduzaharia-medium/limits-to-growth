@@ -5,6 +5,7 @@ export class DeathsPerYear45To64 extends Rate {
     super("deathsPerYear45To64", 11);
 
     this.units = "persons per year";
+    this.dependencies = ["population45To64", "mortality45To64"];
   }
 
   set population45To64(value) {
