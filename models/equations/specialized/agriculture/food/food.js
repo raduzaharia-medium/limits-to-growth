@@ -9,6 +9,7 @@ export class Food extends Aux {
     this.landFractionHarvestedK = 0.7; // dimensionless
     this.processingLossK = 0.1; // dimensionless
     this.plottable = true;
+    this.sequenceNumber = 72;
   }
 
   set landYield(value) {

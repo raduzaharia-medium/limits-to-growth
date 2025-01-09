@@ -7,6 +7,7 @@ export class LifetimeMultiplierFromFood extends Table {
     this.subsistenceFoodPerCapitaK = subsistenceFoodPerCapitaK;
     this.dependencies = ["foodPerCapita"];
     this.plottable = true;
+    this.sequenceNumber = 84;
   }
 
   set foodPerCapita(value) {

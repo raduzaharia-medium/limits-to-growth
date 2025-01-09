@@ -7,6 +7,7 @@ export class MarginalProductivityOfLandDevelopment extends Aux {
     this.units = "kilograms per dollar";
     this.socialDiscount = 0.07;
     this.dependencies = ["landYield", "developmentCostPerHectare"];
+    this.sequenceNumber = 68;
   }
 
   set landYield(value) {

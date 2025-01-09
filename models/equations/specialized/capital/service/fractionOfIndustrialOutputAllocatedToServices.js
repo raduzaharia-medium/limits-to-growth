@@ -7,6 +7,7 @@ export class FractionOfIndustrialOutputAllocatedToServices extends Aux {
     this.dependencies = ["fractionOfIndustrialOutputAllocatedToServicesBefore", "fractionOfIndustrialOutputAllocatedToServicesAfter"];
     this.policyYear = policyYear;
     this.plottable = true;
+    this.sequenceNumber = 49;
   }
 
   set fractionOfIndustrialOutputAllocatedToServicesAfter(value) {

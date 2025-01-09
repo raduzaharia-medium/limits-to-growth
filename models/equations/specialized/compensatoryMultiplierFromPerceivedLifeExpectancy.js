@@ -5,6 +5,7 @@ export class CompensatoryMultiplierFromPerceivedLifeExpectancy extends Table {
     super("compensatoryMultiplierFromPerceivedLifeExpectancy", 36, [3.0, 2.1, 1.6, 1.4, 1.3, 1.2, 1.1, 1.05, 1.0], 0, 80, 10);
 
     this.dependencies = ["perceivedLifeExpectancy"];
+    this.sequenceNumber = 92;
   }
 
   set perceivedLifeExpectancy(value) {

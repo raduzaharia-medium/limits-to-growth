@@ -7,6 +7,7 @@ export class NonRenewableResourceUsageFactor extends Aux {
     this.before = 1;
     this.after = 1;
     this.policyYear = policyYear;
+    this.sequenceNumber = 11;
   }
 
   updateFn() {

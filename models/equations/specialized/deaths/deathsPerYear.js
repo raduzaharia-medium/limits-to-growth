@@ -5,6 +5,7 @@ export class DeathsPerYear extends Aux {
     super("deathsPerYear", 17);
 
     this.units = "persons per year";
+    this.sequenceNumber = 1;
   }
 
   set deathsPerYear0To14(value) {

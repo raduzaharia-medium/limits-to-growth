@@ -12,6 +12,7 @@ export class LandYieldMultiplierFromCapital extends Table {
     );
 
     this.dependencies = ["agriculturalInputsPerHectare"];
+    this.sequenceNumber = 63;
   }
 
   set agriculturalInputsPerHectare(value) {

@@ -6,6 +6,7 @@ export class FractionOfInputsAllocatedToLandDevelopment extends Table {
 
     this.dependencies = ["marginalProductivityOfLandDevelopment", "marginalProductivityOfAgriculturalInputs"];
     this.plottable = true;
+    this.sequenceNumber = 71;
   }
 
   set marginalProductivityOfLandDevelopment(value) {

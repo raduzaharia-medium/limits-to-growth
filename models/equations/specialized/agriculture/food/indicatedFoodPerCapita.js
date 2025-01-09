@@ -7,6 +7,7 @@ export class IndicatedFoodPerCapita extends Aux {
     this.units = "kilograms per person-year";
     this.dependencies = ["indicatedFoodPerCapitaBefore", "indicatedFoodPerCapitaAfter"];
     this.policyYear;
+    this.sequenceNumber = 76;
   }
 
   set indicatedFoodPerCapitaAfter(value) {

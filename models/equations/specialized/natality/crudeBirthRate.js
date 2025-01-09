@@ -9,6 +9,7 @@ export class CrudeBirthRate extends Aux {
     this.plotColor = "#f6f648";
     this.plotMin = 0;
     this.plotMax = 50;
+    this.sequenceNumber = 22;
   }
 
   set birthsPerYear(value) {

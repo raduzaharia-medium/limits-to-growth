@@ -6,6 +6,7 @@ export class FecundityMultiplier extends Table {
 
     this.dependencies = ["lifeExpectancy"];
     this.plottable = true;
+    this.sequenceNumber = 90;
   }
 
   set lifeExpectancy(value) {

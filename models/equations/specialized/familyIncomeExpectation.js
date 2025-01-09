@@ -6,6 +6,7 @@ export class FamilyIncomeExpectation extends Aux {
 
     this.dependencies = ["industrialOutputPerCapita", "averageIndustrialOutputPerCapita"];
     this.plottable = true;
+    this.sequenceNumber = 34;
   }
 
   set industrialOutputPerCapita(value) {

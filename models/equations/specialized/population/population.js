@@ -8,6 +8,7 @@ export class Population extends Aux {
     this.plotColor = "#e07154";
     this.plotMin = 0;
     this.plotMax = 1.6e10;
+    this.sequenceNumber = 0;
   }
 
   set population0To14(value) {

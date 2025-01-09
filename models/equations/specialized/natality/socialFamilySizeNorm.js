@@ -6,6 +6,7 @@ export class SocialFamilySizeNorm extends Table {
 
     this.dependencies = ["delayedIndustrialOutputPerCapita"];
     this.plottable = true;
+    this.sequenceNumber = 32;
   }
 
   set delayedIndustrialOutputPerCapita(value) {

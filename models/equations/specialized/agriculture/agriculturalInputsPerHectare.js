@@ -7,6 +7,7 @@ export class AgriculturalInputsPerHectare extends Aux {
     this.units = "dollars per hectare-year";
     this.dependencies = ["agriculturalInputs", "fractionOfInputsAllocatedToLandMaintenance"];
     this.plottable = true;
+    this.sequenceNumber = 58;
   }
 
   set agriculturalInputs(value) {

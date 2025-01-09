@@ -8,6 +8,7 @@ export class IndexOfPersistentPollution extends Aux {
     this.plotColor = "#a25563";
     this.plotMin = 0;
     this.plotMax = 32;
+    this.sequenceNumber = 14;
   }
 
   set persistentPollution(value) {

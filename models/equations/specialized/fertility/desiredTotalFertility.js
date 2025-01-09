@@ -5,6 +5,7 @@ export class DesiredTotalFertility extends Aux {
     super("desiredTotalFertility", 35);
 
     this.dependencies = ["desiredCompletedFamilySize", "compensatoryMultiplierFromPerceivedLifeExpectancy"];
+    this.sequenceNumber = 94;
   }
 
   set desiredCompletedFamilySize(value) {

@@ -6,6 +6,7 @@ export class LifetimeMultiplierFromPollution extends Table {
 
     this.dependencies = ["indexOfPersistentPollution"];
     this.plottable = true;
+    this.sequenceNumber = 26;
   }
 
   set indexOfPersistentPollution(value) {

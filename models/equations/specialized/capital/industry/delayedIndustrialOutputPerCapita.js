@@ -6,6 +6,7 @@ export class DelayedIndustrialOutputPerCapita extends Delay3 {
 
     this.units = "dollars per person-year";
     this.dependencies = ["industrialOutputPerCapita"];
+    this.sequenceNumber = 31;
   }
 
   set industrialOutputPerCapita(value) {

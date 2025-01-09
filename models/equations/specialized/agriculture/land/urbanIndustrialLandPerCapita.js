@@ -9,6 +9,7 @@ export class UrbanIndustrialLandPerCapita extends Table {
 
     this.units = "hectares per person";
     this.dependencies = ["industrialOutputPerCapita"];
+    this.sequenceNumber = 105;
   }
 
   set industrialOutputPerCapita(value) {

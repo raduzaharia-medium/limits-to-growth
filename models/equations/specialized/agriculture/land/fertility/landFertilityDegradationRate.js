@@ -7,6 +7,7 @@ export class LandFertilityDegradationRate extends Table {
     this.units = "inverse years";
     this.dependencies = ["indexOfPersistentPollution"];
     this.plottable = true;
+    this.sequenceNumber = 27;
   }
 
   set indexOfPersistentPollution(value) {

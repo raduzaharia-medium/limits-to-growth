@@ -7,6 +7,7 @@ export class Jobs extends Aux {
     this.units = "persons";
     this.dependencies = ["potentialJobsInIndustrialSector", "potentialJobsInAgriculturalSector", "potentialJobsInServiceSector"];
     this.plottable = true;
+    this.sequenceNumber = 61;
   }
 
   set potentialJobsInIndustrialSector(value) {

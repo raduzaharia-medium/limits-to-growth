@@ -6,6 +6,7 @@ export class LandLifeMultiplierFromYieldBefore extends Table {
 
     this.dependencies = ["landYield"];
     this.inherentLandFertilityK = inherentLandFertilityK;
+    this.sequenceNumber = 101;
   }
 
   set landYield(value) {

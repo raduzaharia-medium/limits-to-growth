@@ -6,6 +6,7 @@ export class MarginalProductivityOfAgriculturalInputs extends Aux {
 
     this.units = "kilograms per dollar";
     this.dependencies = ["averageLifetimeOfAgriculturalInputs", "landYield", "marginalLandYieldMultiplierFromCapital", "landYieldMultiplierFromCapital"];
+    this.sequenceNumber = 70;
   }
 
   set averageLifetimeOfAgriculturalInputsK(value) {

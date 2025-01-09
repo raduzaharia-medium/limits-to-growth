@@ -6,6 +6,7 @@ export class FractionOfOutputInIndustry extends Aux {
 
     this.dependencies = ["food", "serviceOutput", "industrialOutput"];
     this.plottable = true;
+    this.sequenceNumber = 114;
   }
 
   set industrialOutput(value) {

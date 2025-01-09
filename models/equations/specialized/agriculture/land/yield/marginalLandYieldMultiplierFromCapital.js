@@ -13,6 +13,7 @@ export class MarginalLandYieldMultiplierFromCapital extends Table {
 
     this.units = "hectares per dollar";
     this.dependencies = ["agriculturalInputsPerHectare"];
+    this.sequenceNumber = 69;
   }
 
   set agriculturalInputsPerHectare(value) {

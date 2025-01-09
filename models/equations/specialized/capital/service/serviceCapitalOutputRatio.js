@@ -9,6 +9,7 @@ export class ServiceCapitalOutputRatio extends Aux {
     this.after = 1;
     this.policyYear = policyYear;
     this.plottable = true;
+    this.sequenceNumber = 6;
   }
 
   updateFn() {

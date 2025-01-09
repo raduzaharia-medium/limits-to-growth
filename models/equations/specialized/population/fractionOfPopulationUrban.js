@@ -6,6 +6,7 @@ export class FractionOfPopulationUrban extends Table {
 
     this.dependencies = ["population"];
     this.plottable = true;
+    this.sequenceNumber = 20;
   }
 
   set population(value) {

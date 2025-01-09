@@ -6,6 +6,7 @@ export class MaxTotalFertility extends Aux {
 
     this.dependencies = ["fecundityMultiplier"];
     this.normal = 12; // dimensionless
+    this.sequenceNumber = 93;
   }
 
   set fecundityMultiplier(value) {

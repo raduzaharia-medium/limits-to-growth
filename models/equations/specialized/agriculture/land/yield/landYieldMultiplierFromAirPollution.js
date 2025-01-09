@@ -6,6 +6,7 @@ export class LandYieldMultiplierFromAirPollution extends Aux {
 
     this.dependencies = ["landYieldMultiplierFromAirPollutionBefore", "landYieldMultiplierFromAirPollutionAfter"];
     this.policyYear = policyYear;
+    this.sequenceNumber = 66;
   }
 
   set landYieldMultiplierFromAirPollutionAfter(value) {

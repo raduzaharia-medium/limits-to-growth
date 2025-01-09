@@ -7,6 +7,7 @@ export class HealthServicesAllocationPerCapita extends Table {
     this.units = "dollars per person-year";
     this.dependencies = ["serviceOutputPerCapita"];
     this.plottable = true;
+    this.sequenceNumber = 52;
   }
 
   set serviceOutputPerCapita(value) {

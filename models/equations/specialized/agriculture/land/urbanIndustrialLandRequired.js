@@ -6,6 +6,7 @@ export class UrbanIndustrialLandRequired extends Aux {
 
     this.units = "hectares";
     this.dependencies = ["urbanIndustrialLandPerCapita", "population"];
+    this.sequenceNumber = 106;
   }
 
   set urbanIndustrialLandPerCapita(value) {

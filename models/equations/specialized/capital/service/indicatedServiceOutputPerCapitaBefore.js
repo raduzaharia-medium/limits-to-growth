@@ -6,6 +6,7 @@ export class IndicatedServiceOutputPerCapitaBefore extends Table {
 
     this.units = "dollars per person-year";
     this.dependencies = ["industrialOutputPerCapita"];
+    this.sequenceNumber = 38;
   }
 
   set industrialOutputPerCapita(value) {

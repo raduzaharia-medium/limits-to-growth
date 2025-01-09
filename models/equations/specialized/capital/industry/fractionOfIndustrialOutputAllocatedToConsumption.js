@@ -6,6 +6,7 @@ export class FractionOfIndustrialOutputAllocatedToConsumption extends Aux {
 
     this.dependencies = ["fractionOfIndustrialOutputAllocatedToConsumptionVariable"];
     this.industrialEquilibriumTime = 4000; // year
+    this.sequenceNumber = 42;
   }
 
   set fractionOfIndustrialOutputAllocatedToConsumptionVariable(value) {

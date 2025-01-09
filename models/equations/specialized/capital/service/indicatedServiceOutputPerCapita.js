@@ -7,6 +7,7 @@ export class IndicatedServiceOutputPerCapita extends Aux {
     this.units = "dollars per person-year";
     this.dependencies = ["indicatedServiceOutputPerCapitaAfter", "indicatedServiceOutputPerCapitaBefore"];
     this.policyYear = policyYear;
+    this.sequenceNumber = 40;
   }
 
   set indicatedServiceOutputPerCapitaAfter(value) {

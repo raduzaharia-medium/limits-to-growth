@@ -8,6 +8,7 @@ export class AverageLifetimeOfAgriculturalInputs extends Aux {
     this.before = 2;
     this.after = 2;
     this.policyYear = policyYear;
+    this.sequenceNumber = 16;
   }
 
   updateFn() {

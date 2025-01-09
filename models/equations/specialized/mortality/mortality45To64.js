@@ -7,6 +7,7 @@ export class Mortality45To64 extends Table {
     this.units = "deaths per person-year";
     this.dependencies = ["lifeExpectancy"];
     this.plottable = true;
+    this.sequenceNumber = 88;
   }
 
   set lifeExpectancy(value) {

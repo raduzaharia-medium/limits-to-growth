@@ -5,6 +5,7 @@ export class LandYieldMultiplierFromAirPollutionAfter extends Table {
     super("landYieldMultiplierFromAirPollutionAfter", 107, [1, 1, 0.7, 0.4], 0, 30, 10);
 
     this.dependencies = ["industrialOutput"];
+    this.sequenceNumber = 65;
   }
 
   set industrialOutput(value) {

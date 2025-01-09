@@ -7,6 +7,7 @@ export class FractionOfIndustrialOutputAllocatedToConsumptionConstant extends Au
     this.before = 0.43;
     this.after = 0.43;
     this.policyYear = policyYear;
+    this.sequenceNumber = 15;
   }
 
   updateFn() {

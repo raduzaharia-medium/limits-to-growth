@@ -7,6 +7,7 @@ export class FractionOfCapitalAllocatedToObtainingResources extends Aux {
     this.dependencies = ["fractionOfCapitalAllocatedToObtainingResourcesBefore", "fractionOfCapitalAllocatedToObtainingResourcesAfter"];
     this.policyYear = policyYear;
     this.plottable = true;
+    this.sequenceNumber = 25;
   }
 
   set fractionOfCapitalAllocatedToObtainingResourcesAfter(value) {

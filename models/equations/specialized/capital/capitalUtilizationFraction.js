@@ -6,6 +6,7 @@ export class CapitalUtilizationFraction extends Table {
 
     this.dependencies = []; // "laborUtilizationFractionDelayed" removed to break cycle
     this.plottable = true;
+    this.sequenceNumber = 28;
   }
 
   set laborUtilizationFractionDelayed(value) {

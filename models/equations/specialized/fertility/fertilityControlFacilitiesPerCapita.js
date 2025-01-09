@@ -6,6 +6,7 @@ export class FertilityControlFacilitiesPerCapita extends Delay3 {
 
     this.units = "dollars per person-year";
     this.dependencies = ["fertilityControlAllocationPerCapita"];
+    this.sequenceNumber = 98;
   }
 
   set fertilityControlAllocationPerCapita(value) {

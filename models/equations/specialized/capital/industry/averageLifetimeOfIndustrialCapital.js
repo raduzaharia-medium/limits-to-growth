@@ -8,6 +8,7 @@ export class AverageLifetimeOfIndustrialCapital extends Aux {
     this.before = 14;
     this.after = 14;
     this.policyYear = policyYear;
+    this.sequenceNumber = 4;
   }
 
   updateFn() {

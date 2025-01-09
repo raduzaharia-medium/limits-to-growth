@@ -6,6 +6,7 @@ export class FractionOfIndustrialOutputAllocatedToConsumptionVariable extends Ta
 
     this.dependencies = ["industrialOutputPerCapita"];
     this.industrialOutputPerCapitaDesired = 400;
+    this.sequenceNumber = 41;
   }
 
   set industrialOutputPerCapita(value) {

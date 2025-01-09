@@ -219,138 +219,6 @@ var printQNameDependencies = function () {
   }
 };
 
-var auxSequence = [
-  "population",
-  "deathsPerYear",
-  "lifetimeMultiplierFromCrowding",
-  "industrialCapitalOutputRatio",
-  "averageLifetimeOfIndustrialCapital",
-  "averageLifetimeOfServiceCapital",
-  "serviceCapitalOutputRatio",
-  "laborForce",
-  "landFractionCultivated",
-  "developmentCostPerHectare",
-  "landYieldFactor",
-  "nonrenewableResourceUsageFactor",
-  "nonrenewableResourceFractionRemaining",
-  "persistentPollutionGenerationFactor",
-  "indexOfPersistentPollution",
-  "fractionOfIndustrialOutputAllocatedToConsumptionConstant",
-  "averageLifetimeOfAgriculturalInputs",
-  "laborUtilizationFractionDelayed",
-  "agriculturalInputs",
-  "perceivedFoodRatio",
-  "fractionOfPopulationUrban",
-  "crudeDeathRate",
-  "crudeBirthRate",
-  "fractionOfCapitalAllocatedToObtainingResourcesBefore",
-  "fractionOfCapitalAllocatedToObtainingResourcesAfter",
-  "fractionOfCapitalAllocatedToObtainingResources",
-  "lifetimeMultiplierFromPollution",
-  "landFertilityDegradationRate",
-  "capitalUtilizationFraction",
-  "industrialOutput",
-  "industrialOutputPerCapita",
-  "delayedIndustrialOutputPerCapita",
-  "socialFamilySizeNorm",
-  "averageIndustrialOutputPerCapita",
-  "familyIncomeExpectation",
-  "familyResponseToSocialNorm",
-  "desiredCompletedFamilySize",
-  "crowdingMultiplierFromIndustrialization",
-  "indicatedServiceOutputPerCapitaBefore",
-  "indicatedServiceOutputPerCapitaAfter",
-  "indicatedServiceOutputPerCapita",
-  "fractionOfIndustrialOutputAllocatedToConsumptionVariable",
-  "fractionOfIndustrialOutputAllocatedToConsumption",
-  "jobsPerIndustrialCapitalUnit",
-  "potentialJobsInIndustrialSector",
-  "serviceOutput",
-  "serviceOutputPerCapita",
-  "fractionOfIndustrialOutputAllocatedToServicesBefore",
-  "fractionOfIndustrialOutputAllocatedToServicesAfter",
-  "fractionOfIndustrialOutputAllocatedToServices",
-  "jobsPerServiceCapitalUnit",
-  "potentialJobsInServiceSector",
-  "healthServicesAllocationsPerCapita",
-  "effectiveHealthServicesPerCapita",
-  "lifetimeMultiplierFromHealthServicesBefore",
-  "lifetimeMultiplierFromHealthServicesAfter",
-  "lifetimeMultiplierFromHealthServices",
-  "fractionOfInputsAllocatedToLandMaintenance",
-  "agriculturalInputsPerHectare",
-  "jobsPerHectare",
-  "potentialJobsInAgriculturalSector",
-  "jobs",
-  "laborUtilizationFraction",
-  "landYieldMultiplierFromCapital",
-  "landYieldMultiplierFromAirPollutionBefore",
-  "landYieldMultiplierFromAirPollutionAfter",
-  "landYieldMultiplierFromAirPollution",
-  "landYield",
-  "marginalProductivityOfLandDevelopment",
-  "marginalLandYieldMultiplierFromCapital",
-  "marginalProductivityOfAgriculturalInputs",
-  "fractionOfInputsAllocatedToLandDevelopment",
-  "food",
-  "foodPerCapita",
-  "indicatedFoodPerCapitaBefore",
-  "indicatedFoodPerCapitaAfter",
-  "indicatedFoodPerCapita",
-  "fractionOfIndustrialOutputAllocatedToAgricultureBefore",
-  "fractionOfIndustrialOutputAllocatedToAgricultureAfter",
-  "fractionOfIndustrialOutputAllocatedToAgriculture",
-  "totalAgriculturalInvestment",
-  "currentAgriculturalInputs",
-  "foodRatio",
-  "landFertilityRegenerationTime",
-  "lifetimeMultiplierFromFood",
-  "lifeExpectancy",
-  "mortality0To14",
-  "mortality15To44",
-  "mortality45To64",
-  "mortality65AndOver",
-  "fecundityMultiplier",
-  "perceivedLifeExpectancy",
-  "compensatoryMultiplierFromPerceivedLifeExpectancy",
-  "maxTotalFertility",
-  "desiredTotalFertility",
-  "needForFertilityControl",
-  "fractionOfServicesAllocatedToFertilityControl",
-  "fertilityControlAllocationPerCapita",
-  "fertilityControlFacilitiesPerCapita",
-  "fertilityControlEffectiveness",
-  "totalFertility",
-  "landLifeMultiplierFromYieldBefore",
-  "landLifeMultiplierFromYieldAfter",
-  "landLifeMultiplierFromYield",
-  "averageLifeOfLand",
-  "urbanIndustrialLandPerCapita",
-  "urbanIndustrialLandRequired",
-  "perCapitaResourceUsageMultiplier",
-  "persistentPollutionGeneratedByIndustrialOutput",
-  "persistentPollutionGeneratedByAgriculturalOutput",
-  "assimilationHalfLifeMultiplier",
-  "assimilationHalfLife",
-  "fractionOfIndustrialOutputAllocatedToIndustry",
-  "fractionOfOutputInAgriculture",
-  "fractionOfOutputInIndustry",
-  "fractionOfOutputInServices",
-];
-
-var sortAuxEqns = function () {
-  for (var i = 0; i < auxSequence.length; i++) {
-    eval(auxSequence[i]).sequenceNumber = i;
-  }
-  auxArray.sort(function (left, right) {
-    if (left.sequenceNumber < right.sequenceNumber) {
-      return -1;
-    } else {
-      return 1;
-    }
-  });
-};
-
 // PARAMETERS THAT GOVERN THE RUNNING OF THE MODEL
 
 var startTime = 1900;
@@ -421,7 +289,8 @@ var tock = function () {
 
 var initModel = function () {
   initSmoothsAndDelay3s();
-  sortAuxEqns();
+
+  auxArray.sort((a, b) => (a.sequenceNumber < b.sequenceNumber ? -1 : 1));
   t = startTime;
 };
 

@@ -8,6 +8,7 @@ export class DesiredCompletedFamilySize extends Aux {
     this.dependencies = ["familyResponseToSocialNorm", "socialFamilySizeNorm"];
     this.normal = 4.0;
     this.zeroPopulationGrowthTargetYear = zeroPopulationGrowthTargetYear;
+    this.sequenceNumber = 36;
   }
 
   set familyResponseToSocialNorm(value) {

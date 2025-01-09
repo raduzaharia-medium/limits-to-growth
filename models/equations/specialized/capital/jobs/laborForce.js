@@ -7,6 +7,7 @@ export class LaborForce extends Aux {
     this.units = "persons";
     this.participationFraction = 0.75; // dimensionless
     this.plottable = true;
+    this.sequenceNumber = 7;
   }
 
   set population15To44(value) {

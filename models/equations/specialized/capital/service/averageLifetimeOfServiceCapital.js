@@ -7,6 +7,7 @@ export class AverageLifetimeOfServiceCapital extends Aux {
     this.units = "years";
     this.before = 20; // years
     this.after = 20; // years
+    this.sequenceNumber = 5;
   }
 
   updateFn() {

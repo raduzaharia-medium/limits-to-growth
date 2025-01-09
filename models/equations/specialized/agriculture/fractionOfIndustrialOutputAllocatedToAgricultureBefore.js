@@ -5,6 +5,7 @@ export class FractionOfIndustrialOutputAllocatedToAgricultureBefore extends Tabl
     super("fractionOfIndustrialOutputAllocatedToAgricultureBefore", 94, [0.4, 0.2, 0.1, 0.025, 0, 0], 0, 2.5, 0.5);
 
     this.dependencies = ["foodPerCapita", "indicatedFoodPerCapita"];
+    this.sequenceNumber = 77;
   }
 
   set foodPerCapita(value) {

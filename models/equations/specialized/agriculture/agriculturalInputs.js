@@ -8,6 +8,7 @@ export class AgriculturalInputs extends Smooth {
     this.dependencies = []; // "currentAgriculturalInputs" removed to break cycle
     this.initVal = 5.0e9;
     this.plottable = true;
+    this.sequenceNumber = 18;
   }
 
   set currentAgriculturalInputs(value) {

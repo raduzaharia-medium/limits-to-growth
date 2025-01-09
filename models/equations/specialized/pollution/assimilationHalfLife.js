@@ -8,6 +8,7 @@ export class AssimilationHalfLife extends Aux {
     this.valueIn1970 = 1.5; // years
     this.dependencies = ["assimilationHalfLifeMultiplier"];
     this.plottable = true;
+    this.sequenceNumber = 111;
   }
 
   set assimilationHalfLifeMultiplier(value) {

@@ -6,6 +6,7 @@ export class FractionOfServicesAllocatedToFertilityControl extends Table {
 
     this.dependencies = ["needForFertilityControl"];
     this.plottable = true;
+    this.sequenceNumber = 96;
   }
 
   set needForFertilityControl(value) {

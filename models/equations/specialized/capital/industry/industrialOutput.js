@@ -8,6 +8,7 @@ export class IndustrialOutput extends Aux {
     this.valueIn1970 = 7.9e11; // for eqns 106 and 107
     this.dependencies = ["fractionOfCapitalAllocatedToObtainingResources", "capitalUtilizationFraction", "industrialCapitalOutputRatio"];
     this.plottable = true;
+    this.sequenceNumber = 29;
   }
 
   set industrialCapital(value) {

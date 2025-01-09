@@ -9,6 +9,7 @@ export class CrudeDeathRate extends Aux {
     this.plotColor = "#650d99";
     this.plotMin = 0;
     this.plotMax = 50;
+    this.sequenceNumber = 21;
   }
 
   set deathsPerYear(value) {

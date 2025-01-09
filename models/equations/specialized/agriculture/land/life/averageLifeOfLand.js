@@ -8,6 +8,7 @@ export class AverageLifeOfLand extends Aux {
     this.normal = 6000; // years
     this.dependencies = ["landLifeMultiplierFromYield"];
     this.plottable = true;
+    this.sequenceNumber = 104;
   }
 
   set landLifeMultiplierFromYield(value) {

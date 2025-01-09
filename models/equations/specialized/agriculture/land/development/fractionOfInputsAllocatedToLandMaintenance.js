@@ -6,6 +6,7 @@ export class FractionOfInputsAllocatedToLandMaintenance extends Table {
 
     this.dependencies = ["perceivedFoodRatio"];
     this.plottable = true;
+    this.sequenceNumber = 57;
   }
 
   set perceivedFoodRatio(value) {

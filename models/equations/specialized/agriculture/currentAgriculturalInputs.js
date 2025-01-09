@@ -6,6 +6,7 @@ export class CurrentAgriculturalInputs extends Aux {
 
     this.units = "dollars per year";
     this.dependencies = ["totalAgriculturalInvestment", "fractionOfInputsAllocatedToLandDevelopment"];
+    this.sequenceNumber = 81;
   }
 
   set totalAgriculturalInvestment(value) {

@@ -10,6 +10,7 @@ export class ServiceOutput extends Aux {
     this.plotMax = 1.0e13;
     this.dependencies = ["capitalUtilizationFraction", "serviceCapitalOutputRatio"];
     this.plottable = true;
+    this.sequenceNumber = 45;
   }
 
   set serviceCapital(value) {

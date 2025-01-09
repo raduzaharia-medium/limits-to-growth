@@ -6,6 +6,7 @@ export class FamilyResponseToSocialNorm extends Table {
 
     this.dependencies = ["familyIncomeExpectation"];
     this.plottable = true;
+    this.sequenceNumber = 35;
   }
 
   set familyIncomeExpectation(value) {

@@ -9,6 +9,7 @@ export class LandYield extends Aux {
     this.plotMin = 0;
     this.plotMax = 3000;
     this.dependencies = ["landYieldFactor", "landYieldMultiplierFromCapital", "landYieldMultiplierFromAirPollution"];
+    this.sequenceNumber = 67;
   }
 
   set landYieldFactor(value) {

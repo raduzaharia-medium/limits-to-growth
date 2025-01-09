@@ -6,6 +6,7 @@ export class ServiceOutputPerCapita extends Aux {
 
     this.units = "dollars per person-year";
     this.dependencies = ["serviceOutput", "population"];
+    this.sequenceNumber = 46;
   }
 
   set serviceOutput(value) {

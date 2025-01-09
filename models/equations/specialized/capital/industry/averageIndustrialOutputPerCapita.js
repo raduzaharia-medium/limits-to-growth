@@ -6,6 +6,7 @@ export class AverageIndustrialOutputPerCapita extends Smooth {
 
     this.units = "dollars per person-year";
     this.dependencies = ["industrialOutputPerCapita"];
+    this.sequenceNumber = 33;
   }
 
   set industrialOutputPerCapita(value) {

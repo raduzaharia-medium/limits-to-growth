@@ -5,6 +5,7 @@ export class FertilityControlEffectiveness extends Table {
     super("fertilityControlEffectiveness", 45, [0.75, 0.85, 0.9, 0.95, 0.98, 0.99, 1.0], 0, 3, 0.5);
 
     this.dependencies = ["fertilityControlFacilitiesPerCapita"];
+    this.sequenceNumber = 99;
   }
 
   set fertilityControlFacilitiesPerCapita(value) {

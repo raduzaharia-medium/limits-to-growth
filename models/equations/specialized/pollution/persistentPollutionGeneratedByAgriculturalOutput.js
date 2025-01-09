@@ -8,6 +8,7 @@ export class PersistentPollutionGeneratedByAgriculturalOutput extends Aux {
     this.fractionOfInputsAsPersistentMaterial = 0.001; // dimensionless
     this.agriculturalMaterialsToxicityIndex = 1; // pollution units per dollar
     this.dependencies = ["agriculturalInputsPerHectare"];
+    this.sequenceNumber = 109;
   }
 
   set agriculturalInputsPerHectare(value) {

@@ -5,6 +5,7 @@ export class DevelopmentCostPerHectare extends Table {
     super("developmentCostPerHectare", 97, [100000, 7400, 5200, 3500, 2400, 1500, 750, 300, 150, 75, 50], 0, 1.0, 0.1);
 
     this.units = "dollars per hectare";
+    this.sequenceNumber = 9;
   }
 
   set potentiallyArableLand(value) {

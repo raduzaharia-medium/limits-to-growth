@@ -6,6 +6,7 @@ export class IndicatedFoodPerCapitaBefore extends Table {
 
     this.units = "kilograms per person-year";
     this.dependencies = ["industrialOutputPerCapita"];
+    this.sequenceNumber = 74;
   }
 
   set industrialOutputPerCapita(value) {

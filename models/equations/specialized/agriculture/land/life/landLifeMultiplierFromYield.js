@@ -7,6 +7,7 @@ export class LandLifeMultiplierFromYield extends Aux {
     this.dependencies = ["landLifeMultiplierFromYieldBefore", "landLifeMultiplierFromYieldAfter"];
     this.policyYear = policyYear;
     this.plottable = true;
+    this.sequenceNumber = 103;
   }
 
   set landLifeMultiplierFromYieldAfter(value) {

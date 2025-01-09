@@ -6,6 +6,7 @@ export class LaborUtilizationFraction extends Aux {
 
     this.dependencies = ["jobs", "laborForce"];
     this.plottable = true;
+    this.sequenceNumber = 62;
   }
 
   set jobs(value) {

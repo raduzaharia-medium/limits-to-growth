@@ -5,6 +5,7 @@ export class LifetimeMultiplierFromCrowding extends Aux {
     super("lifetimeMultiplierFromCrowding", 28);
 
     this.plottable = true;
+    this.sequenceNumber = 2;
   }
 
   set crowdingMultiplierFromIndustrialization(value) {

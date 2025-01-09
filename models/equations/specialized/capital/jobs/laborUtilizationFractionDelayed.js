@@ -5,6 +5,7 @@ export class LaborUtilizationFractionDelayed extends Smooth {
     super("laborUtilizationFractionDelayed", 82, laborUtilizationFractionDelayedDelayTime);
 
     this.dependencies = ["laborUtilizationFraction"];
+    this.sequenceNumber = 17;
   }
 
   set laborUtilizationFraction(value) {

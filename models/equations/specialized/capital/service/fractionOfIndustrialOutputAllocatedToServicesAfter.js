@@ -5,6 +5,7 @@ export class FractionOfIndustrialOutputAllocatedToServicesAfter extends Table {
     super("fractionOfIndustrialOutputAllocatedToServicesAfter", 65, [0.3, 0.2, 0.1, 0.05, 0], 0, 2, 0.5);
 
     this.dependencies = ["serviceOutputPerCapita", "indicatedServiceOutputPerCapita"];
+    this.sequenceNumber = 48;
   }
 
   set serviceOutputPerCapita(value) {

@@ -9,6 +9,7 @@ export class FoodPerCapita extends Aux {
     this.plotColor = "#a8c3a5";
     this.plotMin = 0;
     this.plotMax = 1000;
+    this.sequenceNumber = 73;
   }
 
   set food(value) {

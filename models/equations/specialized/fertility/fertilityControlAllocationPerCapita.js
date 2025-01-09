@@ -7,6 +7,7 @@ export class FertilityControlAllocationPerCapita extends Aux {
     this.units = "dollars per person-year";
     this.dependencies = ["serviceOutputPerCapita", "fractionOfServicesAllocatedToFertilityControl"];
     this.plottable = true;
+    this.sequenceNumber = 97;
   }
 
   set fractionOfServicesAllocatedToFertilityControl(value) {

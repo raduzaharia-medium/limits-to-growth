@@ -9,6 +9,7 @@ export class IndustrialOutputPerCapita extends Aux {
     this.plotColor = "#4a6892";
     this.plotMin = 0;
     this.plotMax = 500;
+    this.sequenceNumber = 30;
   }
 
   set industrialOutput(value) {

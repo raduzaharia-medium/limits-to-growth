@@ -6,6 +6,7 @@ export class LandFertilityRegenerationTime extends Table {
 
     this.units = "years";
     this.dependencies = ["fractionOfInputsAllocatedToLandMaintenance"];
+    this.sequenceNumber = 83;
   }
 
   set fractionOfInputsAllocatedToLandMaintenance(value) {

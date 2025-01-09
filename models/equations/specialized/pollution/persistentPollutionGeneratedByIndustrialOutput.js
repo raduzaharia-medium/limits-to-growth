@@ -9,6 +9,7 @@ export class PersistentPollutionGeneratedByIndustrialOutput extends Aux {
     this.industrialMaterialsEmissionFactor = 0.1; // dimensionless
     this.industrialMaterialsToxicityIndex = 10; // pollution units per resource unit
     this.dependencies = ["perCapitaResourceUsageMultiplier", "population"];
+    this.sequenceNumber = 108;
   }
 
   set perCapitaResourceUsageMultiplier(value) {

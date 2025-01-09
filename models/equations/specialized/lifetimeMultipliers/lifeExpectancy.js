@@ -15,6 +15,7 @@ export class LifeExpectancy extends Aux {
       "lifetimeMultiplierFromCrowding",
     ];
     this.normal = 32;
+    this.sequenceNumber = 85;
   }
 
   set lifetimeMultiplierFromFood(value) {
