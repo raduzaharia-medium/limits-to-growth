@@ -1,5 +1,3 @@
-import { Smooth } from "./models/equations/smooth.js";
-import { Delay3 } from "./models/equations/delay.js";
 import { clip } from "./tools.js";
 import { Population } from "./models/equations/specialized/population/population.js";
 import { Population0To14 } from "./models/equations/specialized/population/population0To14.js";
@@ -184,9 +182,9 @@ var gatherDependencies = function () {
 
 var printDeps = function () {
   for (var i = 0; i < auxArray.length; i++) {
-    document.writeln(auxArray[i].qName + "<br/>");
+    console.log(auxArray[i].qName + "<br/>");
     for (var j = 0; j < auxArray[i].dependencies.length; j++) {
-      document.writeln("____" + auxArray[i].dependencies[j] + "<br/>");
+      console.log("____" + auxArray[i].dependencies[j] + "<br/>");
     }
   }
 };
@@ -226,23 +224,12 @@ var stopTime = 2100;
 var t = 1900;
 var dt = 1.0;
 var policyYear = 1975; // eqn 150.1
-var plotInterval = Math.max(dt, 1);
 
 export const resetModel = () => {
   t = startTime;
-  for (var i = 1; i < qArray.length; i++) {
-    qArray[i].reset();
-  }
-  setUpGraph();
-};
 
-var initSmoothsAndDelay3s = function () {
-  for (var i = 1; i < qArray.length; i++) {
-    var q = qArray[i];
-    if (q.constructor === Smooth || q.constructor === Delay3) {
-      q.init();
-    }
-  }
+  qArray.forEach((e) => e.reset());
+  setUpGraph();
 };
 
 var updateAuxen = function () {
@@ -288,9 +275,9 @@ var tock = function () {
 };
 
 var initModel = function () {
-  initSmoothsAndDelay3s();
+  qArray.filter((e) => e.init).forEach((e) => e.init()); // call the init functions for the equations that have them
+  auxArray.sort((a, b) => (a.sequenceNumber < b.sequenceNumber ? -1 : 1)); // sort the aux array by sequence number
 
-  auxArray.sort((a, b) => (a.sequenceNumber < b.sequenceNumber ? -1 : 1));
   t = startTime;
 };
 
@@ -354,41 +341,6 @@ export const fastRun = () => {
   }
   while (t <= stopTime) {
     timeStep();
-  }
-};
-
-var checkForNaNs = function () {
-  for (var i = 1; i < qArray.length; i++) {
-    if (isNaN(qArray[i].k)) console.log(qArray[i].qName);
-  }
-};
-
-var dumpVars = function () {
-  for (var i = 1; i < qArray.length; i++) {
-    console.log(t, qArray[i].qType, qArray[i].qName, qArray[i].j, qArray[i].k);
-  }
-};
-
-var debugRun = function () {
-  initModel();
-  //  logData();
-  for (var i = 1; i <= 100; i++) {
-    warmupAuxen();
-    warmupRates();
-    tock();
-    //    logData();
-  }
-  while (t <= stopTime) {
-    updateLevels();
-    //    if (t < 1904) { dumpVars(); console.log("****") };
-    updateAuxen();
-    //    if (t == 1911) { dumpVars(); };
-    updateRates();
-    //    if (t == 1911) { dumpVars(); };
-    tock();
-    //    if (t == 1911) { dumpVars(); };
-    t += dt;
-    logData();
   }
 };
 
