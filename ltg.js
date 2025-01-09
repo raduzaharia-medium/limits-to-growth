@@ -167,56 +167,6 @@ var rateArray = new Array();
 // Equations with qClass "Aux" are pushed onto this Array
 var auxArray = new Array();
 
-// sort the Aux equations into an order such that each one will
-// not be executed until all of its dependencies have been satisfied
-
-var gatherDependencies = function () {
-  var depArray = [];
-  for (var i = 0; i < auxArray.length; i++) {
-    var d = new Object();
-    d[auxArray[i].qName] = auxArray[i].dependencies;
-    depArray[i] = d;
-  }
-  return depArray;
-};
-
-var printDeps = function () {
-  for (var i = 0; i < auxArray.length; i++) {
-    console.log(auxArray[i].qName + "<br/>");
-    for (var j = 0; j < auxArray[i].dependencies.length; j++) {
-      console.log("____" + auxArray[i].dependencies[j] + "<br/>");
-    }
-  }
-};
-
-var qNameToQNumber = function (theName) {
-  for (var i = 1; i < qArray.length; i++) {
-    if (qArray[i].qName === theName) return qArray[i].qNumber;
-  }
-};
-
-var printQNumberDependencies = function () {
-  for (var i = 0; i < auxArray.length; i++) {
-    document.write(auxArray[i].qNumber, " ");
-    for (var j = 0; j < auxArray[i].dependencies.length; j++) {
-      var qN = qNameToQNumber(auxArray[i].dependencies[j]);
-      //      console.log(i, j, auxArray[i].qNumber, qN);
-      document.write(qN, " ");
-    }
-    document.write("</br>");
-  }
-};
-
-var printQNameDependencies = function () {
-  for (var i = 0; i < auxArray.length; i++) {
-    document.write(auxArray[i].qName, " ");
-    for (var j = 0; j < auxArray[i].dependencies.length; j++) {
-      document.write(auxArray[i].dependencies[j], " ");
-    }
-    document.write("</br>");
-  }
-};
-
 // PARAMETERS THAT GOVERN THE RUNNING OF THE MODEL
 
 var startTime = 1900;
@@ -1410,27 +1360,6 @@ var setUpGraph = function () {
   cvx.fillText("year", scaleX(1, 0, 2), gBottom + 40);
 };
 
-var plotLine = function (data, yMin, yMax, color) {
-  var cvx = document.getElementById("cv").getContext("2d");
-  cvx.strokeStyle = color;
-  cvx.beginPath();
-  var leftPoint = data.shift();
-  cvx.moveTo(scaleX(leftPoint.x, startTime, stopTime), scaleY(leftPoint.y, yMin, yMax));
-  for (var i = 0; i < data.length; i++) {
-    var p = data[i];
-    cvx.lineTo(scaleX(p.x, startTime, stopTime), scaleY(p.y, yMin, yMax));
-  }
-  cvx.stroke();
-  cvx.closePath();
-};
-
-var testPlotData = [
-  { x: 1900, y: 1.6e9 },
-  { x: 1910, y: 1.7e9 },
-  { x: 1920, y: 1.9e9 },
-  { x: 2100, y: 1.1e9 },
-];
-
 // CONTROLS
 // add variables to the pop-up menu
 var populateMenu = function () {
@@ -1579,12 +1508,4 @@ export const setDefaults = () => {
   var cons = document.getElementById("consumption-slider");
   cons.value = 0.43;
   changeConsumption();
-};
-
-// DEBUG LOGGING
-
-var logData = function () {
-  var vals = [t, foodRatio.k, perceivedFoodRatio.k];
-  var valStr = vals.join("  ");
-  console.log(valStr);
 };
