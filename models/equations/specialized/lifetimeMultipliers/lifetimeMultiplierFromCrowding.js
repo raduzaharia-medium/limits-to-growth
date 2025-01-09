@@ -3,6 +3,8 @@ import { Aux } from "../../aux.js";
 export class LifetimeMultiplierFromCrowding extends Aux {
   constructor() {
     super("lifetimeMultiplierFromCrowding", 28);
+
+    this.plottable = true;
   }
 
   set crowdingMultiplierFromIndustrialization(value) {

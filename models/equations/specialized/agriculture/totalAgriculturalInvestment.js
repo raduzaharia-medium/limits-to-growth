@@ -6,6 +6,7 @@ export class TotalAgriculturalInvestment extends Aux {
 
     this.units = "dollars per year";
     this.dependencies = ["industrialOutput", "fractionOfIndustrialOutputAllocatedToAgriculture"];
+    this.plottable = true;
   }
 
   set industrialOutput(value) {

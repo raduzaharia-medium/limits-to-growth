@@ -5,6 +5,7 @@ export class LaborUtilizationFraction extends Aux {
     super("laborUtilizationFraction", 81);
 
     this.dependencies = ["jobs", "laborForce"];
+    this.plottable = true;
   }
 
   set jobs(value) {

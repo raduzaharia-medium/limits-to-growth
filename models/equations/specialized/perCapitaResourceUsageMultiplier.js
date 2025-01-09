@@ -6,6 +6,7 @@ export class PerCapitaResourceUsageMultiplier extends Table {
 
     this.units = "resource units per person-year";
     this.dependencies = ["industrialOutputPerCapita"];
+    this.plottable = true;
   }
 
   set industrialOutputPerCapita(value) {

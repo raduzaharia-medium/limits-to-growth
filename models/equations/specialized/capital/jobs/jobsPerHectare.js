@@ -6,6 +6,7 @@ export class JobsPerHectare extends Table {
 
     this.units = "persons per hectare";
     this.dependencies = ["agriculturalInputsPerHectare"];
+    this.plottable = true;
   }
 
   set agriculturalInputsPerHectare(value) {

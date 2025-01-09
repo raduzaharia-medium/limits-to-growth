@@ -5,6 +5,7 @@ export class IndustrialCapitalDepreciationRate extends Rate {
     super("industrialCapitalDepreciationRate", 53);
 
     this.units = "dollars per year";
+    this.plottable = true;
   }
 
   set industrialCapital(value) {

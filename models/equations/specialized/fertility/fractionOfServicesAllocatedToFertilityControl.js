@@ -5,6 +5,7 @@ export class FractionOfServicesAllocatedToFertilityControl extends Table {
     super("fractionOfServicesAllocatedToFertilityControl", 48, [0.0, 0.005, 0.015, 0.025, 0.03, 0.035], 0, 10, 2);
 
     this.dependencies = ["needForFertilityControl"];
+    this.plottable = true;
   }
 
   set needForFertilityControl(value) {

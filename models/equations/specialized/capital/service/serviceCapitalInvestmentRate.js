@@ -5,6 +5,7 @@ export class ServiceCapitalInvestmentRate extends Rate {
     super("serviceCapitalInvestmentRate", 66);
 
     this.units = "dollars per year";
+    this.plottable = true;
   }
 
   set industrialOutput(value) {

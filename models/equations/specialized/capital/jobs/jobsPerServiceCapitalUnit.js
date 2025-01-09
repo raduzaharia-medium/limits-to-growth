@@ -6,6 +6,7 @@ export class JobsPerServiceCapitalUnit extends Table {
 
     this.units = "persons per dollar";
     this.dependencies = ["serviceOutputPerCapita"];
+    this.plottable = true;
   }
 
   set serviceOutputPerCapita(value) {

@@ -6,6 +6,7 @@ export class PerceivedFoodRatio extends Smooth {
 
     this.dependencies = []; // "foodRatio" removed to break cycle
     this.initVal = 1.0;
+    this.plottable = true;
   }
 
   set foodRatio(value) {

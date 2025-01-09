@@ -1,10 +1,11 @@
-import { Aux } from "../aux.js";
+import { Aux } from "../../aux.js";
 
 export class FractionOfOutputInAgriculture extends Aux {
   constructor() {
     super("fractionOfOutputInAgriculture", 147);
 
     this.dependencies = ["food", "serviceOutput", "industrialOutput"];
+    this.plottable = true;
   }
 
   set food(value) {

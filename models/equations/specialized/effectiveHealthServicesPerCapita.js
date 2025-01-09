@@ -6,6 +6,7 @@ export class EffectiveHealthServicesPerCapita extends Smooth {
 
     this.units = "dollars per person-year";
     this.dependencies = ["healthServicesAllocationsPerCapita"];
+    this.plottable = true;
   }
 
   set healthServicesAllocationsPerCapita(value) {

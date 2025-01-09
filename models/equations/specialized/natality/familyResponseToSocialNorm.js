@@ -5,6 +5,7 @@ export class FamilyResponseToSocialNorm extends Table {
     super("familyResponseToSocialNorm", 41, [0.5, 0.6, 0.7, 0.85, 1.0], -0.2, 0.2, 0.1);
 
     this.dependencies = ["familyIncomeExpectation"];
+    this.plottable = true;
   }
 
   set familyIncomeExpectation(value) {

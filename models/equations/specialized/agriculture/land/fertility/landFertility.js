@@ -5,6 +5,7 @@ export class LandFertility extends Level {
     super("landFertility", 121, 600, startTime);
 
     this.units = "kilograms per hectare-year";
+    this.plottable = true;
   }
 
   set landFertilityDegradation(value) {

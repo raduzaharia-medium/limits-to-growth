@@ -6,6 +6,7 @@ export class PotentialJobsInAgriculturalSector extends Aux {
 
     this.units = "persons";
     this.dependencies = ["jobsPerHectare"];
+    this.plottable = true;
   }
 
   set arableLand(value) {

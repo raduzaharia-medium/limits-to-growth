@@ -7,6 +7,7 @@ export class AgriculturalInputs extends Smooth {
     this.units = "dollars per year";
     this.dependencies = []; // "currentAgriculturalInputs" removed to break cycle
     this.initVal = 5.0e9;
+    this.plottable = true;
   }
 
   set currentAgriculturalInputs(value) {

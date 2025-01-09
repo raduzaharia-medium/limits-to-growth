@@ -5,6 +5,7 @@ export class FractionOfInputsAllocatedToLandDevelopment extends Table {
     super("fractionOfInputsAllocatedToLandDevelopment", 108, [0, 0.05, 0.15, 0.3, 0.5, 0.7, 0.85, 0.95, 1], 0, 2, 0.25);
 
     this.dependencies = ["marginalProductivityOfLandDevelopment", "marginalProductivityOfAgriculturalInputs"];
+    this.plottable = true;
   }
 
   set marginalProductivityOfLandDevelopment(value) {

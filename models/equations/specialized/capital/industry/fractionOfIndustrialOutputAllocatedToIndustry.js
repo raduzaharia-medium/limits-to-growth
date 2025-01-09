@@ -9,6 +9,7 @@ export class FractionOfIndustrialOutputAllocatedToIndustry extends Aux {
       "fractionOfIndustrialOutputAllocatedToServices",
       "fractionOfIndustrialOutputAllocatedToConsumption",
     ];
+    this.plottable = true;
   }
 
   set fractionOfIndustrialOutputAllocatedToAgriculture(value) {

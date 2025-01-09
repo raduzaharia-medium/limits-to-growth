@@ -5,6 +5,7 @@ export class UrbanIndustrialLand extends Level {
     super("urbanIndustrialLand", 120, 8.2e6, startTime);
 
     this.units = "hectares";
+    this.plottable = true;
   }
 
   set landRemovalForUrbanIndustrialUse(value) {

@@ -5,6 +5,7 @@ export class NonRenewableResourceUsageRate extends Rate {
     super("nonrenewableResourceUsageRate", 130);
 
     this.units = "resource units per year";
+    this.plottable = true;
   }
 
   set population(value) {

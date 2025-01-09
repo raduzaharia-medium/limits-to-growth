@@ -5,6 +5,7 @@ export class LandFertilityRegeneration extends Rate {
     super("landFertilityRegeneration", 124);
 
     this.units = "kilograms per hectare-year-year";
+    this.plottable = true;
   }
 
   set inherentLandFertilityK(value) {

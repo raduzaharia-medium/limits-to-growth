@@ -7,6 +7,7 @@ export class LifetimeMultiplierFromHealthServices extends Aux {
 
     this.dependencies = ["lifetimeMultiplierFromHealthServicesBefore", "lifetimeMultiplierFromHealthServicesAfter"];
     this.policyYear = 1940;
+    this.plottable = true;
   }
 
   set lifetimeMultiplierFromHealthServicesBefore(value) {

@@ -5,6 +5,7 @@ export class PersistenPollutionAssimilationRate extends Rate {
     super("persistenPollutionAssimilationRate", 144);
 
     this.units = "pollution units per year";
+    this.plottable = true;
   }
 
   set persistentPollution(value) {

@@ -6,6 +6,7 @@ export class PerceivedLifeExpectancy extends Delay3 {
 
     this.units = "years";
     this.dependencies = ["lifeExpectancy"];
+    this.plottable = true;
   }
 
   set lifeExpectancy(value) {

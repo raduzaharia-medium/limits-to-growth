@@ -8,6 +8,7 @@ export class IndustrialCapitalOutputRatio extends Aux {
     this.before = 3;
     this.after = 3;
     this.policyYear = policyYear;
+    this.plottable = true;
   }
 
   updateFn() {

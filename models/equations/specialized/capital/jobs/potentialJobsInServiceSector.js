@@ -6,6 +6,7 @@ export class PotentialJobsInServiceSector extends Aux {
 
     this.units = "persons";
     this.dependencies = ["jobsPerServiceCapitalUnit"];
+    this.plottable = true;
   }
 
   set serviceCapital(value) {

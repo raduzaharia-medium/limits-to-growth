@@ -5,6 +5,7 @@ export class TotalFertility extends Aux {
     super("totalFertility", 32);
 
     this.dependencies = ["maxTotalFertility", "fertilityControlEffectiveness", "desiredTotalFertility"];
+    this.plottable = true;
   }
 
   set maxTotalFertility(value) {

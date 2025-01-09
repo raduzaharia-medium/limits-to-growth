@@ -5,6 +5,7 @@ export class LandFractionCultivated extends Aux {
     super("landFractionCultivated", 84);
 
     this.potentiallyArableLandTotal = potentiallyArableLandTotal; // hectares, used here and in eqn 97
+    this.plottable = true;
   }
 
   set arableLand(value) {

@@ -7,6 +7,7 @@ export class AssimilationHalfLife extends Aux {
     this.units = "years";
     this.valueIn1970 = 1.5; // years
     this.dependencies = ["assimilationHalfLifeMultiplier"];
+    this.plottable = true;
   }
 
   set assimilationHalfLifeMultiplier(value) {

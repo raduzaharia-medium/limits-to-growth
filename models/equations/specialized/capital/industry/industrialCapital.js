@@ -6,6 +6,7 @@ export class IndustrialCapital extends Level {
 
     this.units = "dollars";
     this.dt = dt;
+    this.plottable = true;
   }
 
   set industrialCapitalInvestmentRate(value) {

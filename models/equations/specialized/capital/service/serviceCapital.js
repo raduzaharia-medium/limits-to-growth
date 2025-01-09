@@ -5,6 +5,7 @@ export class ServiceCapital extends Level {
     super("serviceCapital", 67, 1.44e11);
 
     this.units = "dollars";
+    this.plottable = true;
   }
 
   set serviceCapitalInvestmentRate(value) {

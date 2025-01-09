@@ -83,7 +83,7 @@ import { JobsPerHectare } from "./models/equations/specialized/capital/jobs/jobs
 import { LaborForce } from "./models/equations/specialized/capital/jobs/laborForce.js";
 import { LaborUtilizationFraction } from "./models/equations/specialized/capital/jobs/laborUtilizationFraction.js";
 import { LaborUtilizationFractionDelayed } from "./models/equations/specialized/capital/jobs/laborUtilizationFractionDelayed.js";
-import { CapitalUtilizationFraction } from "./models/equations/specialized/capital/jobs/capitalUtilizationFraction.js";
+import { CapitalUtilizationFraction } from "./models/equations/specialized/capital/capitalUtilizationFraction.js";
 import { LandFractionCultivated } from "./models/equations/specialized/agriculture/land/development/landFractionCultivated.js";
 import { ArableLand } from "./models/equations/specialized/agriculture/land/development/arableLand.js";
 import { PotentiallyArableLand } from "./models/equations/specialized/agriculture/land/development/potentiallyArableLand.js";
@@ -147,9 +147,9 @@ import { IndexOfPersistentPollution } from "./models/equations/specialized/pollu
 import { PersistenPollutionAssimilationRate } from "./models/equations/specialized/pollution/persistenPollutionAssimilationRate.js";
 import { AssimilationHalfLifeMultiplier } from "./models/equations/specialized/pollution/assimilationHalfLifeMultiplier.js";
 import { AssimilationHalfLife } from "./models/equations/specialized/pollution/assimilationHalfLife.js";
-import { FractionOfOutputInAgriculture } from "./models/equations/specialized/fractionOfOutputInAgriculture.js";
-import { FractionOfOutputInIndustry } from "./models/equations/specialized/fractionOfOutputInIndustry.js";
-import { FractionOfOutputInServices } from "./models/equations/specialized/fractionOfOutputInServices.js";
+import { FractionOfOutputInAgriculture } from "./models/equations/specialized/agriculture/fractionOfOutputInAgriculture.js";
+import { FractionOfOutputInIndustry } from "./models/equations/specialized/capital/industry/fractionOfOutputInIndustry.js";
+import { FractionOfOutputInServices } from "./models/equations/specialized/capital/service/fractionOfOutputInServices.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript of World3, the social-economic-environmental model created by
     Dennis and Donella Meadows and others circa 1970. The results of the modeling exercise were published in The Limits to Growth
@@ -1611,96 +1611,18 @@ var testPlotData = [
 ];
 
 // CONTROLS
-
-// array of plottable variables
-
-var plottable = [
-  "agriculturalInputs",
-  "agriculturalInputsPerHectare",
-  "assimilationHalfLife",
-  "averageLifeOfLand",
-  "capitalUtilizationFraction",
-  "effectiveHealthServicesPerCapita",
-  "familyIncomeExpectation",
-  "familyResponseToSocialNorm",
-  "fecundityMultiplier",
-  "fertilityControlAllocationPerCapita",
-  "food",
-  "fractionOfCapitalAllocatedToObtainingResources",
-  "fractionOfIndustrialOutputAllocatedToAgriculture",
-  "fractionOfIndustrialOutputAllocatedToIndustry",
-  "fractionOfIndustrialOutputAllocatedToServices",
-  "fractionOfInputsAllocatedToLandDevelopment",
-  "fractionOfInputsAllocatedToLandMaintenance",
-  "fractionOfOutputInAgriculture",
-  "fractionOfOutputInIndustry",
-  "fractionOfOutputInServices",
-  "fractionOfPopulationUrban",
-  "fractionOfServicesAllocatedToFertilityControl",
-  "healthServicesAllocationsPerCapita",
-  "industrialCapital",
-  "industrialCapitalDepreciationRate",
-  "industrialCapitalInvestmentRate",
-  "industrialCapitalOutputRatio",
-  "industrialOutput",
-  "jobs",
-  "jobsPerHectare",
-  "jobsPerIndustrialCapitalUnit",
-  "jobsPerServiceCapitalUnit",
-  "laborForce",
-  "laborUtilizationFraction",
-  "landDevelopmentRate",
-  "landErosionRate",
-  "landFertility",
-  "landFertilityDegradation",
-  "landFertilityDegradationRate",
-  "landFertilityRegeneration",
-  "landFractionCultivated",
-  "landLifeMultiplierFromYield",
-  "landRemovalForUrbanIndustrialUse",
-  "lifetimeMultiplierFromCrowding",
-  "lifetimeMultiplierFromFood",
-  "lifetimeMultiplierFromHealthServices",
-  "lifetimeMultiplierFromPollution",
-  "mortality0To14",
-  "mortality15To44",
-  "mortality45To64",
-  "mortality65AndOver",
-  "needForFertilityControl",
-  "nonrenewableResourceUsageRate",
-  "perCapitaResourceUsageMultiplier",
-  "perceivedFoodRatio",
-  "perceivedLifeExpectancy",
-  "persistenPollutionAppearanceRate",
-  "persistenPollutionAssimilationRate",
-  "persistentPollutionGenerationRate",
-  "potentialJobsInAgriculturalSector",
-  "potentialJobsInIndustrialSector",
-  "potentialJobsInServiceSector",
-  "potentiallyArableLand",
-  "serviceCapital",
-  "serviceCapitalDepreciationRate",
-  "serviceCapitalInvestmentRate",
-  "serviceCapitalOutputRatio",
-  "serviceOutput",
-  "socialFamilySizeNorm",
-  "totalAgriculturalInvestment",
-  "totalFertility",
-  "urbanIndustrialLand",
-];
-
 // add variables to the pop-up menu
+var populateMenu = function () {
+  const plottable = qArray.filter((e) => e.plottable == true);
+  const menu = document.getElementById("menuOfVars");
 
-/*
-var populateMenu = function() {
-  var menu = document.getElementById("menuOfVars")
-  for (var i in plottable) {
-    var iOption = new Option();
-    iOption.text = plottable[i];
-    menu.options[menu.length] = iOption;
+  for (var i of plottable) {
+    const newOption = new Option();
+
+    newOption.text = plottable[i].qName;
+    menu.options.push(newOption);
   }
-}
-*/
+};
 
 var setUpControls = function () {
   pollCheckBoxes();
