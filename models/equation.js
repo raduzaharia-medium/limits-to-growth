@@ -1,5 +1,3 @@
-import { scaleX, scaleY } from "../tools.js";
-
 export class Equation {
   constructor(qName, qNumber) {
     this.qName = qName;

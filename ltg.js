@@ -10,7 +10,7 @@ import { Simulation } from "./models/simulation.js";
 var startTime = 1900;
 var stopTime = 2100;
 var t = 1900;
-var dt = 1.0;
+var dt = 0.5;
 var policyYear = 1975; // eqn 150.1
 
 const plotDelay = 0 * dt; // milliseconds

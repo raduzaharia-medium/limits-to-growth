@@ -149,10 +149,10 @@ import { Population45To64 } from "./equations/specialized/population/population4
 import { Population65AndOver } from "./equations/specialized/population/population65AndOver.js";
 
 export class Simulation {
-  constructor(startYear, stopYear, stepSize, policyYear) {
+  constructor(startYear, stopYear, timeStep, policyYear) {
     this.startYear = startYear;
     this.stopYear = stopYear;
-    this.stepSize = stepSize;
+    this.timeStep = timeStep;
     this.policyYear = policyYear;
     this.currentYear = startYear;
 
@@ -930,18 +930,18 @@ export class Simulation {
     this.equations.filter((e) => e.init).forEach((e) => e.init());
   }
 
-  warmup(currentYear, timeStep) {
+  warmup() {
     for (var i = 1; i <= 3; i++) {
-      this.auxArray.forEach((e) => e.warmup(currentYear, timeStep));
-      this.rateArray.forEach((e) => e.warmup(currentYear, timeStep));
+      this.auxArray.forEach((e) => e.warmup(this.currentYear, this.timeStep));
+      this.rateArray.forEach((e) => e.warmup(this.currentYear, this.timeStep));
 
       this.equations.forEach((e) => e.tick());
     }
 
     for (var i = 1; i <= 10; i++) {
-      this.auxArray.forEach((e) => e.warmup(currentYear, timeStep));
-      this.rateArray.forEach((e) => e.warmup(currentYear, timeStep));
-      this.levelArray.forEach((e) => e.warmup(currentYear, timeStep));
+      this.auxArray.forEach((e) => e.warmup(this.currentYear, this.timeStep));
+      this.rateArray.forEach((e) => e.warmup(this.currentYear, this.timeStep));
+      this.levelArray.forEach((e) => e.warmup(this.currentYear, this.timeStep));
 
       this.equations.forEach((e) => e.tick());
     }
