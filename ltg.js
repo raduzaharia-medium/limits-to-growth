@@ -39,14 +39,14 @@ const toggleSimulation = () => {
 const stop = () => {
   clearInterval(plotTimer);
 
-  enableControls();
+  document.querySelectorAll("input, button").forEach((e) => e.removeAttribute("disabled"));
   document.getElementById("run").innerHTML = "Run";
 };
 
 const start = () => {
   document.getElementById("run").innerHTML = "Stop";
+  document.querySelectorAll("input, button:not(#run)").forEach((e) => e.setAttribute("disabled", ""));
 
-  disableControls();
   setUpGraph();
 
   simulation.restart();
@@ -219,32 +219,6 @@ var changeMenuVar = function() {
 
 }
 */
-
-var disableControls = function () {
-  var ctrls = document.getElementsByTagName("input");
-  for (var c = 0; c < ctrls.length; c++) {
-    ctrls[c].setAttribute("disabled", "disabled");
-  }
-  var btns = document.getElementsByTagName("button");
-  for (var b = 0; b < btns.length; b++) {
-    if (btns[b].getAttribute("id") != "run") {
-      btns[b].setAttribute("disabled", "disabled");
-    }
-  }
-};
-
-var enableControls = function () {
-  var ctrls = document.getElementsByTagName("input");
-  for (var c = 0; c < ctrls.length; c++) {
-    ctrls[c].removeAttribute("disabled");
-  }
-  var btns = document.getElementsByTagName("button");
-  for (var b = 0; b < btns.length; b++) {
-    if (btns[b].getAttribute("id") != "run") {
-      btns[b].removeAttribute("disabled");
-    }
-  }
-};
 
 const setDefaults = () => {
   const defaultPlotVariables = ["population-ck", "resources-ck", "food-ck", "industry-ck", "pollution-ck", "life-expect-ck"];
