@@ -19,42 +19,13 @@ const levelArray = simulation.levelArray;
 const rateArray = simulation.rateArray;
 const auxArray = simulation.auxArray;
 
-export const resetModel = () => {
-  t = startTime;
-
-  qArray.forEach((e) => e.reset());
-  setUpGraph();
-};
-
-var warmupAuxen = function () {
-  auxArray.forEach((e) => e.warmup(t, dt));
-};
-
-var warmupRates = function () {
-  rateArray.forEach((e) => e.warmup(t, dt));
-};
-
-var warmupLevels = function () {
-  levelArray.forEach((e) => e.warmup(t, dt));
-};
-
-var tock = function () {
-  qArray.forEach((e) => e.tick());
-};
-
-var initModel = function () {
-  qArray.filter((e) => e.init).forEach((e) => e.init()); // call the init functions for the equations that have them
-  auxArray.sort((a, b) => (a.sequenceNumber < b.sequenceNumber ? -1 : 1)); // sort the aux array by sequence number
-
-  t = startTime;
-};
-
 var timeStep = function () {
   levelArray.forEach((e) => e.update(t, startTime, stopTime, gLeft, gRight, gBottom, gTop, dt));
   auxArray.forEach((e) => e.update(t, startTime, stopTime, gLeft, gRight, gBottom, gTop, dt));
   rateArray.forEach((e) => e.update(t, startTime, stopTime, gLeft, gRight, gBottom, gTop, dt));
 
-  tock();
+  qArray.forEach((e) => e.tick());
+
   t += dt;
 };
 
@@ -76,30 +47,16 @@ export const stopModel = () => {
 const plotDelay = 0 * dt; // milliseconds
 let plotTimer = null;
 
-const warmup = () => {
-  for (var i = 1; i <= 3; i++) {
-    warmupAuxen();
-    warmupRates();
-
-    tock();
-  }
-  for (var i = 1; i <= 10; i++) {
-    warmupAuxen();
-    warmupRates();
-    warmupLevels();
-
-    tock();
-  }
-};
-
 export const runModel = () => {
   disableControls();
   setStopButton();
-  resetModel();
-  initModel();
+
+  t = startTime;
+  simulation.restart();
+
   setUpGraph();
 
-  warmup(t, dt);
+  simulation.warmup(t, dt);
 
   levelArray.forEach((e) => e.reset(startTime));
 
@@ -107,14 +64,17 @@ export const runModel = () => {
 };
 
 export const fastRun = () => {
-  resetModel();
-  initModel();
+  t = startTime;
+
+  simulation.restart();
+
   setUpGraph();
 
   for (var i = 1; i <= 100; i++) {
-    warmupAuxen();
-    warmupRates();
-    tock();
+    auxArray.forEach((e) => e.warmup(t, dt));
+    rateArray.forEach((e) => e.warmup(t, dt));
+
+    qArray.forEach((e) => e.tick());
   }
 
   while (t <= stopTime) {
@@ -219,7 +179,8 @@ export const changeDuration = () => {
   var sliderReadOut = document.getElementById("duration-readout");
   sliderReadOut.innerHTML = sliderInput.toString();
   stopTime = startTime + sliderInput;
-  resetModel();
+
+  t = startTime;
   setUpGraph();
 };
 
@@ -229,7 +190,8 @@ export const changeDt = () => {
   var newDt = Math.pow(2, sliderInput);
   sliderReadOut.innerHTML = newDt.toString();
   dt = newDt;
-  resetModel();
+
+  t = startTime;
 };
 
 export const changeResources = () => {
@@ -241,7 +203,7 @@ export const changeResources = () => {
   //nonrenewableResources.initVal = newResources * 1.0e12;
   //nonrenewableResourcesInitialK = newResources * 1.0e12;
 
-  resetModel();
+  t = startTime;
 };
 
 export const changeConsumption = () => {
@@ -252,7 +214,7 @@ export const changeConsumption = () => {
   //fractionOfIndustrialOutputAllocatedToConsumptionConstant.before = sliderInput;
   //fractionOfIndustrialOutputAllocatedToConsumptionConstant.after = sliderInput;
 
-  resetModel();
+  t = startTime;
 };
 
 /*

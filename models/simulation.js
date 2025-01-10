@@ -157,11 +157,18 @@ export class Simulation {
     this.currentYear = startYear;
 
     this.equations = [];
+
     this.setup();
 
     this.auxArray = this.equations.filter((e) => e.qType === "Aux");
     this.rateArray = this.equations.filter((e) => e.qType === "Rate");
     this.levelArray = this.equations.filter((e) => e.qType === "Level");
+
+    // the auxArray has to be processed in the order of the sequenceNumber
+    this.auxArray.sort((a, b) => (a.sequenceNumber < b.sequenceNumber ? -1 : 1));
+
+    // call the init functions for the equations that have them
+    this.equations.filter((e) => e.init).forEach((e) => e.init());
   }
 
   setup() {
@@ -914,6 +921,30 @@ export class Simulation {
     fractionOfOutputInServices.food = food;
     fractionOfOutputInServices.industrialOutput = industrialOutput;
     fractionOfOutputInServices.serviceOutput = serviceOutput;
+  }
+
+  restart() {
+    this.currentYear = this.startYear;
+
+    this.equations.forEach((e) => e.reset());
+    this.equations.filter((e) => e.init).forEach((e) => e.init());
+  }
+
+  warmup(currentYear, timeStep) {
+    for (var i = 1; i <= 3; i++) {
+      this.auxArray.forEach((e) => e.warmup(currentYear, timeStep));
+      this.rateArray.forEach((e) => e.warmup(currentYear, timeStep));
+
+      this.equations.forEach((e) => e.tick());
+    }
+
+    for (var i = 1; i <= 10; i++) {
+      this.auxArray.forEach((e) => e.warmup(currentYear, timeStep));
+      this.rateArray.forEach((e) => e.warmup(currentYear, timeStep));
+      this.levelArray.forEach((e) => e.warmup(currentYear, timeStep));
+
+      this.equations.forEach((e) => e.tick());
+    }
   }
 
   step() {
