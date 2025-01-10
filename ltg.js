@@ -69,8 +69,6 @@ const fastRun = () => {
 
 const resetModel = () => {};
 
-// ENTRY POINT: called by body.onload
-
 const setUpModel = () => {
   setUpGraph();
   setDefaults();
@@ -265,17 +263,17 @@ export const setDefaults = () => {
   }
   pollCheckBoxes();
 
-  var duration = document.getElementById("duration-slider");
-  duration.value = 200;
-  changeDuration();
+  document.getElementById("duration-slider").value = 200;
+  document.getElementById("duration-slider").dispatchEvent(new Event("input"));
 
-  var res = document.getElementById("resource-slider");
-  res.value = 0;
-  changeResources();
+  document.getElementById("resource-slider").value = 0;
+  document.getElementById("resource-slider").dispatchEvent(new Event("input"));
 
-  var cons = document.getElementById("consumption-slider");
-  cons.value = 0.43;
-  changeConsumption();
+  document.getElementById("consumption-slider").value = 0.43;
+  document.getElementById("consumption-slider").dispatchEvent(new Event("input"));
+
+  document.getElementById("dt-slider").value = -1;
+  document.getElementById("dt-slider").dispatchEvent(new Event("input"));
 };
 
 function plot(startTime, stopTime, gLeft, gRight, gBottom, gTop, data, color, min, max) {
