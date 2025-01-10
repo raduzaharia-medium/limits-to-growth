@@ -21,11 +21,13 @@ const gTop = 25;
 const gBottom = cvHeight - 50;
 
 var animationStep = function () {
-  simulation.step();
+  const variablesToPlot = [...document.querySelectorAll(".checkbox-line input[checked]")].map((e) => e.name);
 
+  simulation.step();
   simulation.equations
-    .filter((e) => e.plotThisVar)
+    .filter((e) => variablesToPlot.includes(e.qName))
     .forEach((e) => plot(simulation.startYear, simulation.stopYear, gLeft, gRight, gBottom, gTop, e.data, e.color, e.min, e.max));
+
   if (simulation.currentYear > simulation.stopYear) stop();
 };
 
@@ -54,6 +56,8 @@ const start = () => {
 };
 
 const fastRun = () => {
+  const variablesToPlot = [...document.querySelectorAll(".checkbox-line input[checked]")].map((e) => e.name);
+
   setUpGraph();
 
   simulation.restart();
@@ -62,7 +66,7 @@ const fastRun = () => {
   while (simulation.currentYear <= simulation.stopYear) {
     simulation.step();
     simulation.equations
-      .filter((e) => e.plotThisVar)
+      .filter((e) => variablesToPlot.includes(e.qName))
       .forEach((e) => plot(simulation.startYear, simulation.stopYear, gLeft, gRight, gBottom, gTop, e.data, e.color, e.min, e.max));
   }
 };
@@ -158,14 +162,6 @@ var populateMenu = function () {
   }
 };
 
-var setUpControls = function () {
-  pollCheckBoxes();
-  changeDuration();
-  changeDt();
-  changeResources();
-  changeConsumption();
-};
-
 export const changeDuration = () => {
   var sliderInput = parseInt(document.getElementById("duration-slider").value);
   var sliderReadOut = document.getElementById("duration-readout");
@@ -232,30 +228,11 @@ var enableControls = function () {
   }
 };
 
-export const pollCheckBoxes = () => {
-  var ckx = document.getElementsByClassName("checkbox-line");
-  for (var i = 0; i < ckx.length; i++) {
-    var theInput = ckx[i].getElementsByTagName("input")[0];
-    var theEqn = simulation.equations.find((e) => e.qName === theInput.getAttribute("name"));
-    var theSample = ckx[i].getElementsByClassName("color-sample")[0];
-    var theHue = theEqn.color;
-    if (theInput.checked == true) {
-      theSample.style.backgroundColor = theHue;
-      theEqn.plotThisVar = true;
-    } else {
-      theSample.style.backgroundColor = "transparent";
-      theEqn.plotThisVar = false;
-    }
-  }
-};
-
 const setDefaults = () => {
   const defaultPlotVariables = ["population-ck", "resources-ck", "food-ck", "industry-ck", "pollution-ck", "life-expect-ck"];
 
   document.querySelectorAll(".checkbox-line input").forEach((e) => (e.checked = false));
   defaultPlotVariables.forEach((e) => (document.getElementById(e).checked = true));
-
-  pollCheckBoxes();
 
   document.getElementById("duration-slider").value = 200;
   document.getElementById("duration-slider").dispatchEvent(new Event("input"));

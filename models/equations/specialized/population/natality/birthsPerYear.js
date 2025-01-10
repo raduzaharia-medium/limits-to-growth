@@ -6,7 +6,6 @@ export class BirthsPerYear extends Rate {
     super("birthsPerYear", 30);
 
     this.units = "persons per year";
-    this.plotThisVar = true;
     this.reproductiveLifetime = 30; // years
     this.populationEquilibriumTime = 4000; // year
 
