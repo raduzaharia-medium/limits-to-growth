@@ -945,6 +945,8 @@ export class Simulation {
 
       this.equations.forEach((e) => e.tick());
     }
+
+    this.levelArray.forEach((e) => e.reset(this.startYear));
   }
 
   step() {

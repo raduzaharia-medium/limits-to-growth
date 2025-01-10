@@ -50,15 +50,11 @@ let plotTimer = null;
 export const runModel = () => {
   disableControls();
   setStopButton();
+  setUpGraph();
 
   t = startTime;
   simulation.restart();
-
-  setUpGraph();
-
   simulation.warmup(t, dt);
-
-  levelArray.forEach((e) => e.reset(startTime));
 
   plotTimer = setInterval(animationStep, plotDelay); // note GLOBAL
 };
