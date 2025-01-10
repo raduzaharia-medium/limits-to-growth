@@ -26,19 +26,25 @@ var animationStep = function () {
   simulation.equations
     .filter((e) => e.plotThisVar)
     .forEach((e) => plot(simulation.startYear, simulation.stopYear, gLeft, gRight, gBottom, gTop, e.data, e.color, e.min, e.max));
-  if (simulation.currentYear > simulation.stopYear) stopModel();
+  if (simulation.currentYear > simulation.stopYear) stop();
 };
 
-const stopModel = () => {
+const toggleSimulation = () => {
+  if (document.getElementById("run").innerHTML === "Run") start();
+  else stop();
+};
+
+const stop = () => {
   clearInterval(plotTimer);
 
   enableControls();
-  setRunButton();
+  document.getElementById("run").innerHTML = "Run";
 };
 
-const runModel = () => {
+const start = () => {
+  document.getElementById("run").innerHTML = "Stop";
+
   disableControls();
-  setStopButton();
   setUpGraph();
 
   simulation.restart();
@@ -97,7 +103,7 @@ const setUpModel = () => {
     consumptionReadout.innerHTML = consumptionSlider.value;
   });
 
-  document.getElementById("run").addEventListener("click", runModel);
+  document.getElementById("run").addEventListener("click", toggleSimulation);
   document.getElementById("reset").addEventListener("click", resetModel);
   document.getElementById("fast-run").addEventListener("click", fastRun);
   document.getElementById("defaults").addEventListener("click", setDefaults);
@@ -226,18 +232,6 @@ var enableControls = function () {
       btns[b].removeAttribute("disabled");
     }
   }
-};
-
-var setStopButton = function () {
-  var btn = document.getElementById("run");
-  btn.setAttribute("onclick", stopModel());
-  btn.innerHTML = "Stop";
-};
-
-var setRunButton = function () {
-  var btn = document.getElementById("run");
-  btn.setAttribute("onclick", "runModel()");
-  btn.innerHTML = "Run";
 };
 
 export const pollCheckBoxes = () => {
