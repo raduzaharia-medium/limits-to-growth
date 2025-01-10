@@ -9,9 +9,11 @@ import { scaleX, scaleY } from "./tools.js";
 // PARAMETERS THAT GOVERN THE RUNNING OF THE MODEL
 
 let plotTimer = null;
+const startYear = 1900;
 const timeStepSlider = document.getElementById("dt-slider");
 const timeStep = Math.pow(2, parseFloat(timeStepSlider.value));
-const simulation = new Simulation(1900, 2100, timeStep, 1975);
+const duration = parseInt(document.getElementById("duration-slider").value);
+const simulation = new Simulation(startYear, startYear + duration, timeStep, 1975);
 
 const cvWidth = 800;
 const cvHeight = 450;
@@ -105,7 +107,9 @@ const setUpModel = () => {
   const durationSlider = document.getElementById("duration-slider");
   durationSlider.addEventListener("input", () => {
     const durationReadout = document.getElementById("duration-readout");
+
     durationReadout.innerHTML = durationSlider.value;
+    setUpGraph();
   });
 
   const resourceSlider = document.getElementById("resource-slider");
@@ -130,6 +134,8 @@ const setUpModel = () => {
 };
 
 var setUpGraph = function () {
+  const duration = parseInt(document.getElementById("duration-slider").value);
+
   var cv = document.getElementById("cv");
   cv.width = cv.width;
   var cvx = cv.getContext("2d");
@@ -148,9 +154,9 @@ var setUpGraph = function () {
 
   cvx.lineWidth = 1;
   cvx.strokeStyle = "#fff";
-  for (var x = simulation.startYear; x <= simulation.stopYear; x += 50) {
-    cvx.moveTo(scaleX(x, simulation.startYear, simulation.stopYear, gLeft, gRight), scaleY(0, 0, 1, gTop, gBottom));
-    cvx.lineTo(scaleX(x, simulation.startYear, simulation.stopYear, gLeft, gRight), scaleY(1, 0, 1, gTop, gBottom));
+  for (var x = startYear; x <= startYear + duration; x += 50) {
+    cvx.moveTo(scaleX(x, startYear, startYear + duration, gLeft, gRight), scaleY(0, 0, 1, gTop, gBottom));
+    cvx.lineTo(scaleX(x, startYear, startYear + duration, gLeft, gRight), scaleY(1, 0, 1, gTop, gBottom));
     cvx.stroke();
   }
 
@@ -160,8 +166,8 @@ var setUpGraph = function () {
   cvx.textAlign = "center";
   cvx.fillStyle = "#000";
   var textY = gBottom + 20;
-  for (var textX = simulation.startYear; textX <= simulation.stopYear; textX += 50) {
-    cvx.fillText(textX.toString(), scaleX(textX, simulation.startYear, simulation.stopYear, gLeft, gRight), textY);
+  for (var textX = startYear; textX <= startYear + duration; textX += 50) {
+    cvx.fillText(textX.toString(), scaleX(textX, startYear, startYear + duration, gLeft, gRight), textY);
   }
   cvx.fillText("year", scaleX(1, 0, 2, gLeft, gRight), gBottom + 40);
 };
@@ -178,17 +184,6 @@ var populateMenu = function () {
     newOption.text = plottable[i].qName;
     menu.options.push(newOption);
   }
-};
-
-export const changeDuration = () => {
-  var sliderInput = parseInt(document.getElementById("duration-slider").value);
-  var sliderReadOut = document.getElementById("duration-readout");
-
-  sliderReadOut.innerHTML = sliderInput.toString();
-
-  // recreate simulation
-
-  setUpGraph();
 };
 
 export const changeResources = () => {
