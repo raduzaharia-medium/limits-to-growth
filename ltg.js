@@ -1,4 +1,5 @@
 import { Simulation } from "./models/simulation.js";
+import { scaleX, scaleY } from "./tools.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript of World3, the social-economic-environmental model created by
     Dennis and Donella Meadows and others circa 1970. The results of the modeling exercise were published in The Limits to Growth
@@ -28,14 +29,14 @@ var animationStep = function () {
   if (simulation.currentYear > simulation.stopYear) stopModel();
 };
 
-export const stopModel = () => {
+const stopModel = () => {
   clearInterval(plotTimer);
 
   enableControls();
   setRunButton();
 };
 
-export const runModel = () => {
+const runModel = () => {
   disableControls();
   setStopButton();
   setUpGraph();
@@ -46,7 +47,7 @@ export const runModel = () => {
   plotTimer = setInterval(animationStep, 0);
 };
 
-export const fastRun = () => {
+const fastRun = () => {
   setUpGraph();
 
   simulation.restart();
@@ -64,7 +65,7 @@ const resetModel = () => {};
 
 // ENTRY POINT: called by body.onload
 
-export const setUpModel = () => {
+const setUpModel = () => {
   setUpGraph();
   setDefaults();
 
@@ -102,18 +103,6 @@ export const setUpModel = () => {
   document.getElementById("defaults").addEventListener("click", setDefaults);
 };
 
-var scaleX = function (x, xMin, xMax) {
-  var sx = (x - xMin) / (xMax - xMin);
-  var px = gLeft + sx * (gRight - gLeft);
-  return px;
-};
-
-var scaleY = function (y, yMin, yMax) {
-  var sy = (y - yMin) / (yMax - yMin);
-  var py = gTop + (1 - sy) * (gBottom - gTop);
-  return py;
-};
-
 var setUpGraph = function () {
   var cv = document.getElementById("cv");
   cv.width = cv.width;
@@ -124,8 +113,8 @@ var setUpGraph = function () {
   cvx.lineWidth = 1;
   cvx.strokeStyle = "#fff";
   for (var y = 0; y <= 5; y++) {
-    cvx.moveTo(scaleX(0, 0, 1), scaleY(y, 0, 5));
-    cvx.lineTo(scaleX(1, 0, 1), scaleY(y, 0, 5));
+    cvx.moveTo(scaleX(0, 0, 1, gLeft, gRight), scaleY(y, 0, 5, gTop, gBottom));
+    cvx.lineTo(scaleX(1, 0, 1, gLeft, gRight), scaleY(y, 0, 5, gTop, gBottom));
     cvx.stroke();
   }
 
@@ -134,8 +123,8 @@ var setUpGraph = function () {
   cvx.lineWidth = 1;
   cvx.strokeStyle = "#fff";
   for (var x = simulation.startYear; x <= simulation.stopYear; x += 50) {
-    cvx.moveTo(scaleX(x, simulation.startYear, simulation.stopYear), scaleY(0, 0, 1));
-    cvx.lineTo(scaleX(x, simulation.startYear, simulation.stopYear), scaleY(1, 0, 1));
+    cvx.moveTo(scaleX(x, simulation.startYear, simulation.stopYear, gLeft, gRight), scaleY(0, 0, 1, gTop, gBottom));
+    cvx.lineTo(scaleX(x, simulation.startYear, simulation.stopYear, gLeft, gRight), scaleY(1, 0, 1, gTop, gBottom));
     cvx.stroke();
   }
 
@@ -146,9 +135,9 @@ var setUpGraph = function () {
   cvx.fillStyle = "#000";
   var textY = gBottom + 20;
   for (var textX = simulation.startYear; textX <= simulation.stopYear; textX += 50) {
-    cvx.fillText(textX.toString(), scaleX(textX, simulation.startYear, simulation.stopYear), textY);
+    cvx.fillText(textX.toString(), scaleX(textX, simulation.startYear, simulation.stopYear, gLeft, gRight), textY);
   }
-  cvx.fillText("year", scaleX(1, 0, 2), gBottom + 40);
+  cvx.fillText("year", scaleX(1, 0, 2, gLeft, gRight), gBottom + 40);
 };
 
 // CONTROLS
@@ -304,11 +293,11 @@ function plot(startTime, stopTime, gLeft, gRight, gBottom, gTop, data, color, mi
   context.beginPath();
 
   var leftPoint = data[0];
-  context.moveTo(scaleX(leftPoint.x, startTime, stopTime, gLeft, gRight), scaleY(leftPoint.y, min, max, gBottom, gTop));
+  context.moveTo(scaleX(leftPoint.x, startTime, stopTime, gLeft, gRight), scaleY(leftPoint.y, min, max, gTop, gBottom));
 
   for (var i = 1; i < data.length; i++) {
     var p = data[i];
-    context.lineTo(scaleX(p.x, startTime, stopTime, gLeft, gRight), scaleY(p.y, min, max, gBottom, gTop));
+    context.lineTo(scaleX(p.x, startTime, stopTime, gLeft, gRight), scaleY(p.y, min, max, gTop, gBottom));
   }
 
   context.stroke();
