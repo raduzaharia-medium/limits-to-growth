@@ -37,26 +37,6 @@ export class Equation {
     this.j = this.k;
   }
 
-  plot(startTime, stopTime, gLeft, gRight, gBottom, gTop) {
-    const canvas = document.getElementById("cv");
-    const context = canvas.getContext("2d");
-
-    context.strokeStyle = this.plotColor;
-    context.lineWidth = 2;
-    context.beginPath();
-
-    var leftPoint = this.data[0];
-    context.moveTo(scaleX(leftPoint.x, startTime, stopTime, gLeft, gRight), scaleY(leftPoint.y, this.plotMin, this.plotMax, gBottom, gTop));
-
-    for (var i = 1; i < this.data.length; i++) {
-      var p = this.data[i];
-      context.lineTo(scaleX(p.x, startTime, stopTime, gLeft, gRight), scaleY(p.y, this.plotMin, this.plotMax, gBottom, gTop));
-    }
-
-    context.stroke();
-    context.closePath();
-  }
-
   updateFn(t, dt) {
     return this.j;
   }

@@ -13,31 +13,27 @@ var t = 1900;
 var dt = 1.0;
 var policyYear = 1975; // eqn 150.1
 
+const plotDelay = 0 * dt; // milliseconds
+let plotTimer = null;
+
+const cvWidth = 800;
+const cvHeight = 450;
+const gLeft = 50;
+const gRight = cvWidth - 50;
+const gTop = 25;
+const gBottom = cvHeight - 50;
+
 const simulation = new Simulation(startTime, stopTime, dt, policyYear);
 const qArray = simulation.equations;
-const levelArray = simulation.levelArray;
 const rateArray = simulation.rateArray;
 const auxArray = simulation.auxArray;
 
-var timeStep = function () {
-  levelArray.forEach((e) => e.update(t, dt));
-  auxArray.forEach((e) => e.update(t, dt));
-  rateArray.forEach((e) => e.update(t, dt));
-
-  qArray.forEach((e) => e.tick());
-
-  t += dt;
-};
-
 var animationStep = function () {
-  timeStep();
-  qArray.filter((e) => e.plotThisVar).forEach((e) => e.plot(startTime, stopTime, gLeft, gRight, gBottom, gTop));
+  simulation.step(t, dt);
+  t += dt;
 
-  if (t > stopTime) {
-    clearInterval(plotTimer);
-    enableControls();
-    setRunButton();
-  }
+  qArray.filter((e) => e.plotThisVar).forEach((e) => plot(startTime, stopTime, gLeft, gRight, gBottom, gTop, e.data, e.plotColor, e.plotMin, e.plotMax));
+  if (t > stopTime) stopModel();
 };
 
 export const stopModel = () => {
@@ -45,9 +41,6 @@ export const stopModel = () => {
   enableControls();
   setRunButton();
 };
-
-const plotDelay = 0 * dt; // milliseconds
-let plotTimer = null;
 
 export const runModel = () => {
   disableControls();
@@ -76,7 +69,8 @@ export const fastRun = () => {
   }
 
   while (t <= stopTime) {
-    timeStep();
+    simulation.step(t, dt);
+    t += dt;
   }
 };
 
@@ -87,19 +81,6 @@ export const setUpModel = () => {
   setUpControls();
   setDefaults();
 };
-
-// GRAPHICS
-
-// some basic dimensions
-
-var cvWidth = 800;
-var cvHeight = 450;
-var gLeft = 50;
-var gRight = cvWidth - 50;
-var gTop = 25;
-var gBottom = cvHeight - 50;
-
-// RGB colors associated with the polttable variables
 
 var scaleX = function (x, xMin, xMax) {
   var sx = (x - xMin) / (xMax - xMin);
@@ -305,3 +286,23 @@ export const setDefaults = () => {
   cons.value = 0.43;
   changeConsumption();
 };
+
+function plot(startTime, stopTime, gLeft, gRight, gBottom, gTop, data, color, plotMin, plotMax) {
+  const canvas = document.getElementById("cv");
+  const context = canvas.getContext("2d");
+
+  context.strokeStyle = color;
+  context.lineWidth = 2;
+  context.beginPath();
+
+  var leftPoint = data[0];
+  context.moveTo(scaleX(leftPoint.x, startTime, stopTime, gLeft, gRight), scaleY(leftPoint.y, plotMin, plotMax, gBottom, gTop));
+
+  for (var i = 1; i < data.length; i++) {
+    var p = data[i];
+    context.lineTo(scaleX(p.x, startTime, stopTime, gLeft, gRight), scaleY(p.y, plotMin, plotMax, gBottom, gTop));
+  }
+
+  context.stroke();
+  context.closePath();
+}
