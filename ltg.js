@@ -249,18 +249,12 @@ export const pollCheckBoxes = () => {
   }
 };
 
-export const setDefaults = () => {
-  var plotVars = ["population-ck", "resources-ck", "food-ck", "industry-ck", "pollution-ck", "life-expect-ck"];
-  var ckx = document.getElementsByClassName("checkbox-line");
-  for (var i = 0; i < ckx.length; i++) {
-    var theInput = ckx[i].getElementsByTagName("input")[0];
-    theInput.checked = false;
-  }
+const setDefaults = () => {
+  const defaultPlotVariables = ["population-ck", "resources-ck", "food-ck", "industry-ck", "pollution-ck", "life-expect-ck"];
 
-  for (var id in plotVars) {
-    var ckBox = document.getElementById(plotVars[id]);
-    ckBox.checked = true;
-  }
+  document.querySelectorAll(".checkbox-line input").forEach((e) => (e.checked = false));
+  defaultPlotVariables.forEach((e) => (document.getElementById(e).checked = true));
+
   pollCheckBoxes();
 
   document.getElementById("duration-slider").value = 200;
