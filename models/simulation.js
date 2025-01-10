@@ -149,12 +149,13 @@ import { Population45To64 } from "./equations/specialized/population/population4
 import { Population65AndOver } from "./equations/specialized/population/population65AndOver.js";
 
 export class Simulation {
-  constructor(startYear, stopYear, timeStep, policyYear) {
+  constructor(startYear, stopYear, timeStep, policyYear, resources) {
     this.startYear = startYear;
     this.stopYear = stopYear;
     this.timeStep = timeStep;
     this.policyYear = policyYear;
     this.currentYear = startYear;
+    this.nonRenewableResourcesInitialK = resources * 1.0e12;
 
     this.equations = [];
 
@@ -169,6 +170,9 @@ export class Simulation {
 
     // call the init functions for the equations that have them
     this.equations.filter((e) => e.init).forEach((e) => e.init());
+
+    // configure resources
+    this.equations.find((e) => e.qName === "nonrenewableResources").initVal = resources * 1.0e12;
   }
 
   setup() {
@@ -816,8 +820,7 @@ export class Simulation {
 
     // NONRENEWABLE RESOURCE SECTOR
 
-    let nonrenewableResourcesInitialK = 1.0e12; // resource units, used in eqns 129 and 133
-    const nonrenewableResources = new NonRenewableResources(nonrenewableResourcesInitialK, this.startYear);
+    const nonrenewableResources = new NonRenewableResources(this.nonRenewableResourcesInitialK, this.startYear);
     this.equations.push(nonrenewableResources);
 
     const nonrenewableResourceUsageRate = new NonRenewableResourceUsageRate();
@@ -834,7 +837,7 @@ export class Simulation {
     nonrenewableResourceUsageRate.perCapitaResourceUsageMultiplier = perCapitaResourceUsageMultiplier;
     perCapitaResourceUsageMultiplier.industrialOutputPerCapita = industrialOutputPerCapita;
 
-    const nonrenewableResourceFractionRemaining = new NonRenewableResourceFractionRemaining(nonrenewableResourcesInitialK);
+    const nonrenewableResourceFractionRemaining = new NonRenewableResourceFractionRemaining(this.nonRenewableResourcesInitialK);
     this.equations.push(nonrenewableResourceFractionRemaining);
     nonrenewableResourceFractionRemaining.nonRenewableResources = nonrenewableResources;
 

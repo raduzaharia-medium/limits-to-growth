@@ -10,10 +10,7 @@ import { scaleX, scaleY } from "./tools.js";
 
 let plotTimer = null;
 const startYear = 1900;
-const timeStepSlider = document.getElementById("dt-slider");
-const timeStep = Math.pow(2, parseFloat(timeStepSlider.value));
-const duration = parseInt(document.getElementById("duration-slider").value);
-const simulation = new Simulation(startYear, startYear + duration, timeStep, 1975);
+let simulation = null;
 
 const cvWidth = 800;
 const cvHeight = 450;
@@ -46,6 +43,14 @@ const stop = () => {
 };
 
 const start = () => {
+  const timeStepSlider = document.getElementById("dt-slider");
+  const timeStep = Math.pow(2, parseFloat(timeStepSlider.value));
+  const duration = parseInt(document.getElementById("duration-slider").value);
+  const resourcesSlider = document.getElementById("resource-slider");
+  const resources = Math.pow(2, parseInt(resourcesSlider.value)); // 1.0e12
+
+  simulation = new Simulation(startYear, startYear + duration, timeStep, 1975, resources);
+
   document.getElementById("run").innerHTML = "Stop";
   document.querySelectorAll("input, button:not(#run)").forEach((e) => e.setAttribute("disabled", ""));
 
@@ -58,7 +63,10 @@ const start = () => {
 };
 
 export const pollCheckBoxes = () => {
+  if (simulation === null) return;
+
   var ckx = document.getElementsByClassName("checkbox-line");
+
   for (var i = 0; i < ckx.length; i++) {
     var theInput = ckx[i].getElementsByTagName("input")[0];
     var theEqn = simulation.equations.find((e) => e.qName === theInput.getAttribute("name"));
@@ -186,16 +194,6 @@ var populateMenu = function () {
   }
 };
 
-export const changeResources = () => {
-  var sliderInput = parseInt(document.getElementById("resource-slider").value);
-  var sliderReadOut = document.getElementById("resource-readout");
-  var newResources = Math.pow(2, sliderInput);
-  sliderReadOut.innerHTML = newResources.toString();
-
-  //nonrenewableResources.initVal = newResources * 1.0e12;
-  //nonrenewableResourcesInitialK = newResources * 1.0e12;
-};
-
 export const changeConsumption = () => {
   var sliderInput = parseFloat(document.getElementById("consumption-slider").value);
   var sliderReadOut = document.getElementById("consumption-readout");
@@ -236,24 +234,21 @@ const setDefaults = () => {
   document.getElementById("dt-slider").dispatchEvent(new Event("input"));
 };
 
-function plot(startTime, stopTime, gLeft, gRight, gBottom, gTop, data, color, min, max) {
+const plot = (startTime, stopTime, gLeft, gRight, gBottom, gTop, data, color, min, max) => {
   const canvas = document.getElementById("cv");
   const context = canvas.getContext("2d");
 
   context.strokeStyle = color;
   context.lineWidth = 2;
   context.beginPath();
-
-  var leftPoint = data[0];
-  context.moveTo(scaleX(leftPoint.x, startTime, stopTime, gLeft, gRight), scaleY(leftPoint.y, min, max, gTop, gBottom));
+  context.moveTo(scaleX(data[0].x, startTime, stopTime, gLeft, gRight), scaleY(data[0].y, min, max, gTop, gBottom));
 
   for (var i = 1; i < data.length; i++) {
-    var p = data[i];
-    context.lineTo(scaleX(p.x, startTime, stopTime, gLeft, gRight), scaleY(p.y, min, max, gTop, gBottom));
+    context.lineTo(scaleX(data[i].x, startTime, stopTime, gLeft, gRight), scaleY(data[i].y, min, max, gTop, gBottom));
   }
 
   context.stroke();
   context.closePath();
-}
+};
 
 setUpModel();
