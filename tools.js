@@ -5,7 +5,7 @@ export const scaleX = (x, xMin, xMax, gLeft, gRight) => {
   return px;
 };
 
-export const scaleY = (y, yMin, yMax, gBottom, gTop) => {
+export const scaleY = (y, yMin, yMax, gTop, gBottom) => {
   var sy = (y - yMin) / (yMax - yMin);
   var py = gTop + (1 - sy) * (gBottom - gTop);
 

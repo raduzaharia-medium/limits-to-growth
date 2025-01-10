@@ -60,6 +60,8 @@ export const fastRun = () => {
   }
 };
 
+const resetModel = () => {};
+
 // ENTRY POINT: called by body.onload
 
 export const setUpModel = () => {
@@ -93,6 +95,11 @@ export const setUpModel = () => {
     const consumptionReadout = document.getElementById("consumption-readout");
     consumptionReadout.innerHTML = consumptionSlider.value;
   });
+
+  document.getElementById("run").addEventListener("click", runModel);
+  document.getElementById("reset").addEventListener("click", resetModel);
+  document.getElementById("fast-run").addEventListener("click", fastRun);
+  document.getElementById("defaults").addEventListener("click", setDefaults);
 };
 
 var scaleX = function (x, xMin, xMax) {
@@ -307,3 +314,5 @@ function plot(startTime, stopTime, gLeft, gRight, gBottom, gTop, data, color, mi
   context.stroke();
   context.closePath();
 }
+
+setUpModel();
