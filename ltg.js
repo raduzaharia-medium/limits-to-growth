@@ -7,14 +7,10 @@ import { Simulation } from "./models/simulation.js";
 
 // PARAMETERS THAT GOVERN THE RUNNING OF THE MODEL
 
-var startTime = 1900;
-var stopTime = 2100;
-var t = 1900;
-var dt = 0.5;
-var policyYear = 1975; // eqn 150.1
-
-const plotDelay = 0 * dt; // milliseconds
 let plotTimer = null;
+
+const simulation = new Simulation(1900, 2100, 0.5, 1975);
+const qArray = simulation.equations;
 
 const cvWidth = 800;
 const cvHeight = 450;
@@ -23,13 +19,12 @@ const gRight = cvWidth - 50;
 const gTop = 25;
 const gBottom = cvHeight - 50;
 
-const simulation = new Simulation(startTime, stopTime, dt, policyYear);
-const qArray = simulation.equations;
-
 var animationStep = function () {
   simulation.step();
 
-  qArray.filter((e) => e.plotThisVar).forEach((e) => plot(startTime, stopTime, gLeft, gRight, gBottom, gTop, e.data, e.color, e.min, e.max));
+  qArray
+    .filter((e) => e.plotThisVar)
+    .forEach((e) => plot(simulation.startYear, simulation.stopYear, gLeft, gRight, gBottom, gTop, e.data, e.color, e.min, e.max));
   if (simulation.currentYear > simulation.stopYear) stopModel();
 };
 
@@ -48,7 +43,7 @@ export const runModel = () => {
   simulation.restart();
   simulation.warmup();
 
-  plotTimer = setInterval(animationStep, plotDelay); // note GLOBAL
+  plotTimer = setInterval(animationStep, 0);
 };
 
 export const fastRun = () => {
@@ -59,7 +54,9 @@ export const fastRun = () => {
 
   while (simulation.currentYear <= simulation.stopYear) {
     simulation.step();
-    qArray.filter((e) => e.plotThisVar).forEach((e) => plot(startTime, stopTime, gLeft, gRight, gBottom, gTop, e.data, e.color, e.min, e.max));
+    qArray
+      .filter((e) => e.plotThisVar)
+      .forEach((e) => plot(simulation.startYear, simulation.stopYear, gLeft, gRight, gBottom, gTop, e.data, e.color, e.min, e.max));
   }
 };
 
@@ -102,9 +99,9 @@ var setUpGraph = function () {
 
   cvx.lineWidth = 1;
   cvx.strokeStyle = "#fff";
-  for (var x = startTime; x <= stopTime; x += 50) {
-    cvx.moveTo(scaleX(x, startTime, stopTime), scaleY(0, 0, 1));
-    cvx.lineTo(scaleX(x, startTime, stopTime), scaleY(1, 0, 1));
+  for (var x = simulation.startYear; x <= simulation.stopYear; x += 50) {
+    cvx.moveTo(scaleX(x, simulation.startYear, simulation.stopYear), scaleY(0, 0, 1));
+    cvx.lineTo(scaleX(x, simulation.startYear, simulation.stopYear), scaleY(1, 0, 1));
     cvx.stroke();
   }
 
@@ -114,8 +111,8 @@ var setUpGraph = function () {
   cvx.textAlign = "center";
   cvx.fillStyle = "#000";
   var textY = gBottom + 20;
-  for (var textX = startTime; textX <= stopTime; textX += 50) {
-    cvx.fillText(textX.toString(), scaleX(textX, startTime, stopTime), textY);
+  for (var textX = simulation.startYear; textX <= simulation.stopYear; textX += 50) {
+    cvx.fillText(textX.toString(), scaleX(textX, simulation.startYear, simulation.stopYear), textY);
   }
   cvx.fillText("year", scaleX(1, 0, 2), gBottom + 40);
 };
@@ -145,10 +142,11 @@ var setUpControls = function () {
 export const changeDuration = () => {
   var sliderInput = parseInt(document.getElementById("duration-slider").value);
   var sliderReadOut = document.getElementById("duration-readout");
-  sliderReadOut.innerHTML = sliderInput.toString();
-  stopTime = startTime + sliderInput;
 
-  t = startTime;
+  sliderReadOut.innerHTML = sliderInput.toString();
+
+  // recreate simulation
+
   setUpGraph();
 };
 
@@ -156,10 +154,10 @@ export const changeDt = () => {
   var sliderInput = parseInt(document.getElementById("dt-slider").value);
   var sliderReadOut = document.getElementById("dt-readout");
   var newDt = Math.pow(2, sliderInput);
-  sliderReadOut.innerHTML = newDt.toString();
-  dt = newDt;
 
-  t = startTime;
+  sliderReadOut.innerHTML = newDt.toString();
+
+  // recreate simulation
 };
 
 export const changeResources = () => {
@@ -170,8 +168,6 @@ export const changeResources = () => {
 
   //nonrenewableResources.initVal = newResources * 1.0e12;
   //nonrenewableResourcesInitialK = newResources * 1.0e12;
-
-  t = startTime;
 };
 
 export const changeConsumption = () => {
@@ -181,8 +177,6 @@ export const changeConsumption = () => {
 
   //fractionOfIndustrialOutputAllocatedToConsumptionConstant.before = sliderInput;
   //fractionOfIndustrialOutputAllocatedToConsumptionConstant.after = sliderInput;
-
-  t = startTime;
 };
 
 /*
