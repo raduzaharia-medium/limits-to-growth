@@ -5,9 +5,8 @@ export class LandYield extends Aux {
     super("landYield", 103);
 
     this.units = "kilograms per hectare-year";
-    this.plotColor = "#185103";
-    this.plotMin = 0;
-    this.plotMax = 3000;
+    this.color = "#185103";
+    this.max = 3000;
     this.dependencies = ["landYieldFactor", "landYieldMultiplierFromCapital", "landYieldMultiplierFromAirPollution", "landFertility"];
     this.sequenceNumber = 67;
   }

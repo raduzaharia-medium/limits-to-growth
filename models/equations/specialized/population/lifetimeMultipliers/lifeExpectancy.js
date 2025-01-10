@@ -5,9 +5,8 @@ export class LifeExpectancy extends Aux {
     super("lifeExpectancy", 19);
 
     this.units = "years";
-    this.plotColor = "#666666";
-    this.plotMin = 0;
-    this.plotMax = 80;
+    this.color = "#666666";
+    this.max = 80;
     this.dependencies = [
       "lifetimeMultiplierFromFood",
       "lifetimeMultiplierFromHealthServices",

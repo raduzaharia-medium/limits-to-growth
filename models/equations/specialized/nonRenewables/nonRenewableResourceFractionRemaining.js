@@ -4,9 +4,9 @@ export class NonRenewableResourceFractionRemaining extends Aux {
   constructor(nonRenewableResourcesInitialK) {
     super("nonrenewableResourceFractionRemaining", 133);
 
-    this.plotColor = "#b0875e";
-    this.plotMin = 0.0;
-    this.plotMax = 1.0;
+    this.color = "#b0875e";
+    this.min = 0.0;
+    this.max = 1.0;
     this.nonRenewableResourcesInitialK = nonRenewableResourcesInitialK;
     this.sequenceNumber = 12;
     this.dependencies = ["nonRenewableResources"];

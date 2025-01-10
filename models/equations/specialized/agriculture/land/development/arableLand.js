@@ -5,9 +5,8 @@ export class ArableLand extends Level {
     super("arableLand", 85, 0.9e9);
 
     this.units = "hectares";
-    this.plotColor = "#513210";
-    this.plotMin = 0;
-    this.plotMax = 3.0e9;
+    this.color = "#513210";
+    this.max = 3.0e9;
 
     this.dependencies = ["landDevelopmentRate", "landErosionRate", "landRemovalForUrbanIndustrialUse"];
   }

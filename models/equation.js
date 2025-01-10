@@ -11,9 +11,9 @@ export class Equation {
     this.k = null;
 
     this.plotThisVar = false;
-    this.plotColor = "transparent";
-    this.plotMin = 0;
-    this.plotMax = 1000;
+    this.color = "transparent";
+    this.min = 0;
+    this.max = 1000;
   }
 
   warmup(t, dt) {

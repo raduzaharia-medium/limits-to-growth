@@ -32,7 +32,7 @@ var animationStep = function () {
   simulation.step(t, dt);
   t += dt;
 
-  qArray.filter((e) => e.plotThisVar).forEach((e) => plot(startTime, stopTime, gLeft, gRight, gBottom, gTop, e.data, e.plotColor, e.plotMin, e.plotMax));
+  qArray.filter((e) => e.plotThisVar).forEach((e) => plot(startTime, stopTime, gLeft, gRight, gBottom, gTop, e.data, e.color, e.min, e.max));
   if (t > stopTime) stopModel();
 };
 
@@ -250,7 +250,7 @@ export const pollCheckBoxes = () => {
     var theInput = ckx[i].getElementsByTagName("input")[0];
     var theEqn = qArray.find((e) => e.qName === theInput.getAttribute("name"));
     var theSample = ckx[i].getElementsByClassName("color-sample")[0];
-    var theHue = theEqn.plotColor;
+    var theHue = theEqn.color;
     if (theInput.checked == true) {
       theSample.style.backgroundColor = theHue;
       theEqn.plotThisVar = true;
@@ -287,7 +287,7 @@ export const setDefaults = () => {
   changeConsumption();
 };
 
-function plot(startTime, stopTime, gLeft, gRight, gBottom, gTop, data, color, plotMin, plotMax) {
+function plot(startTime, stopTime, gLeft, gRight, gBottom, gTop, data, color, min, max) {
   const canvas = document.getElementById("cv");
   const context = canvas.getContext("2d");
 
@@ -296,11 +296,11 @@ function plot(startTime, stopTime, gLeft, gRight, gBottom, gTop, data, color, pl
   context.beginPath();
 
   var leftPoint = data[0];
-  context.moveTo(scaleX(leftPoint.x, startTime, stopTime, gLeft, gRight), scaleY(leftPoint.y, plotMin, plotMax, gBottom, gTop));
+  context.moveTo(scaleX(leftPoint.x, startTime, stopTime, gLeft, gRight), scaleY(leftPoint.y, min, max, gBottom, gTop));
 
   for (var i = 1; i < data.length; i++) {
     var p = data[i];
-    context.lineTo(scaleX(p.x, startTime, stopTime, gLeft, gRight), scaleY(p.y, plotMin, plotMax, gBottom, gTop));
+    context.lineTo(scaleX(p.x, startTime, stopTime, gLeft, gRight), scaleY(p.y, min, max, gBottom, gTop));
   }
 
   context.stroke();

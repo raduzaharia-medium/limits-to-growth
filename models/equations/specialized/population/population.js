@@ -5,9 +5,8 @@ export class Population extends Aux {
     super("population", 1);
 
     this.units = "persons";
-    this.plotColor = "#e07154";
-    this.plotMin = 0;
-    this.plotMax = 1.6e10;
+    this.color = "#e07154";
+    this.max = 1.6e10;
     this.sequenceNumber = 0;
 
     this.dependencies = ["population0To14", "population15To44", "population45To64", "population65AndOver"];
