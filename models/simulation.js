@@ -949,10 +949,19 @@ export class Simulation {
     this.levelArray.forEach((e) => e.reset(this.startYear));
   }
 
-  step(currentYear, timeStep) {
-    this.levelArray.forEach((e) => e.update(currentYear, timeStep));
-    this.auxArray.forEach((e) => e.update(currentYear, timeStep));
-    this.rateArray.forEach((e) => e.update(currentYear, timeStep));
+  quickWarmup() {
+    for (var i = 1; i <= 100; i++) {
+      this.auxArray.forEach((e) => e.warmup(this.currentYear, this.timeStep));
+      this.rateArray.forEach((e) => e.warmup(this.currentYear, this.timeStep));
+
+      this.equations.forEach((e) => e.tick());
+    }
+  }
+
+  step() {
+    this.levelArray.forEach((e) => e.update(this.currentYear, this.timeStep));
+    this.auxArray.forEach((e) => e.update(this.currentYear, this.timeStep));
+    this.rateArray.forEach((e) => e.update(this.currentYear, this.timeStep));
 
     this.equations.forEach((e) => e.tick());
     this.currentYear += this.timeStep;

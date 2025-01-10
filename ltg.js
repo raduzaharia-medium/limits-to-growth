@@ -25,19 +25,17 @@ const gBottom = cvHeight - 50;
 
 const simulation = new Simulation(startTime, stopTime, dt, policyYear);
 const qArray = simulation.equations;
-const rateArray = simulation.rateArray;
-const auxArray = simulation.auxArray;
 
 var animationStep = function () {
-  simulation.step(t, dt);
-  t += dt;
+  simulation.step();
 
   qArray.filter((e) => e.plotThisVar).forEach((e) => plot(startTime, stopTime, gLeft, gRight, gBottom, gTop, e.data, e.color, e.min, e.max));
-  if (t > stopTime) stopModel();
+  if (simulation.currentYear > simulation.stopYear) stopModel();
 };
 
 export const stopModel = () => {
   clearInterval(plotTimer);
+
   enableControls();
   setRunButton();
 };
@@ -47,30 +45,21 @@ export const runModel = () => {
   setStopButton();
   setUpGraph();
 
-  t = startTime;
   simulation.restart();
-  simulation.warmup(t, dt);
+  simulation.warmup();
 
   plotTimer = setInterval(animationStep, plotDelay); // note GLOBAL
 };
 
 export const fastRun = () => {
-  t = startTime;
-
-  simulation.restart();
-
   setUpGraph();
 
-  for (var i = 1; i <= 100; i++) {
-    auxArray.forEach((e) => e.warmup(t, dt));
-    rateArray.forEach((e) => e.warmup(t, dt));
+  simulation.restart();
+  simulation.quickWarmup();
 
-    qArray.forEach((e) => e.tick());
-  }
-
-  while (t <= stopTime) {
-    simulation.step(t, dt);
-    t += dt;
+  while (simulation.currentYear <= simulation.stopYear) {
+    simulation.step();
+    qArray.filter((e) => e.plotThisVar).forEach((e) => plot(startTime, stopTime, gLeft, gRight, gBottom, gTop, e.data, e.color, e.min, e.max));
   }
 };
 
