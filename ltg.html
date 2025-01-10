@@ -9,24 +9,7 @@
   <script type="module" src="ltg.js"></script>
 
   <script type="module">
-    import { setUpModel, runModel, fastRun, changeDuration, changeDt, changeResources, changeConsumption, pollCheckBoxes, setDefaults } from './ltg.js';
-
-    document.getElementById("duration-slider").addEventListener("input", changeDuration);
-    document.getElementById("dt-slider").addEventListener("input", changeDt);
-    document.getElementById("resource-slider").addEventListener("input", changeResources);
-    document.getElementById("consumption-slider").addEventListener("input", changeConsumption);
-
-    document.getElementById('population-ck').addEventListener('change', pollCheckBoxes);
-    document.getElementById('resources-ck').addEventListener('change', pollCheckBoxes);
-    document.getElementById('food-ck').addEventListener('change', pollCheckBoxes);
-    document.getElementById('industry-ck').addEventListener('change', pollCheckBoxes);
-    document.getElementById('service-ck').addEventListener('change', pollCheckBoxes);
-    document.getElementById('pollution-ck').addEventListener('change', pollCheckBoxes);
-    document.getElementById('life-expect-ck').addEventListener('change', pollCheckBoxes);
-    document.getElementById('birth-rate-ck').addEventListener('change', pollCheckBoxes);
-    document.getElementById('death-rate-ck').addEventListener('change', pollCheckBoxes);
-    document.getElementById('arable-land-ck').addEventListener('change', pollCheckBoxes);
-    document.getElementById('land-yield-ck').addEventListener('change', pollCheckBoxes);
+    import { setUpModel, runModel, fastRun, setDefaults } from './ltg.js';
 
     document.getElementById('run').addEventListener('click', runModel);
     // document.getElementById('reset').addEventListener('click', resetModel);
@@ -64,7 +47,7 @@
           <div class="slider-set">
             <label for="dt-slider">time step (years)</label>
             <input id="dt-slider" name="dt-slider" type="range" class="slider" min="-4" max="1" step="1" value="-1" />
-            <span id="dt-readout" class="slider-readout">1</span>
+            <span id="dt-readout" class="slider-readout">0.5</span>
           </div>
           <div class="slider-set">
             <label for="resource-slider">initial resources multiplier</label>

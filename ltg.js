@@ -8,8 +8,9 @@ import { Simulation } from "./models/simulation.js";
 // PARAMETERS THAT GOVERN THE RUNNING OF THE MODEL
 
 let plotTimer = null;
-
-const simulation = new Simulation(1900, 2100, 0.5, 1975);
+const timeStepSlider = document.getElementById("dt-slider");
+const timeStep = Math.pow(2, parseFloat(timeStepSlider.value));
+const simulation = new Simulation(1900, 2100, timeStep, 1975);
 
 const cvWidth = 800;
 const cvHeight = 450;
@@ -63,8 +64,35 @@ export const fastRun = () => {
 
 export const setUpModel = () => {
   setUpGraph();
-  setUpControls();
   setDefaults();
+
+  const timeStepSlider = document.getElementById("dt-slider");
+  timeStepSlider.addEventListener("input", () => {
+    const timeStepReadout = document.getElementById("dt-readout");
+    const timeStep = Math.pow(2, parseFloat(timeStepSlider.value));
+
+    timeStepReadout.innerHTML = timeStep;
+  });
+
+  const durationSlider = document.getElementById("duration-slider");
+  durationSlider.addEventListener("input", () => {
+    const durationReadout = document.getElementById("duration-readout");
+    durationReadout.innerHTML = durationSlider.value;
+  });
+
+  const resourceSlider = document.getElementById("resource-slider");
+  resourceSlider.addEventListener("input", () => {
+    const resourceReadout = document.getElementById("resource-readout");
+    const resource = Math.pow(2, parseFloat(resourceSlider.value));
+
+    resourceReadout.innerHTML = resource;
+  });
+
+  const consumptionSlider = document.getElementById("consumption-slider");
+  consumptionSlider.addEventListener("input", () => {
+    const consumptionReadout = document.getElementById("consumption-readout");
+    consumptionReadout.innerHTML = consumptionSlider.value;
+  });
 };
 
 var scaleX = function (x, xMin, xMax) {
@@ -147,16 +175,6 @@ export const changeDuration = () => {
   // recreate simulation
 
   setUpGraph();
-};
-
-export const changeDt = () => {
-  var sliderInput = parseInt(document.getElementById("dt-slider").value);
-  var sliderReadOut = document.getElementById("dt-readout");
-  var newDt = Math.pow(2, sliderInput);
-
-  sliderReadOut.innerHTML = newDt.toString();
-
-  // recreate simulation
 };
 
 export const changeResources = () => {
@@ -250,20 +268,21 @@ export const setDefaults = () => {
     var theInput = ckx[i].getElementsByTagName("input")[0];
     theInput.checked = false;
   }
+
   for (var id in plotVars) {
     var ckBox = document.getElementById(plotVars[id]);
     ckBox.checked = true;
   }
   pollCheckBoxes();
+
   var duration = document.getElementById("duration-slider");
   duration.value = 200;
   changeDuration();
-  var dtx = document.getElementById("dt-slider");
-  dtx.value = -1;
-  changeDt();
+
   var res = document.getElementById("resource-slider");
   res.value = 0;
   changeResources();
+
   var cons = document.getElementById("consumption-slider");
   cons.value = 0.43;
   changeConsumption();
