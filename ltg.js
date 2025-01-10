@@ -20,7 +20,7 @@ const gTop = 25;
 const gBottom = cvHeight - 50;
 
 var animationStep = function () {
-  const variablesToPlot = [...document.querySelectorAll(".checkbox-line input[checked]")].map((e) => e.name);
+  const variablesToPlot = [...document.querySelectorAll(".checkbox-line input:checked")].map((e) => e.name);
 
   simulation.step();
   simulation.equations
@@ -62,28 +62,20 @@ const start = () => {
   plotTimer = setInterval(animationStep, 0);
 };
 
-export const pollCheckBoxes = () => {
-  if (simulation === null) return;
+const toggleSampleColors = () => {
+  const selection = document.querySelectorAll(".checkbox-line");
 
-  var ckx = document.getElementsByClassName("checkbox-line");
+  for (var i = 0; i < selection.length; i++) {
+    const input = selection[i].querySelector("input");
+    const colorSample = selection[i].querySelector(".color-sample");
 
-  for (var i = 0; i < ckx.length; i++) {
-    var theInput = ckx[i].getElementsByTagName("input")[0];
-    var theEqn = simulation.equations.find((e) => e.qName === theInput.getAttribute("name"));
-    var theSample = ckx[i].getElementsByClassName("color-sample")[0];
-    var theHue = theEqn.color;
-    if (theInput.checked == true) {
-      theSample.style.backgroundColor = theHue;
-      theEqn.plotThisVar = true;
-    } else {
-      theSample.style.backgroundColor = "transparent";
-      theEqn.plotThisVar = false;
-    }
+    if (input.checked == true) colorSample.classList.remove("hidden");
+    else colorSample.classList.add("hidden");
   }
 };
 
 const fastRun = () => {
-  const variablesToPlot = [...document.querySelectorAll(".checkbox-line input[checked]")].map((e) => e.name);
+  const variablesToPlot = [...document.querySelectorAll(".checkbox-line input:checked")].map((e) => e.name);
 
   setUpGraph();
 
@@ -138,7 +130,7 @@ const setUpModel = () => {
   document.getElementById("reset").addEventListener("click", resetModel);
   document.getElementById("fast-run").addEventListener("click", fastRun);
   document.getElementById("defaults").addEventListener("click", setDefaults);
-  document.getElementById("checkboxes").addEventListener("click", pollCheckBoxes);
+  document.getElementById("checkboxes").addEventListener("click", toggleSampleColors);
 };
 
 var setUpGraph = function () {
@@ -218,8 +210,7 @@ const setDefaults = () => {
 
   document.querySelectorAll(".checkbox-line input").forEach((e) => (e.checked = false));
   defaultPlotVariables.forEach((e) => (document.getElementById(e).checked = true));
-
-  pollCheckBoxes();
+  document.getElementById("checkboxes").dispatchEvent(new Event("click"));
 
   document.getElementById("duration-slider").value = 200;
   document.getElementById("duration-slider").dispatchEvent(new Event("input"));

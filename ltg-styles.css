@@ -1,4 +1,3 @@
-
 body {
 	margin: 0px;
 	padding: 0px;
@@ -58,7 +57,7 @@ div#controls {
 
 div#sliders {
 	/* background-color: #ffe1e1; */
-	width: 350px;	
+	width: 350px;
 	position: absolute;
 	top: 10px;
 	left: 20px;
@@ -84,10 +83,10 @@ input.slider {
 }
 
 .slider-readout {
-  text-align: right;
-  position: absolute;
-  right: 5px;
-  top: 15px;
+	text-align: right;
+	position: absolute;
+	right: 5px;
+	top: 15px;
 }
 
 button#run {
@@ -127,34 +126,40 @@ div#checkboxes {
 }
 
 input.checkbox {
-  display: block;
+	display: block;
 }
 
 #checkboxes label:hover {
- cursor:pointer;
+	cursor: pointer;
 }
 
-div.checkbox-line, div.select-line {
-  position: relative;
+div.checkbox-line,
+div.select-line {
+	position: relative;
 }
 
-div.checkbox-line label, div.select-line label {
-  position: absolute;
-  left: 80px;
+div.checkbox-line label,
+div.select-line label {
+	position: absolute;
+	left: 80px;
 }
 
 select {
-  width: 200px;
-  position: absolute;
-  left: 100px;
+	width: 200px;
+	position: absolute;
+	left: 100px;
 }
 
 div.color-sample {
-  width: 75px;
-  height: 5px;
-  background-color: "transparent";
-  display: inline;
-  position: absolute;
-  left: 0px;
-  top: 6px;
+	width: 75px;
+	height: 5px;
+	background-color: "transparent";
+	display: inline;
+	position: absolute;
+	left: 0px;
+	top: 6px;
+
+	&.hidden {
+		visibility: hidden;
+	}
 }
