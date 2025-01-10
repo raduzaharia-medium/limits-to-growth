@@ -10,7 +10,6 @@ import { Simulation } from "./models/simulation.js";
 let plotTimer = null;
 
 const simulation = new Simulation(1900, 2100, 0.5, 1975);
-const qArray = simulation.equations;
 
 const cvWidth = 800;
 const cvHeight = 450;
@@ -22,7 +21,7 @@ const gBottom = cvHeight - 50;
 var animationStep = function () {
   simulation.step();
 
-  qArray
+  simulation.equations
     .filter((e) => e.plotThisVar)
     .forEach((e) => plot(simulation.startYear, simulation.stopYear, gLeft, gRight, gBottom, gTop, e.data, e.color, e.min, e.max));
   if (simulation.currentYear > simulation.stopYear) stopModel();
@@ -54,7 +53,7 @@ export const fastRun = () => {
 
   while (simulation.currentYear <= simulation.stopYear) {
     simulation.step();
-    qArray
+    simulation.equations
       .filter((e) => e.plotThisVar)
       .forEach((e) => plot(simulation.startYear, simulation.stopYear, gLeft, gRight, gBottom, gTop, e.data, e.color, e.min, e.max));
   }
@@ -120,7 +119,7 @@ var setUpGraph = function () {
 // CONTROLS
 // add variables to the pop-up menu
 var populateMenu = function () {
-  const plottable = qArray.filter((e) => e.plottable == true);
+  const plottable = simulation.equations.filter((e) => e.plottable == true);
   const menu = document.getElementById("menuOfVars");
 
   for (var i of plottable) {
@@ -231,7 +230,7 @@ export const pollCheckBoxes = () => {
   var ckx = document.getElementsByClassName("checkbox-line");
   for (var i = 0; i < ckx.length; i++) {
     var theInput = ckx[i].getElementsByTagName("input")[0];
-    var theEqn = qArray.find((e) => e.qName === theInput.getAttribute("name"));
+    var theEqn = simulation.equations.find((e) => e.qName === theInput.getAttribute("name"));
     var theSample = ckx[i].getElementsByClassName("color-sample")[0];
     var theHue = theEqn.color;
     if (theInput.checked == true) {
