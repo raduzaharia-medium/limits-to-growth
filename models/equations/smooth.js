@@ -24,7 +24,7 @@ export class Smooth extends Aux {
     this.j = this.k = this.null;
   }
 
-  update(t, startTime, stopTime, gLeft, gRight, gBottom, gTop, dt) {
+  update(t, dt) {
     if (this.firstCall) {
       this.j = this.k = this.theInput.k || this.initVal;
       this.firstCall = false;

@@ -26,13 +26,9 @@ export class Equation {
     this.data = [];
   }
 
-  update(t, startTime, stopTime, gLeft, gRight, gBottom, gTop, dt) {
+  update(t, dt) {
     this.k = this.updateFn(t, dt);
-
-    if (this.plotThisVar) {
-      this.data.push({ x: t, y: this.k });
-      this.plot(startTime, stopTime, gLeft, gRight, gBottom, gTop);
-    }
+    this.data.push({ x: t, y: this.k });
 
     return this.k;
   }

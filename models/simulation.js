@@ -950,6 +950,11 @@ export class Simulation {
   }
 
   step() {
-    this.this.equations.forEach((e) => e.update());
+    this.levelArray.forEach((e) => e.update(this.currentYear, this.timeStep));
+    this.auxArray.forEach((e) => e.update(this.currentYear, this.timeStep));
+    this.rateArray.forEach((e) => e.update(this.currentYear, this.timeStep));
+
+    this.equations.forEach((e) => e.tick());
+    this.currentYear += this.timeStep;
   }
 }

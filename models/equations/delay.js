@@ -30,7 +30,7 @@ export class Delay3 extends Aux {
     this.gamma = { j: null, k: null };
   }
 
-  update(t, startTime, stopTime, gLeft, gRight, gBottom, gTop, dt) {
+  update(t, dt) {
     if (this.firstCall) {
       this.j = this.k = this.theInput.k;
       this.alpha.j = this.alpha.k = this.theInput.k;

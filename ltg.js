@@ -20,9 +20,9 @@ const rateArray = simulation.rateArray;
 const auxArray = simulation.auxArray;
 
 var timeStep = function () {
-  levelArray.forEach((e) => e.update(t, startTime, stopTime, gLeft, gRight, gBottom, gTop, dt));
-  auxArray.forEach((e) => e.update(t, startTime, stopTime, gLeft, gRight, gBottom, gTop, dt));
-  rateArray.forEach((e) => e.update(t, startTime, stopTime, gLeft, gRight, gBottom, gTop, dt));
+  levelArray.forEach((e) => e.update(t, dt));
+  auxArray.forEach((e) => e.update(t, dt));
+  rateArray.forEach((e) => e.update(t, dt));
 
   qArray.forEach((e) => e.tick());
 
@@ -31,6 +31,8 @@ var timeStep = function () {
 
 var animationStep = function () {
   timeStep();
+  qArray.filter((e) => e.plotThisVar).forEach((e) => e.plot(startTime, stopTime, gLeft, gRight, gBottom, gTop));
+
   if (t > stopTime) {
     clearInterval(plotTimer);
     enableControls();
@@ -251,7 +253,7 @@ var enableControls = function () {
 
 var setStopButton = function () {
   var btn = document.getElementById("run");
-  btn.setAttribute("onclick", "stopModel()");
+  btn.setAttribute("onclick", stopModel());
   btn.innerHTML = "Stop";
 };
 
