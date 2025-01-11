@@ -8,7 +8,6 @@ export class Equation {
     this.j = null;
     this.k = null;
 
-    this.color = "transparent";
     this.min = 0;
     this.max = 1000;
   }

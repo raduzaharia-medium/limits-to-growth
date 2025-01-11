@@ -5,7 +5,6 @@ export class Population extends Aux {
     super("population", 1);
 
     this.units = "persons";
-    this.color = "#e07154";
     this.max = 1.6e10;
     this.sequenceNumber = 0;
 

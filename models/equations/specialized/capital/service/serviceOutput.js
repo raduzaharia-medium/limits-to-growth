@@ -5,7 +5,6 @@ export class ServiceOutput extends Aux {
     super("serviceOutput", 70);
 
     this.units = "dollars per year";
-    this.color = "#4a8a91";
     this.max = 1.0e13;
     this.dependencies = ["capitalUtilizationFraction", "serviceCapitalOutputRatio", "serviceCapital"];
     this.plottable = true;

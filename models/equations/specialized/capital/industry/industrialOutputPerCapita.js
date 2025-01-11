@@ -6,7 +6,6 @@ export class IndustrialOutputPerCapita extends Aux {
 
     this.units = "dollars per person-year";
     this.dependencies = ["industrialOutput", "population"];
-    this.color = "#4a6892";
     this.max = 500;
     this.sequenceNumber = 30;
   }

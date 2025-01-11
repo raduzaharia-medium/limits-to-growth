@@ -25,7 +25,20 @@ var animationStep = function () {
   simulation.step();
   simulation.equations
     .filter((e) => variablesToPlot.includes(e.qName))
-    .forEach((e) => plot(simulation.startYear, simulation.stopYear, gLeft, gRight, gBottom, gTop, e.data, e.color, e.min, e.max));
+    .forEach((e) =>
+      plot(
+        simulation.startYear,
+        simulation.stopYear,
+        gLeft,
+        gRight,
+        gBottom,
+        gTop,
+        e.data,
+        document.querySelector("[name='" + e.qName + "']").dataset.color,
+        e.min,
+        e.max
+      )
+    );
 
   if (simulation.currentYear > simulation.stopYear) stop();
 };
@@ -86,7 +99,20 @@ const fastRun = () => {
     simulation.step();
     simulation.equations
       .filter((e) => variablesToPlot.includes(e.qName))
-      .forEach((e) => plot(simulation.startYear, simulation.stopYear, gLeft, gRight, gBottom, gTop, e.data, e.color, e.min, e.max));
+      .forEach((e) =>
+        plot(
+          simulation.startYear,
+          simulation.stopYear,
+          gLeft,
+          gRight,
+          gBottom,
+          gTop,
+          e.data,
+          document.querySelector("[name='" + e.qName + "']").dataset.color,
+          e.min,
+          e.max
+        )
+      );
   }
 };
 

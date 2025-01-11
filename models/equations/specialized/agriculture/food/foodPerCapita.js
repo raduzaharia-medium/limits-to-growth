@@ -6,7 +6,6 @@ export class FoodPerCapita extends Aux {
 
     this.units = "kilograms per person-year";
     this.dependencies = ["food", "population"];
-    this.color = "#a8c3a5";
     this.sequenceNumber = 73;
   }
 

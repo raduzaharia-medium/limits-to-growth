@@ -6,7 +6,6 @@ export class CrudeDeathRate extends Aux {
 
     this.units = "deaths per 1000 person-years";
     this.dependencies = ["deathsPerYear", "population"];
-    this.color = "#650d99";
     this.max = 50;
     this.sequenceNumber = 21;
   }
