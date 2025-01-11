@@ -16,7 +16,7 @@ const gRight = cvWidth - 50;
 const gTop = 25;
 const gBottom = cvHeight - 50;
 
-var animationStep = function () {
+const animationStep = function () {
   const variablesToPlot = [...document.querySelectorAll(".checkbox-line input:checked")].map((e) => e.name);
 
   simulation.step();
