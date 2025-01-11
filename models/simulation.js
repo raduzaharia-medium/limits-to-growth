@@ -149,13 +149,14 @@ import { Population45To64 } from "./equations/specialized/population/population4
 import { Population65AndOver } from "./equations/specialized/population/population65AndOver.js";
 
 export class Simulation {
-  constructor(startYear, stopYear, timeStep, policyYear, resources) {
+  constructor(startYear, stopYear, timeStep, policyYear, resources, consumption) {
     this.startYear = startYear;
     this.stopYear = stopYear;
     this.timeStep = timeStep;
     this.policyYear = policyYear;
     this.currentYear = startYear;
     this.nonRenewableResourcesInitialK = resources * 1.0e12;
+    this.consumption = consumption;
 
     this.equations = [];
 
@@ -170,9 +171,6 @@ export class Simulation {
 
     // call the init functions for the equations that have them
     this.equations.filter((e) => e.init).forEach((e) => e.init());
-
-    // configure resources
-    this.equations.find((e) => e.qName === "nonrenewableResources").initVal = resources * 1.0e12;
   }
 
   setup() {
@@ -453,7 +451,11 @@ export class Simulation {
     this.equations.push(fractionOfIndustrialOutputAllocatedToConsumption);
     fractionOfIndustrialOutputAllocatedToIndustry.fractionOfIndustrialOutputAllocatedToConsumption = fractionOfIndustrialOutputAllocatedToConsumption;
 
-    const fractionOfIndustrialOutputAllocatedToConsumptionConstant = new FractionOfIndustrialOutputAllocatedToConsumptionConstant(this.policyYear);
+    const fractionOfIndustrialOutputAllocatedToConsumptionConstant = new FractionOfIndustrialOutputAllocatedToConsumptionConstant(
+      this.policyYear,
+      this.consumption,
+      this.consumption
+    );
     this.equations.push(fractionOfIndustrialOutputAllocatedToConsumptionConstant);
     fractionOfIndustrialOutputAllocatedToConsumption.fractionOfIndustrialOutputAllocatedToConsumptionConstant =
       fractionOfIndustrialOutputAllocatedToConsumptionConstant;

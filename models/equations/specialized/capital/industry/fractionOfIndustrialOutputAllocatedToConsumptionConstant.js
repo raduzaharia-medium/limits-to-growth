@@ -2,11 +2,11 @@ import { clip } from "../../../../../tools.js";
 import { Aux } from "../../../aux.js";
 
 export class FractionOfIndustrialOutputAllocatedToConsumptionConstant extends Aux {
-  constructor(policyYear) {
+  constructor(policyYear, before, after) {
     super("fractionOfIndustrialOutputAllocatedToConsumptionConstant", 58);
 
-    this.before = 0.43;
-    this.after = 0.43;
+    this.before = before;
+    this.after = after;
     this.policyYear = policyYear;
     this.sequenceNumber = 15;
   }

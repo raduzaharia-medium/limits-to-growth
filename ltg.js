@@ -3,10 +3,7 @@ import { scaleX, scaleY } from "./tools.js";
 
 /*  Limits to Growth: This is a re-implementation in JavaScript of World3, the social-economic-environmental model created by
     Dennis and Donella Meadows and others circa 1970. The results of the modeling exercise were published in The Limits to Growth
-    in 1972, and the model itself was more fully documented in Dynamics of Growth in a Finite World in 1974. 
-*/
-
-// PARAMETERS THAT GOVERN THE RUNNING OF THE MODEL
+    in 1972, and the model itself was more fully documented in Dynamics of Growth in a Finite World in 1974. */
 
 let plotTimer = null;
 const startYear = 1900;
@@ -48,21 +45,8 @@ const toggleSimulation = () => {
   else stop();
 };
 
-const stop = () => {
-  clearInterval(plotTimer);
-
-  document.querySelectorAll("input, button").forEach((e) => e.removeAttribute("disabled"));
-  document.getElementById("run").innerHTML = "Run";
-};
-
 const start = () => {
-  const timeStepSlider = document.getElementById("dt-slider");
-  const timeStep = Math.pow(2, parseFloat(timeStepSlider.value));
-  const duration = parseInt(document.getElementById("duration-slider").value);
-  const resourcesSlider = document.getElementById("resource-slider");
-  const resources = Math.pow(2, parseInt(resourcesSlider.value)); // 1.0e12
-
-  simulation = new Simulation(startYear, startYear + duration, timeStep, 1975, resources);
+  simulation = createSimulation();
 
   document.getElementById("run").innerHTML = "Stop";
   document.querySelectorAll("input, button:not(#run)").forEach((e) => e.setAttribute("disabled", ""));
@@ -75,19 +59,15 @@ const start = () => {
   plotTimer = setInterval(animationStep, 0);
 };
 
-const toggleSampleColors = () => {
-  const selection = document.querySelectorAll(".checkbox-line");
+const stop = () => {
+  clearInterval(plotTimer);
 
-  for (var i = 0; i < selection.length; i++) {
-    const input = selection[i].querySelector("input");
-    const colorSample = selection[i].querySelector(".color-sample");
-
-    if (input.checked == true) colorSample.classList.remove("hidden");
-    else colorSample.classList.add("hidden");
-  }
+  document.querySelectorAll("input, button").forEach((e) => e.removeAttribute("disabled"));
+  document.getElementById("run").innerHTML = "Run";
 };
 
 const fastRun = () => {
+  simulation = createSimulation();
   const variablesToPlot = [...document.querySelectorAll(".checkbox-line input:checked")].map((e) => e.name);
 
   setUpGraph();
@@ -116,12 +96,39 @@ const fastRun = () => {
   }
 };
 
-const resetModel = () => {};
+const setDefaults = () => {
+  const defaultPlotVariables = ["population-ck", "resources-ck", "food-ck", "industry-ck", "pollution-ck", "life-expect-ck"];
 
-const setUpModel = () => {
-  setUpGraph();
-  setDefaults();
+  document.querySelectorAll(".checkbox-line input").forEach((e) => (e.checked = false));
+  defaultPlotVariables.forEach((e) => (document.getElementById(e).checked = true));
+  document.getElementById("checkboxes").dispatchEvent(new Event("click"));
 
+  document.getElementById("duration-slider").value = 200;
+  document.getElementById("duration-slider").dispatchEvent(new Event("input"));
+
+  document.getElementById("resource-slider").value = 0;
+  document.getElementById("resource-slider").dispatchEvent(new Event("input"));
+
+  document.getElementById("consumption-slider").value = 0.43;
+  document.getElementById("consumption-slider").dispatchEvent(new Event("input"));
+
+  document.getElementById("dt-slider").value = -1;
+  document.getElementById("dt-slider").dispatchEvent(new Event("input"));
+};
+
+const toggleSampleColors = () => {
+  const selection = document.querySelectorAll(".checkbox-line");
+
+  for (var i = 0; i < selection.length; i++) {
+    const input = selection[i].querySelector("input");
+    const colorSample = selection[i].querySelector(".color-sample");
+
+    if (input.checked == true) colorSample.classList.remove("hidden");
+    else colorSample.classList.add("hidden");
+  }
+};
+
+const setUpControls = () => {
   const timeStepSlider = document.getElementById("dt-slider");
   timeStepSlider.addEventListener("input", () => {
     const timeStepReadout = document.getElementById("dt-readout");
@@ -153,49 +160,49 @@ const setUpModel = () => {
   });
 
   document.getElementById("run").addEventListener("click", toggleSimulation);
-  document.getElementById("reset").addEventListener("click", resetModel);
+  document.getElementById("reset").addEventListener("click", setUpGraph);
   document.getElementById("fast-run").addEventListener("click", fastRun);
   document.getElementById("defaults").addEventListener("click", setDefaults);
   document.getElementById("checkboxes").addEventListener("click", toggleSampleColors);
 };
 
-var setUpGraph = function () {
+const setUpGraph = function () {
   const duration = parseInt(document.getElementById("duration-slider").value);
+  const canvas = document.getElementById("cv");
+  const context = canvas.getContext("2d");
 
-  var cv = document.getElementById("cv");
-  cv.width = cv.width;
-  var cvx = cv.getContext("2d");
+  canvas.width = canvas.width;
 
   // draw horizontal gridlines
+  context.lineWidth = 1;
+  context.strokeStyle = "#fff";
 
-  cvx.lineWidth = 1;
-  cvx.strokeStyle = "#fff";
-  for (var y = 0; y <= 5; y++) {
-    cvx.moveTo(scaleX(0, 0, 1, gLeft, gRight), scaleY(y, 0, 5, gTop, gBottom));
-    cvx.lineTo(scaleX(1, 0, 1, gLeft, gRight), scaleY(y, 0, 5, gTop, gBottom));
-    cvx.stroke();
+  for (let y = 0; y <= 5; y++) {
+    context.moveTo(scaleX(0, 0, 1, gLeft, gRight), scaleY(y, 0, 5, gTop, gBottom));
+    context.lineTo(scaleX(1, 0, 1, gLeft, gRight), scaleY(y, 0, 5, gTop, gBottom));
+    context.stroke();
   }
 
   // draw vertical gridlines
+  context.lineWidth = 1;
+  context.strokeStyle = "#fff";
 
-  cvx.lineWidth = 1;
-  cvx.strokeStyle = "#fff";
-  for (var x = startYear; x <= startYear + duration; x += 50) {
-    cvx.moveTo(scaleX(x, startYear, startYear + duration, gLeft, gRight), scaleY(0, 0, 1, gTop, gBottom));
-    cvx.lineTo(scaleX(x, startYear, startYear + duration, gLeft, gRight), scaleY(1, 0, 1, gTop, gBottom));
-    cvx.stroke();
+  for (let x = startYear; x <= startYear + duration; x += 50) {
+    context.moveTo(scaleX(x, startYear, startYear + duration, gLeft, gRight), scaleY(0, 0, 1, gTop, gBottom));
+    context.lineTo(scaleX(x, startYear, startYear + duration, gLeft, gRight), scaleY(1, 0, 1, gTop, gBottom));
+    context.stroke();
   }
 
   // place labels for time axis
+  context.font = "1.0em 'Helvetica Neue', Helvetica, Verdana, sans-serif";
+  context.textAlign = "center";
+  context.fillStyle = "#000";
 
-  cvx.font = "1.0em 'Helvetica Neue', Helvetica, Verdana, sans-serif";
-  cvx.textAlign = "center";
-  cvx.fillStyle = "#000";
-  var textY = gBottom + 20;
   for (var textX = startYear; textX <= startYear + duration; textX += 50) {
-    cvx.fillText(textX.toString(), scaleX(textX, startYear, startYear + duration, gLeft, gRight), textY);
+    context.fillText(textX.toString(), scaleX(textX, startYear, startYear + duration, gLeft, gRight), gBottom + 20);
   }
-  cvx.fillText("year", scaleX(1, 0, 2, gLeft, gRight), gBottom + 40);
+
+  context.fillText("year", scaleX(1, 0, 2, gLeft, gRight), gBottom + 40);
 };
 
 // CONTROLS
@@ -212,15 +219,6 @@ var populateMenu = function () {
   }
 };
 
-export const changeConsumption = () => {
-  var sliderInput = parseFloat(document.getElementById("consumption-slider").value);
-  var sliderReadOut = document.getElementById("consumption-readout");
-  sliderReadOut.innerHTML = sliderInput.toFixed(2);
-
-  //fractionOfIndustrialOutputAllocatedToConsumptionConstant.before = sliderInput;
-  //fractionOfIndustrialOutputAllocatedToConsumptionConstant.after = sliderInput;
-};
-
 /*
 var changeMenuVar = function() {
   var menu = document.getElementById("menuOfVars");
@@ -230,26 +228,6 @@ var changeMenuVar = function() {
 
 }
 */
-
-const setDefaults = () => {
-  const defaultPlotVariables = ["population-ck", "resources-ck", "food-ck", "industry-ck", "pollution-ck", "life-expect-ck"];
-
-  document.querySelectorAll(".checkbox-line input").forEach((e) => (e.checked = false));
-  defaultPlotVariables.forEach((e) => (document.getElementById(e).checked = true));
-  document.getElementById("checkboxes").dispatchEvent(new Event("click"));
-
-  document.getElementById("duration-slider").value = 200;
-  document.getElementById("duration-slider").dispatchEvent(new Event("input"));
-
-  document.getElementById("resource-slider").value = 0;
-  document.getElementById("resource-slider").dispatchEvent(new Event("input"));
-
-  document.getElementById("consumption-slider").value = 0.43;
-  document.getElementById("consumption-slider").dispatchEvent(new Event("input"));
-
-  document.getElementById("dt-slider").value = -1;
-  document.getElementById("dt-slider").dispatchEvent(new Event("input"));
-};
 
 const plot = (startTime, stopTime, gLeft, gRight, gBottom, gTop, data, color, min, max) => {
   const canvas = document.getElementById("cv");
@@ -268,4 +246,17 @@ const plot = (startTime, stopTime, gLeft, gRight, gBottom, gTop, data, color, mi
   context.closePath();
 };
 
-setUpModel();
+const createSimulation = () => {
+  const timeStepSlider = document.getElementById("dt-slider");
+  const timeStep = Math.pow(2, parseFloat(timeStepSlider.value));
+  const duration = parseInt(document.getElementById("duration-slider").value);
+  const resourcesSlider = document.getElementById("resource-slider");
+  const resources = Math.pow(2, parseInt(resourcesSlider.value)); // 1.0e12
+  const consumptionSlider = document.getElementById("consumption-slider");
+  const consumption = parseFloat(consumptionSlider.value);
+
+  return new Simulation(startYear, startYear + duration, timeStep, 1975, resources, consumption);
+};
+
+setUpGraph();
+setUpControls();
