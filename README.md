@@ -2,7 +2,7 @@
 
 _The Limits to Growth_ by Meadows et al. (1972) presented a system dynamics model of the global ecosystem and economy, called World3. The original simulation was written in a language called DYNAMO. The code in this repository, written in 2012, attempts to translate the DYNAMO World3 program into JavaScript.
 
-You can run the program in a web browser at [http://bit-player.org/extras/limits/ltg.html](http://bit-player.org/extras/limits/ltg.html).
+You can run the program in a web browser [here](https://raduzaharia-medium.github.io/limits-to-growth/ltg.html).
 
 For background on the project see:
 
